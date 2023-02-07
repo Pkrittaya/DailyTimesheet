@@ -1,0 +1,588 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2499255628B078A600A56CA2 /* TimesheetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499255528B078A600A56CA2 /* TimesheetAppApp.swift */; };
+		2499255828B078A600A56CA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499255728B078A600A56CA2 /* ContentView.swift */; };
+		2499255A28B078A700A56CA2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2499255928B078A700A56CA2 /* Assets.xcassets */; };
+		2499255D28B078A700A56CA2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2499255C28B078A700A56CA2 /* Preview Assets.xcassets */; };
+		2499256728B078A700A56CA2 /* TimesheetAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499256628B078A700A56CA2 /* TimesheetAppTests.swift */; };
+		2499257128B078A700A56CA2 /* TimesheetAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499257028B078A700A56CA2 /* TimesheetAppUITests.swift */; };
+		2499257328B078A700A56CA2 /* TimesheetAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2499257228B078A700A56CA2 /* TimesheetAppUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2499256328B078A700A56CA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2499254A28B078A500A56CA2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2499255128B078A500A56CA2;
+			remoteInfo = TimesheetApp;
+		};
+		2499256D28B078A700A56CA2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2499254A28B078A500A56CA2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2499255128B078A500A56CA2;
+			remoteInfo = TimesheetApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2499255228B078A500A56CA2 /* TimesheetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimesheetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2499255528B078A600A56CA2 /* TimesheetAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetAppApp.swift; sourceTree = "<group>"; };
+		2499255728B078A600A56CA2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2499255928B078A700A56CA2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2499255C28B078A700A56CA2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		2499256228B078A700A56CA2 /* TimesheetAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimesheetAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2499256628B078A700A56CA2 /* TimesheetAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetAppTests.swift; sourceTree = "<group>"; };
+		2499256C28B078A700A56CA2 /* TimesheetAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TimesheetAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2499257028B078A700A56CA2 /* TimesheetAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetAppUITests.swift; sourceTree = "<group>"; };
+		2499257228B078A700A56CA2 /* TimesheetAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesheetAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2499254F28B078A500A56CA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499255F28B078A700A56CA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499256928B078A700A56CA2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2499254928B078A500A56CA2 = {
+			isa = PBXGroup;
+			children = (
+				2499255428B078A600A56CA2 /* TimesheetApp */,
+				2499256528B078A700A56CA2 /* TimesheetAppTests */,
+				2499256F28B078A700A56CA2 /* TimesheetAppUITests */,
+				2499255328B078A500A56CA2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2499255328B078A500A56CA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2499255228B078A500A56CA2 /* TimesheetApp.app */,
+				2499256228B078A700A56CA2 /* TimesheetAppTests.xctest */,
+				2499256C28B078A700A56CA2 /* TimesheetAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2499255428B078A600A56CA2 /* TimesheetApp */ = {
+			isa = PBXGroup;
+			children = (
+				2499255528B078A600A56CA2 /* TimesheetAppApp.swift */,
+				2499255728B078A600A56CA2 /* ContentView.swift */,
+				2499255928B078A700A56CA2 /* Assets.xcassets */,
+				2499255B28B078A700A56CA2 /* Preview Content */,
+			);
+			path = TimesheetApp;
+			sourceTree = "<group>";
+		};
+		2499255B28B078A700A56CA2 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				2499255C28B078A700A56CA2 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		2499256528B078A700A56CA2 /* TimesheetAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				2499256628B078A700A56CA2 /* TimesheetAppTests.swift */,
+			);
+			path = TimesheetAppTests;
+			sourceTree = "<group>";
+		};
+		2499256F28B078A700A56CA2 /* TimesheetAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				2499257028B078A700A56CA2 /* TimesheetAppUITests.swift */,
+				2499257228B078A700A56CA2 /* TimesheetAppUITestsLaunchTests.swift */,
+			);
+			path = TimesheetAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2499255128B078A500A56CA2 /* TimesheetApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2499257628B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetApp" */;
+			buildPhases = (
+				2499254E28B078A500A56CA2 /* Sources */,
+				2499254F28B078A500A56CA2 /* Frameworks */,
+				2499255028B078A500A56CA2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TimesheetApp;
+			productName = TimesheetApp;
+			productReference = 2499255228B078A500A56CA2 /* TimesheetApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2499256128B078A700A56CA2 /* TimesheetAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2499257928B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetAppTests" */;
+			buildPhases = (
+				2499255E28B078A700A56CA2 /* Sources */,
+				2499255F28B078A700A56CA2 /* Frameworks */,
+				2499256028B078A700A56CA2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2499256428B078A700A56CA2 /* PBXTargetDependency */,
+			);
+			name = TimesheetAppTests;
+			productName = TimesheetAppTests;
+			productReference = 2499256228B078A700A56CA2 /* TimesheetAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		2499256B28B078A700A56CA2 /* TimesheetAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2499257C28B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetAppUITests" */;
+			buildPhases = (
+				2499256828B078A700A56CA2 /* Sources */,
+				2499256928B078A700A56CA2 /* Frameworks */,
+				2499256A28B078A700A56CA2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2499256E28B078A700A56CA2 /* PBXTargetDependency */,
+			);
+			name = TimesheetAppUITests;
+			productName = TimesheetAppUITests;
+			productReference = 2499256C28B078A700A56CA2 /* TimesheetAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2499254A28B078A500A56CA2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1340;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					2499255128B078A500A56CA2 = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+					2499256128B078A700A56CA2 = {
+						CreatedOnToolsVersion = 13.4.1;
+						TestTargetID = 2499255128B078A500A56CA2;
+					};
+					2499256B28B078A700A56CA2 = {
+						CreatedOnToolsVersion = 13.4.1;
+						TestTargetID = 2499255128B078A500A56CA2;
+					};
+				};
+			};
+			buildConfigurationList = 2499254D28B078A500A56CA2 /* Build configuration list for PBXProject "TimesheetApp" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2499254928B078A500A56CA2;
+			productRefGroup = 2499255328B078A500A56CA2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2499255128B078A500A56CA2 /* TimesheetApp */,
+				2499256128B078A700A56CA2 /* TimesheetAppTests */,
+				2499256B28B078A700A56CA2 /* TimesheetAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2499255028B078A500A56CA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2499255D28B078A700A56CA2 /* Preview Assets.xcassets in Resources */,
+				2499255A28B078A700A56CA2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499256028B078A700A56CA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499256A28B078A700A56CA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2499254E28B078A500A56CA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2499255828B078A600A56CA2 /* ContentView.swift in Sources */,
+				2499255628B078A600A56CA2 /* TimesheetAppApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499255E28B078A700A56CA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2499256728B078A700A56CA2 /* TimesheetAppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2499256828B078A700A56CA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2499257128B078A700A56CA2 /* TimesheetAppUITests.swift in Sources */,
+				2499257328B078A700A56CA2 /* TimesheetAppUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2499256428B078A700A56CA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2499255128B078A500A56CA2 /* TimesheetApp */;
+			targetProxy = 2499256328B078A700A56CA2 /* PBXContainerItemProxy */;
+		};
+		2499256E28B078A700A56CA2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2499255128B078A500A56CA2 /* TimesheetApp */;
+			targetProxy = 2499256D28B078A700A56CA2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2499257428B078A700A56CA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2499257528B078A700A56CA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2499257728B078A700A56CA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TimesheetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2499257828B078A700A56CA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TimesheetApp/Preview Content\"";
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		2499257A28B078A700A56CA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimesheetApp.app/TimesheetApp";
+			};
+			name = Debug;
+		};
+		2499257B28B078A700A56CA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TimesheetApp.app/TimesheetApp";
+			};
+			name = Release;
+		};
+		2499257D28B078A700A56CA2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TimesheetApp;
+			};
+			name = Debug;
+		};
+		2499257E28B078A700A56CA2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U3PN62FQ45;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = k2mobileapp.TimesheetAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TimesheetApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2499254D28B078A500A56CA2 /* Build configuration list for PBXProject "TimesheetApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2499257428B078A700A56CA2 /* Debug */,
+				2499257528B078A700A56CA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2499257628B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2499257728B078A700A56CA2 /* Debug */,
+				2499257828B078A700A56CA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2499257928B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2499257A28B078A700A56CA2 /* Debug */,
+				2499257B28B078A700A56CA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2499257C28B078A700A56CA2 /* Build configuration list for PBXNativeTarget "TimesheetAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2499257D28B078A700A56CA2 /* Debug */,
+				2499257E28B078A700A56CA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2499254A28B078A500A56CA2 /* Project object */;
+}
