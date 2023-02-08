@@ -308,7 +308,33 @@ class _MyHomePageState extends State<ManpowerList> {
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 16),
                               ),
-                            )
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            TextButton.icon(
+                              style: TextButton.styleFrom(
+                                textStyle: TextStyle(fontSize: 14),
+                                padding: EdgeInsets.zero,
+                                alignment: Alignment.centerLeft,
+                                // tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              icon: Icon(
+                                Icons.logout,
+                                color: Colors.white,
+                              ),
+                              label: Text('ออกจากระบบ',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: Fonts.fonts)),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Login()),
+                                );
+                              },
+                            ),
                           ],
                         ),
                         Row(

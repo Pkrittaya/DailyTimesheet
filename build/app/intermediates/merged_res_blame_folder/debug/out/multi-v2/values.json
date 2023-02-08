@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\Krittaya\\Dailytimesheet\\dev\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "D:\\Krittaya\\Flutter\\Git\\DailyTimesheet\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\krittaya\\.gradle\\caches\\transforms-3\\acbce933e4b464a5224ed377a62db1f5\\transformed\\core-1.6.0\\res\\values\\values.xml",
@@ -42,7 +42,7 @@
                     }
                 },
                 {
-                    "source": "D:\\Krittaya\\Dailytimesheet\\dev\\android\\app\\src\\main\\res\\values\\styles.xml",
+                    "source": "D:\\Krittaya\\Flutter\\Git\\DailyTimesheet\\android\\app\\src\\main\\res\\values\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",
