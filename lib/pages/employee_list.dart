@@ -27,6 +27,9 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
+import '../models/ManpowerEmpData.dart';
+import '../models/ManpowerJobDetail.dart';
+
 String fonts = "Kanit";
 
 CustomDateTime(textdate) {
@@ -67,7 +70,7 @@ FormatDateTime(textdate) {
 }
 
 class EmployeeList extends StatefulWidget {
-  final List<TimesheetData> listtimesheet;
+  final List<ManpowerEmpData> listtimesheet;
   final int index;
   final String EmpCode;
   final String url;
@@ -87,7 +90,7 @@ class EmployeeList extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<EmployeeList> {
-  List<TimesheetData> _data = [];
+  List<ManpowerEmpData> _data = [];
   bool viewVisible = false;
   bool OvernightVisible = false;
   String _showdatehistory = "";
@@ -1368,7 +1371,7 @@ class _MyHomePageState extends State<EmployeeList> {
           _data[index].isExpanded = !isExpanded;
         });
       },
-      children: _data.map<ExpansionPanel>((TimesheetData item) {
+      children: _data.map<ExpansionPanel>((ManpowerEmpData item) {
         return ExpansionPanel(
           canTapOnHeader: true,
           headerBuilder: (BuildContext context, bool isExpanded) {
@@ -1376,7 +1379,7 @@ class _MyHomePageState extends State<EmployeeList> {
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('690000 AAAA BBB'),
+                  Text(item.empName!),
                   Expanded(
                     child: Row(
                       children: [
@@ -2476,7 +2479,7 @@ class _MyHomePageState extends State<EmployeeList> {
                   )
                 ],
               ),
-              subtitle: Text('(9 ชั่วโมง 0 นาที)'),
+              subtitle: Text(item.SumTime!),
             );
           },
           body: ListTile(
@@ -2498,15 +2501,16 @@ class _MyHomePageState extends State<EmployeeList> {
                         Container(
                           height: 300.0,
                           child: ListView.builder(
-                            itemCount: items.length,
+                            itemCount: item.lstDaily.length,
                             itemBuilder: (BuildContext context, int index) {
                               return Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  // Text('Item ${item.empCode}'),
                                   Text(
-                                      "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
+                                      'Item ${item.lstDaily[index].timeIn} - ${item.lstDaily[index].timeOut} (${item.lstDaily[index].dateDiffs} )'),
+                                  //Text(
+                                  //    "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
                                   Row(
                                     children: <Widget>[
                                       Ink(

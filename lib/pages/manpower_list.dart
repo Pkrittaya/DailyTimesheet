@@ -26,6 +26,9 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
+import '../models/ManpowerEmpData.dart';
+import '../models/ManpowerJobDetail.dart';
+
 // String fonts = "Kanit";
 
 // CustomDateTime(textdate) {
@@ -66,7 +69,8 @@ import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 // }
 
 class ManpowerList extends StatefulWidget {
-  final List<TimesheetData> listtimesheet;
+  final List<ManpowerJobDetail> listtimesheet;
+  final List<ManpowerEmpData> listEmp;
   final int index;
   final String EmpCode;
   final String url;
@@ -74,6 +78,7 @@ class ManpowerList extends StatefulWidget {
   const ManpowerList(
       {Key? key,
       required this.listtimesheet,
+      required this.listEmp,
       required this.index,
       required this.EmpCode,
       required this.url})
@@ -107,7 +112,7 @@ class _MyHomePageState extends State<ManpowerList> {
   //   DateFormat('dd/MM/yyyy').format(new DateTime(
   //       DateTime.now().year + 543, DateTime.now().month, DateTime.now().day))
   // ];
-
+/*
   List<String> titles = [
     "AAA001",
     "AAA002",
@@ -122,7 +127,7 @@ class _MyHomePageState extends State<ManpowerList> {
     // "AAA011",
     // "AAA012",
   ];
-
+*/
   // void getlsttimesheet() async {
   //   var client = http.Client();
   //   DateTime NewDate = DateTime.now();
@@ -381,7 +386,7 @@ class _MyHomePageState extends State<ManpowerList> {
                                   style: TextStyle(fontSize: 18),
                                 ),
                                 Text(
-                                  "จำนวน ${titles.length} ใบ",
+                                  "จำนวน ${widget.listtimesheet.length} ใบ",
                                   style: TextStyle(fontSize: 18),
                                 ),
                               ],
@@ -403,7 +408,7 @@ class _MyHomePageState extends State<ManpowerList> {
 
   Widget ListViewHomeLayout() {
     return ListView.builder(
-        itemCount: titles.length,
+        itemCount: widget.listtimesheet.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return Card(
@@ -414,14 +419,14 @@ class _MyHomePageState extends State<ManpowerList> {
                       MaterialPageRoute(
                           builder: (context) => EmployeeList(
                               index: widget.index,
-                              listtimesheet: widget.listtimesheet,
+                              listtimesheet: widget.listEmp,
                               EmpCode: widget.EmpCode,
                               url: widget.url,
-                              jobno: titles[index])),
+                              jobno: widget.listtimesheet[index].jobNo!)),
                     );
                   },
                   title: Text(
-                    "เลขที่งาน ${titles[index]}",
+                    "เลขที่งาน ${widget.listtimesheet[index].jobNo}",
                     style: TextStyle(fontSize: 18, color: Colors.green[900]),
                   ),
                   leading: Icon(Icons.ballot)));

@@ -19,8 +19,8 @@ import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   static const String id = 'mentor sample 1';
-
-  const Login({Key? key}) : super(key: key);
+  String? myurl, para1;
+  Login({Key? key, this.myurl, this.para1}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -66,6 +66,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
         // print(parsedJson['description']);
         // remark.text = parsedJson['type'];
         // remark.text = parsedJson['description'];
+
         if (parsedJson['type'] == "S") {
           Flag = true;
           if (parsedJson['typeCode'] == "S001") {
@@ -141,6 +142,80 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     }
   }
 
+  void ValidateToken() async {
+    try {
+      var _baseUrl = "https://dev-unique.com:9018/api/Interface/GetUserByToken";
+
+      Map<String, String> body = {
+        'method': '${widget.para1!}',
+      };
+      print(json.encode(body));
+      var UserName = '';
+      final res = await http.post(Uri.parse("${_baseUrl}"),
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(body));
+
+      if (res.statusCode == 200) {
+        final jsonData = json.decode(res.body);
+        //   print(res.body);
+
+        final parsedJson = jsonDecode(res.body);
+        // print(parsedJson['description']);
+        // remark.text = parsedJson['type'];
+        // remark.text = parsedJson['description'];
+
+        if (parsedJson['code'] == "200") {
+          Flag = true;
+
+          UserName = parsedJson['messages'];
+          // getlsttimesheet();
+        } else {
+          Flag = false;
+        }
+
+        //  var sessionManager = SessionManager();
+        //   var at = await sessionManager.get("authorization");
+        //   await sessionManager.set("authorization", _authEncode);
+        //  await sessionManager.set("username", controllerUser.text);
+        //   await sessionManager.set("password", controllerPwd.text);
+
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => homepage()),
+        // );
+      } else {
+        Flag = false;
+      }
+
+      setState(() {
+        if (res.statusCode == 200) {
+          final jsonData = json.decode(res.body);
+          //   print(res.body);
+
+          final parsedJson = jsonDecode(res.body);
+          // print(parsedJson['description']);
+          // remark.text = parsedJson['type'];
+          // remark.text = parsedJson['description'];
+          if (parsedJson['code'] == "200") {
+            Flag = true;
+            _Emp_code = UserName;
+            // _Showpopup = ShowPopUp;
+            getlsttimesheet();
+          }
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => homepage()),
+          // );
+        } else {
+          Flag = false;
+        }
+      });
+    } catch (err) {
+      Flag = false;
+      print('Something went wrong');
+    }
+  }
+
   String _authAPI(_username, _password) {
     String _baase64encode = '${_username}:${_password}';
     Codec<String, String> stringToBase64 = utf8.fuse(base64);
@@ -198,6 +273,8 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
   @override
   void initState() {
     loadJson();
+
+    if (widget.para1 != null || widget.para1 != '') ValidateToken();
   }
 
   @override
@@ -282,35 +359,34 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                 ),
                               ),
                               Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade200)),
-                                ),
-                                child: TextField(
-                                  controller: controllerPwd,
-                                  obscureText: _isObscure,
-                                  decoration: InputDecoration(
-                                    // labelText: 'Password',
-                                    hintText: "รหัสผ่าน",
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                    suffixIcon: IconButton(
-                                        icon: Icon(_isObscure
-                                            ? Icons.visibility
-                                            : Icons.visibility_off),
-                                        onPressed: () {
-                                          setState(() {
-                                            _isObscure = !_isObscure;
-                                          });
-                                        }),
-                                    errorText: _validate
-                                        ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
-                                        : null,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey.shade200)),
                                   ),
-                                ),
-                              ),
+                                  child: TextField(
+                                    controller: controllerPwd,
+                                    obscureText: _isObscure,
+                                    decoration: InputDecoration(
+                                      // labelText: 'Password',
+                                      hintText: "รหัสผ่าน",
+                                      hintStyle: TextStyle(color: Colors.grey),
+                                      border: InputBorder.none,
+                                      suffixIcon: IconButton(
+                                          icon: Icon(_isObscure
+                                              ? Icons.visibility
+                                              : Icons.visibility_off),
+                                          onPressed: () {
+                                            setState(() {
+                                              _isObscure = !_isObscure;
+                                            });
+                                          }),
+                                      errorText: _validate
+                                          ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
+                                          : null,
+                                    ),
+                                  ))
                             ],
                           ),
                         ),

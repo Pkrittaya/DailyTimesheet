@@ -4,12 +4,18 @@ import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  String? myurl = Uri.base.toString(); //get complete url
+  String? para1 =
+      Uri.base.queryParameters["para1"]; //get parameter with attribute "para1"
+
+  runApp(MyApp(myurl: myurl, para1: para1)); //pass to MyApp class
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  String? myurl, para1;
+  MyApp({Key? key, this.myurl, this.para1}) : super(key: key);
 
+  //con MyApp({this.myurl, this.para1});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: [const Locale('en'), const Locale('th', 'TH')],
       title: 'Monthlytimesheet',
       theme: basicTheme(),
-      home: const Login(),
+      home: Login(myurl: myurl, para1: para1),
     );
   }
 }
