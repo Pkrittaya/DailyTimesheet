@@ -196,78 +196,78 @@ class _MyHomePageState extends State<ManpowerList> {
   //   }
   // }
 
-  // EmployeeData empdata = new EmployeeData(
-  //     empCode: '',
-  //     empCompName: '',
-  //     empDepartmentName: '',
-  //     empName: '',
-  //     empNationality: '',
-  //     empPositionName: '');
+  EmployeeData empdata = new EmployeeData(
+      empCode: '',
+      empCompName: '',
+      empDepartmentName: '',
+      empName: '',
+      empNationality: '',
+      empPositionName: '');
 
-  // void GetEmpProfile() async {
-  //   var client = http.Client();
-  //   var uri = Uri.parse(
-  //       "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
-  //   var response = await client.get(uri);
-  //   if (response.statusCode == 200) {
-  //     final jsonData = json.decode(response.body);
-  //     print(response.body);
+  void GetEmpProfile() async {
+    var client = http.Client();
+    var uri = Uri.parse(
+        "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
+    var response = await client.get(uri);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      print(response.body);
 
-  //     final parsedJson = jsonDecode(response.body);
+      final parsedJson = jsonDecode(response.body);
 
-  //     setState(() {
-  //       empdata.empCode = parsedJson['emp_Code'];
-  //       empdata.empCompName = parsedJson['emp_Comp_Name'];
-  //       empdata.empDepartmentName = parsedJson['emp_Department_Name'];
-  //       empdata.empName = parsedJson['emp_Name'];
-  //       empdata.empNationality = parsedJson['emp_Nationality'];
-  //       empdata.empPositionName = parsedJson['emp_Position_Name'];
-  //     });
-  //   }
-  // }
+      setState(() {
+        empdata.empCode = parsedJson['emp_Code'];
+        empdata.empCompName = parsedJson['emp_Comp_Name'];
+        empdata.empDepartmentName = parsedJson['emp_Department_Name'];
+        empdata.empName = parsedJson['emp_Name'];
+        empdata.empNationality = parsedJson['emp_Nationality'];
+        empdata.empPositionName = parsedJson['emp_Position_Name'];
+      });
+    }
+  }
 
-  // @override
-  // void initState() {
-  // GetEmpProfile();
+  @override
+  void initState() {
+    GetEmpProfile();
 
-  // dateInput.text = "";
-  // _data = widget.listtimesheet;
-  // // _datahistory = widget.listtimesheet;
-  // DateTime NewDate = DateTime.now();
+    // dateInput.text = "";
+    // _data = widget.listtimesheet;
+    // // _datahistory = widget.listtimesheet;
+    // DateTime NewDate = DateTime.now();
 
-  // //Duration work_yesterday = Duration(hours: 9, minutes: 00);
+    // //Duration work_yesterday = Duration(hours: 9, minutes: 00);
 
-  // if ((NewDate.hour < work_yesterday.inHours) ||
-  //     ((NewDate.hour == work_yesterday.inHours) &&
-  //         (NewDate.minute <= work_yesterday.inMinutes.remainder(60)))) {
-  //   NewDate = DateTime.now().add(new Duration(days: -1));
-  // } else {
-  //   NewDate = DateTime.now();
-  // }
+    // if ((NewDate.hour < work_yesterday.inHours) ||
+    //     ((NewDate.hour == work_yesterday.inHours) &&
+    //         (NewDate.minute <= work_yesterday.inMinutes.remainder(60)))) {
+    //   NewDate = DateTime.now().add(new Duration(days: -1));
+    // } else {
+    //   NewDate = DateTime.now();
+    // }
 
-  // if (_data.length == 0) {
-  //   _showdatetoday = DateFormat("dd/MM/yyyy")
-  //       .format(new DateTime(NewDate.year + 543, NewDate.month, NewDate.day));
-  //   _showtimetoday = "00:00";
-  // } else {
-  //   _showdatetoday = Customdatetext(_data[0].timesheetDate);
-  //   _showtimetoday = _data[0].totalHourDataDay!;
-  // }
+    // if (_data.length == 0) {
+    //   _showdatetoday = DateFormat("dd/MM/yyyy")
+    //       .format(new DateTime(NewDate.year + 543, NewDate.month, NewDate.day));
+    //   _showtimetoday = "00:00";
+    // } else {
+    //   _showdatetoday = Customdatetext(_data[0].timesheetDate);
+    //   _showtimetoday = _data[0].totalHourDataDay!;
+    // }
 
-  // CheckPremission();
+    // CheckPremission();
 
-  // Timer mytimer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //   DateTime timenow = DateTime.now(); //get current date and time
-  //   if (timenow.hour == 9 && timenow.minute == 00 && timenow.second == 00) {
-  //     //setState(() {});
-  //     print('timer');
-  //     getlsttimesheet();
-  //   }
-  //   //mytimer.cancel() //to terminate this timer
-  // });
+    // Timer mytimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   DateTime timenow = DateTime.now(); //get current date and time
+    //   if (timenow.hour == 9 && timenow.minute == 00 && timenow.second == 00) {
+    //     //setState(() {});
+    //     print('timer');
+    //     getlsttimesheet();
+    //   }
+    //   //mytimer.cancel() //to terminate this timer
+    // });
 
-  // super.initState();
-  // }
+    // super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -348,7 +348,7 @@ class _MyHomePageState extends State<ManpowerList> {
                           children: <Widget>[
                             Center(
                               child: Text(
-                                '6400100 AAAA AAAA',
+                                '${widget.EmpCode}  ${empdata.empName}',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -422,7 +422,7 @@ class _MyHomePageState extends State<ManpowerList> {
                               listtimesheet: widget.listEmp,
                               EmpCode: widget.EmpCode,
                               url: widget.url,
-                              jobno: widget.listtimesheet[index].jobNo!)),
+                              manpower: widget.listtimesheet[index])),
                     );
                   },
                   title: Text(

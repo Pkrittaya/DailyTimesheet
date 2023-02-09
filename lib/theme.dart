@@ -31,3 +31,8 @@ ThemeData basicTheme() {
     primarySwatch: Palette.Colortheme,
   );
 }
+
+class Cutofftime {
+  static int hours = 9;
+  static int minutes = 0;
+}

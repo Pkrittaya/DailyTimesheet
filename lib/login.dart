@@ -42,20 +42,17 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     String data = await rootBundle.loadString('assets/config.json');
     final parsedJson = jsonDecode(data);
     webconfig = parsedJson['WebAPIConfig'];
-
-    // return parsedJson['WebAPIConfig'];
   }
 
   void ValidateLogIn() async {
     try {
       String ShowPopUp = "";
-      String UserName = ""; //_domain + controllerUser.text;
+      String UserName = "";
       String _authEncode = _authAPI(UserName, controllerPwd.text);
       var _baseUrl =
           "${webconfig}/api/Interface/GetLogOn?Username=${controllerUser.text}&Password=${controllerPwd.text}";
       final res = await http.get(
         Uri.parse("$_baseUrl"),
-        // headers: <String, String>{'authorization': _authEncode},
       );
 
       if (res.statusCode == 200) {
@@ -63,9 +60,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
         //   print(res.body);
 
         final parsedJson = jsonDecode(res.body);
-        // print(parsedJson['description']);
-        // remark.text = parsedJson['type'];
-        // remark.text = parsedJson['description'];
 
         if (parsedJson['type'] == "S") {
           Flag = true;
@@ -73,21 +67,9 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
             ShowPopUp = "1";
           }
           UserName = parsedJson['description'];
-          // getlsttimesheet();
         } else {
           Flag = false;
         }
-
-        //  var sessionManager = SessionManager();
-        //   var at = await sessionManager.get("authorization");
-        //   await sessionManager.set("authorization", _authEncode);
-        //  await sessionManager.set("username", controllerUser.text);
-        //   await sessionManager.set("password", controllerPwd.text);
-
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => homepage()),
-        // );
       } else {
         Flag = false;
       }
@@ -95,17 +77,13 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
       setState(() {
         if (res.statusCode == 200) {
           final jsonData = json.decode(res.body);
-          //   print(res.body);
 
           final parsedJson = jsonDecode(res.body);
-          // print(parsedJson['description']);
-          // remark.text = parsedJson['type'];
-          // remark.text = parsedJson['description'];
           if (parsedJson['type'] == "S") {
             Flag = true;
             _Emp_code = UserName;
             _Showpopup = ShowPopUp;
-            getlsttimesheet();
+            loadpage();
           } else {
             Flag = false;
 
@@ -117,8 +95,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                   IconsButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-
-                      //getlsttimesheet();
                     },
                     text: 'ตกลง',
                     iconData: Icons.check_circle_outline,
@@ -128,10 +104,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                   ),
                 ]);
           }
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => homepage()),
-          // );
         } else {
           Flag = false;
         }
@@ -157,32 +129,16 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
 
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
-        //   print(res.body);
 
         final parsedJson = jsonDecode(res.body);
-        // print(parsedJson['description']);
-        // remark.text = parsedJson['type'];
-        // remark.text = parsedJson['description'];
 
         if (parsedJson['code'] == "200") {
           Flag = true;
 
           UserName = parsedJson['messages'];
-          // getlsttimesheet();
         } else {
           Flag = false;
         }
-
-        //  var sessionManager = SessionManager();
-        //   var at = await sessionManager.get("authorization");
-        //   await sessionManager.set("authorization", _authEncode);
-        //  await sessionManager.set("username", controllerUser.text);
-        //   await sessionManager.set("password", controllerPwd.text);
-
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => homepage()),
-        // );
       } else {
         Flag = false;
       }
@@ -190,22 +146,15 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
       setState(() {
         if (res.statusCode == 200) {
           final jsonData = json.decode(res.body);
-          //   print(res.body);
 
           final parsedJson = jsonDecode(res.body);
-          // print(parsedJson['description']);
-          // remark.text = parsedJson['type'];
-          // remark.text = parsedJson['description'];
+
           if (parsedJson['code'] == "200") {
             Flag = true;
             _Emp_code = UserName;
-            // _Showpopup = ShowPopUp;
-            getlsttimesheet();
+
+            loadpage();
           }
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => homepage()),
-          // );
         } else {
           Flag = false;
         }
@@ -226,7 +175,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
   }
 
   bool _isObscure = true;
-  void getlsttimesheet() async {
+  void loadpage() async {
     var client = http.Client();
     DateTime NewDate = DateTime.now();
 
@@ -242,32 +191,16 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
 
     String formattedDate = DateFormat('yyyy-MM-dd').format(NewDate);
 
-    formattedDate = '2022-11-08';
-
-    var uri = Uri.parse(
-        "${webconfig}/api/Interface/GetListTimesheeet?Emp_Code=${_Emp_code}&dataTime=${formattedDate}");
-    var response = await client.get(uri);
-    if (response.statusCode == 200) {
-      // Map<String, dynamic> map = jsonDecode(response.body);
-      final parsed = jsonDecode(response.body).cast<Map<String, dynamic>>();
-
-      List<TimesheetData> TestAuto = parsed
-          .map<TimesheetData>((json) => TimesheetData.fromJson(json))
-          .toList();
-
-      // _data = TestAuto;
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => homepage(
-                index: TestAuto.length,
-                listtimesheet: TestAuto,
-                EmpCode: _Emp_code,
-                ShowPopup: _Showpopup,
-                url: webconfig)),
-      );
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => homepage(
+              index: 1,
+              listtimesheet: [],
+              EmpCode: _Emp_code,
+              ShowPopup: _Showpopup,
+              url: webconfig)),
+    );
   }
 
   @override

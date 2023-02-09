@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/models/DailyTimeSheet.dart';
 import 'package:k2mobileapp/models/TimesheetData.dart';
@@ -153,9 +154,25 @@ class _homepageState extends State<homepage> {
               parsedListJson.map<ManpowerEmpData>(
                   (dynamic i) => ManpowerEmpData.fromJson(i)));
 
+          ///check 9.00
+          DateTime NewDate = DateTime.now();
+
+          Duration work_yesterday =
+              Duration(hours: Cutofftime.hours, minutes: Cutofftime.minutes);
+
+          if ((NewDate.hour < work_yesterday.inHours) ||
+              ((NewDate.hour == work_yesterday.inHours) &&
+                  (NewDate.minute < work_yesterday.inMinutes.remainder(60)))) {
+            NewDate = DateTime.now().add(new Duration(days: -1));
+          } else {
+            NewDate = DateTime.now();
+          }
+
+          String formattedDate = DateFormat('yyyy-MM-dd').format(NewDate);
+
           for (var empData in lstEmp) {
             var _serviceBaseURL =
-                "https://dev-unique.com:9012/api/Interface/GetDailyTimeSheet?Emp_Code=${empData.empCode}&DateTime=2022-02-06";
+                "https://dev-unique.com:9012/api/Interface/GetDailyTimeSheet?Emp_Code=${empData.empCode}&DateTime=${formattedDate}";
             final res_emp = await http.get(
               Uri.parse("$_serviceBaseURL"),
             );
