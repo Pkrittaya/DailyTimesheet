@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:k2mobileapp/home.dart';
 import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/main.dart';
+import 'package:k2mobileapp/models/DailyTimeSheet.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
 import 'package:k2mobileapp/models/TimesheetData.dart';
 import 'package:http/http.dart' as http;
@@ -19,6 +20,7 @@ import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
 import '../models/ManpowerEmpData.dart';
 import '../models/ManpowerJobDetail.dart';
+import 'manpower_list.dart';
 
 class EmployeeList extends StatefulWidget {
   final List<ManpowerEmpData> listtimesheet;
@@ -173,6 +175,99 @@ class _MyHomePageState extends State<EmployeeList> {
 
   List<String> HideEmp = [];
 
+  void GetManpowerEmployeeList() async {
+    try {
+      var _baseUrl =
+          "https://dev-unique.com:9012/api/Interface/GetDailyEmployee?Emp_Code=4300001";
+      final res = await http.get(
+        Uri.parse("$_baseUrl"),
+      );
+
+      if (res.statusCode == 200) {
+        final jsonData = json.decode(res.body);
+
+        final parsedJson = jsonDecode(res.body);
+
+        if (parsedJson['type'] == "S") {
+          List<dynamic> parsedListJson = jsonDecode(parsedJson['description']);
+
+          List<ManpowerEmpData> lstEmp = List<ManpowerEmpData>.from(
+              parsedListJson.map<ManpowerEmpData>(
+                  (dynamic i) => ManpowerEmpData.fromJson(i)));
+
+          ///check 9.00
+          DateTime NewDate = DateTime.now();
+
+          Duration work_yesterday =
+              Duration(hours: Cutofftime.hours, minutes: Cutofftime.minutes);
+
+          if ((NewDate.hour < work_yesterday.inHours) ||
+              ((NewDate.hour == work_yesterday.inHours) &&
+                  (NewDate.minute < work_yesterday.inMinutes.remainder(60)))) {
+            NewDate = DateTime.now().add(new Duration(days: -1));
+          } else {
+            NewDate = DateTime.now();
+          }
+
+          String formattedDate = DateFormat('yyyy-MM-dd').format(NewDate);
+
+          for (var empData in lstEmp) {
+            var _serviceBaseURL =
+                "https://dev-unique.com:9012/api/Interface/GetDailyTimeSheet?Emp_Code=${empData.empCode}&DateTime=${formattedDate}";
+            final res_emp = await http.get(
+              Uri.parse("$_serviceBaseURL"),
+            );
+
+            if (res_emp.statusCode == 200) {
+              final jsonDataEmp = json.decode(res_emp.body);
+
+              final parsedJsonEmp = jsonDecode(res_emp.body);
+
+              if (parsedJsonEmp['type'] == "S") {
+                List<dynamic> parsedListJsonEmp =
+                    jsonDecode(parsedJsonEmp['description']);
+
+                List<DailyTimeSheet> lstEmpData = List<DailyTimeSheet>.from(
+                    parsedListJsonEmp.map<DailyTimeSheet>(
+                        (dynamic i) => DailyTimeSheet.fromJson(i)));
+
+                empData.lstDaily = lstEmpData;
+                if (lstEmpData.length > 0)
+                  empData.SumTime = lstEmpData[0].sumtimes!.substring(1, 5);
+                else
+                  empData.SumTime = "00:00";
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EmployeeList(
+                          index: widget.index,
+                          listtimesheet: lstEmp,
+                          EmpCode: widget.EmpCode,
+                          url: widget.url,
+                          manpower: widget.manpower)
+                      // homepage(
+                      //     index: 1,
+                      //     listtimesheet: [],
+                      //     EmpCode: widget.EmpCode,
+                      //     ShowPopup: '',
+                      //     url: widget.url)
+                      ),
+                );
+              }
+            }
+          }
+
+          setState(() {
+            EmpList = lstEmp;
+          });
+        }
+      }
+    } catch (err) {
+      print('Something went wrong');
+    }
+  }
+
   void datasavetimesheet(
       var arrayText, var empcode, var costCenter, var jobcode) async {
     const JsonDecoder decoder = JsonDecoder();
@@ -237,6 +332,26 @@ class _MyHomePageState extends State<EmployeeList> {
               IconsButton(
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) =>
+                  //           EmployeeList(
+                  //               index: widget.index,
+                  //               listtimesheet: widget.listtimesheet,
+                  //               EmpCode: widget.EmpCode,
+                  //               url: widget.url,
+                  //               manpower: widget.manpower)
+                  //           // homepage(
+                  //           //   index: 1,
+                  //           //   listtimesheet: [],
+                  //           //   EmpCode: widget.EmpCode,
+                  //           //   ShowPopup: '',
+                  //           //   url: widget.url,
+                  //           // )
+                  //           ),
+                  // );
+                  GetManpowerEmployeeList();
                 },
                 text: 'ตกลง',
                 iconData: Icons.check_circle_outline,
@@ -3112,7 +3227,8 @@ class _MyHomePageState extends State<EmployeeList> {
                   )
                 ],
               ),
-              subtitle: Text('(${CustomCountTime(item.SumTime!)})'),
+              subtitle: Text(
+                  '(${item.SumTime != null ? CustomCountTime(item.SumTime!) : ''})'),
             );
           },
           body: ListTile(
@@ -3136,26 +3252,31 @@ class _MyHomePageState extends State<EmployeeList> {
                           child: ListView.builder(
                             itemCount: item.lstDaily.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                      '${ReplaceStatusTime(item.lstDaily[index].status)} : ${CustomTime(item.lstDaily[index].timeIn)} - ${CustomTime(item.lstDaily[index].timeOut)} (${CustomCountTime(item.lstDaily[index].dateDiffs)})'),
-                                  //Text(
-                                  //    "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
-                                  Row(
-                                    children: <Widget>[
-                                      _buildedittimesheet(item.lstDaily[index]),
-                                      SizedBox(
-                                        width: 6,
-                                      ),
-                                      _builddeletetimesheet(
-                                          item.lstDaily[index]),
-                                    ],
-                                  ),
-                                ],
-                              );
+                              return item.lstDaily[index].status != '300'
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            '${ReplaceStatusTime(item.lstDaily[index].status)} : ${CustomTime(item.lstDaily[index].timeIn)} - ${CustomTime(item.lstDaily[index].timeOut)} (${CustomCountTime(item.lstDaily[index].dateDiffs)})'),
+                                        //Text(
+                                        //    "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
+                                        Row(
+                                          children: <Widget>[
+                                            _buildedittimesheet(
+                                                item.lstDaily[index]),
+                                            SizedBox(
+                                              width: 6,
+                                            ),
+                                            _builddeletetimesheet(
+                                                item.lstDaily[index]),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                  : SizedBox(
+                                      width: 0,
+                                    );
                             },
                           ),
                         ),
