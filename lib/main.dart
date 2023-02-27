@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       localizationsDelegates: [GlobalMaterialLocalizations.delegate],
       supportedLocales: [const Locale('en'), const Locale('th', 'TH')],
-      title: 'Monthlytimesheet',
+      title: 'Daily Timesheet',
       theme: basicTheme(),
       home: Login(myurl: myurl, para1: para1),
     );
