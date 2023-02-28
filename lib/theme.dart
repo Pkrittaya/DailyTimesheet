@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:k2mobileapp/pages/timesheet.dart';
 
 class Palette {
   static const MaterialColor Colortheme = const MaterialColor(

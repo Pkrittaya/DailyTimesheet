@@ -7,8 +7,6 @@ import 'package:k2mobileapp/example/datepicker.dart';
 import 'package:k2mobileapp/example/expandable-demo.dart';
 import 'package:k2mobileapp/example/expandable.dart';
 import 'package:k2mobileapp/home.dart';
-import 'package:k2mobileapp/models/TimesheetData.dart';
-import 'package:k2mobileapp/pages/timesheet.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'dart:convert';
@@ -196,7 +194,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
       MaterialPageRoute(
           builder: (context) => homepage(
               index: 1,
-              listtimesheet: [],
               EmpCode: _Emp_code,
               ShowPopup: _Showpopup,
               url: webconfig)),
