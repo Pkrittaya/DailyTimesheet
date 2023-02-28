@@ -1,0 +1,10 @@
+^D:\KRITTAYA\FLUTTER\GIT\DAILYTIMESHEET\BUILD\WINDOWS\CMAKEFILES\FF05DAF3E138F931AD28C666D333F8B1\INSTALL_FORCE.RULE
+setlocal
+cd .
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

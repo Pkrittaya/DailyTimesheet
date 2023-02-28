@@ -1,0 +1,28 @@
+^D:\KRITTAYA\FLUTTER\GIT\DAILYTIMESHEET\BUILD\WINDOWS\CMAKEFILES\C32819E0B9B82C8CD172B0A5C877D242\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=D:\Flutter\flutter PROJECT_DIR=D:\Krittaya\Flutter\Git\DailyTimesheet FLUTTER_ROOT=D:\Flutter\flutter FLUTTER_EPHEMERAL_DIR=D:\Krittaya\Flutter\Git\DailyTimesheet\windows\flutter\ephemeral PROJECT_DIR=D:\Krittaya\Flutter\Git\DailyTimesheet FLUTTER_TARGET=D:\Krittaya\Flutter\Git\DailyTimesheet\lib\main.dart DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ== DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false PACKAGE_CONFIG=D:\Krittaya\Flutter\Git\DailyTimesheet\.dart_tool\package_config.json D:/Flutter/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\KRITTAYA\FLUTTER\GIT\DAILYTIMESHEET\BUILD\WINDOWS\CMAKEFILES\CB360D26E31EC206A3327DB6706F3078\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^D:\KRITTAYA\FLUTTER\GIT\DAILYTIMESHEET\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SD:/Krittaya/Flutter/Git/DailyTimesheet/windows -BD:/Krittaya/Flutter/Git/DailyTimesheet/build/windows --check-stamp-file D:/Krittaya/Flutter/Git/DailyTimesheet/build/windows/flutter/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

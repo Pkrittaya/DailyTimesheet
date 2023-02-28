@@ -18,32 +18,32 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
+import '../api.dart';
+import '../models/EmpDailyEmployee.dart';
+import '../models/EmployeeList.dart';
 import '../models/ManpowerEmpData.dart';
 import '../models/ManpowerJobDetail.dart';
 import 'manpower_list.dart';
 
 class EmployeeList extends StatefulWidget {
-  final List<ManpowerEmpData> listtimesheet;
   final int index;
   final String EmpCode;
   final String url;
-  final ManpowerJobDetail manpower;
 
-  const EmployeeList(
-      {Key? key,
-      required this.listtimesheet,
-      required this.index,
-      required this.EmpCode,
-      required this.url,
-      required this.manpower})
-      : super(key: key);
+  const EmployeeList({
+    Key? key,
+    required this.index,
+    required this.EmpCode,
+    required this.url,
+  }) : super(key: key);
 
   @override
   State<EmployeeList> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<EmployeeList> {
-  List<ManpowerEmpData> _data = [];
+  List<Employeelist> _data = [];
+  List<Employeelist> _dataAdd = [];
   Duration work_yesterday = Duration(hours: 9, minutes: 00);
   TextEditingController timestart = TextEditingController();
 
@@ -181,100 +181,35 @@ class _MyHomePageState extends State<EmployeeList> {
   ];
 
   List<String> HideEmp = [];
+  List<Employeelist> itemsList = [];
+  List<EmpDailyEmployee> empdaily = [];
 
-  bool statusLocation = false;
+  TextEditingController textempdaily = TextEditingController();
 
-  void GetManpowerEmployeeList() async {
-    try {
-      var _baseUrl =
-          "https://dev-unique.com:9012/api/Interface/GetDailyEmployee?Emp_Code=4300001";
-      final res = await http.get(
-        Uri.parse("$_baseUrl"),
-      );
+  bool searchempdaily = false;
 
-      if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
+  void dataaddemployee(
+      var cycle, var supcode, var empcode, var projcode) async {
+    var tojsontext = {
+      "cyCleTime": "${cycle}",
+      "suppervisor_Code": "${supcode}",
+      "empCode": "${empcode}",
+      "projectName": "${projcode}",
+    };
 
-        final parsedJson = jsonDecode(res.body);
+    // var tojsontext = decoder.convert(totext);
 
-        if (parsedJson['type'] == "S") {
-          List<dynamic> parsedListJson = jsonDecode(parsedJson['description']);
-
-          List<ManpowerEmpData> lstEmp = List<ManpowerEmpData>.from(
-              parsedListJson.map<ManpowerEmpData>(
-                  (dynamic i) => ManpowerEmpData.fromJson(i)));
-
-          ///check 9.00
-          DateTime NewDate = DateTime.now();
-
-          Duration work_yesterday =
-              Duration(hours: Cutofftime.hours, minutes: Cutofftime.minutes);
-
-          if ((NewDate.hour < work_yesterday.inHours) ||
-              ((NewDate.hour == work_yesterday.inHours) &&
-                  (NewDate.minute < work_yesterday.inMinutes.remainder(60)))) {
-            NewDate = DateTime.now().add(new Duration(days: -1));
-          } else {
-            NewDate = DateTime.now();
-          }
-
-          String formattedDate = DateFormat('yyyy-MM-dd').format(NewDate);
-
-          for (var empData in lstEmp) {
-            var _serviceBaseURL =
-                "https://dev-unique.com:9012/api/Interface/GetDailyTimeSheet?Emp_Code=${empData.empCode}&DateTime=${formattedDate}";
-            final res_emp = await http.get(
-              Uri.parse("$_serviceBaseURL"),
-            );
-
-            if (res_emp.statusCode == 200) {
-              final jsonDataEmp = json.decode(res_emp.body);
-
-              final parsedJsonEmp = jsonDecode(res_emp.body);
-
-              if (parsedJsonEmp['type'] == "S") {
-                List<dynamic> parsedListJsonEmp =
-                    jsonDecode(parsedJsonEmp['description']);
-
-                List<DailyTimeSheet> lstEmpData = List<DailyTimeSheet>.from(
-                    parsedListJsonEmp.map<DailyTimeSheet>(
-                        (dynamic i) => DailyTimeSheet.fromJson(i)));
-
-                empData.lstDaily = lstEmpData;
-                if (lstEmpData.length > 0)
-                  empData.SumTime = lstEmpData[0].sumtimes!.substring(1, 5);
-                else
-                  empData.SumTime = "00:00";
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EmployeeList(
-                          index: widget.index,
-                          listtimesheet: lstEmp,
-                          EmpCode: widget.EmpCode,
-                          url: widget.url,
-                          manpower: widget.manpower)
-                      // homepage(
-                      //     index: 1,
-                      //     listtimesheet: [],
-                      //     EmpCode: widget.EmpCode,
-                      //     ShowPopup: '',
-                      //     url: widget.url)
-                      ),
-                );
-              }
-            }
-          }
-
-          setState(() {
-            EmpList = lstEmp;
-          });
-        }
-      }
-    } catch (err) {
-      print('Something went wrong');
-    }
+    var res = PostTempEmployeeDaily(tojsontext);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EmployeeList(
+          index: widget.index,
+          EmpCode: widget.EmpCode,
+          url: widget.url,
+        ),
+      ),
+    );
   }
 
   void datasavetimesheet(
@@ -301,8 +236,8 @@ class _MyHomePageState extends State<EmployeeList> {
       totext += '"emp_Code": "${empcode}",';
       totext += '"time_In": "${Datestart}",';
       totext += '"time_Out": "${DateEnd}",';
-      totext += '"jobNo": "${widget.manpower.jobNo}",';
-      totext += '"revise_No": "${widget.manpower.reviseNo}",';
+      totext += '"jobNo": "",';
+      totext += '"revise_No": "",';
       totext += '"type": "Labour",';
       totext += '"supervisor_Code": "${widget.EmpCode}",';
       totext += '"location_Status": "",';
@@ -341,26 +276,8 @@ class _MyHomePageState extends State<EmployeeList> {
               IconsButton(
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) =>
-                  //           EmployeeList(
-                  //               index: widget.index,
-                  //               listtimesheet: widget.listtimesheet,
-                  //               EmpCode: widget.EmpCode,
-                  //               url: widget.url,
-                  //               manpower: widget.manpower)
-                  //           // homepage(
-                  //           //   index: 1,
-                  //           //   listtimesheet: [],
-                  //           //   EmpCode: widget.EmpCode,
-                  //           //   ShowPopup: '',
-                  //           //   url: widget.url,
-                  //           // )
-                  //           ),
-                  // );
-                  GetManpowerEmployeeList();
+
+                  // GetManpowerEmployeeList();
                 },
                 text: 'ตกลง',
                 iconData: Icons.check_circle_outline,
@@ -457,10 +374,10 @@ class _MyHomePageState extends State<EmployeeList> {
     }
   }
 
-  Locationstatus() async {
+  AddEmployee() async {
     await Future.delayed(Duration(milliseconds: 10));
-    TextLocationStart = "";
-    TextLocationEnd = "";
+    searchempdaily = false;
+    textempdaily = TextEditingController();
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -473,309 +390,149 @@ class _MyHomePageState extends State<EmployeeList> {
                 // shape: Dialogs.dialogShape,
                 title: Center(
                   child: Text(
-                    "สภาพหน้างาน",
+                    "เพิ่มพนักงาน",
                     style: Dialogs.titleStyle,
                   ),
                 ),
-                // actions: <Widget>[
-                //   SizedBox(height: 20),
-                //   Row(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       SizedBox(
-                //         width: 100,
-                //         child: IconsOutlineButton(
-                //           onPressed: () {
-                //             Navigator.of(context, rootNavigator: true).pop();
-                //           },
-                //           text: 'ไม่',
-                //           iconData: Icons.cancel_outlined,
-                //           color: Colors.white,
-                //           textStyle: TextStyle(color: Colors.black),
-                //           iconColor: Colors.black,
-                //         ),
-                //       ),
-                //       SizedBox(
-                //         width: 10,
-                //       ),
-                //       SizedBox(
-                //         width: 100,
-                //         child: IconsButton(
-                //           onPressed: () {
-                //             Navigator.of(context, rootNavigator: true).pop();
-                //           },
-                //           text: 'ใช่',
-                //           iconData: Icons.check_circle_outline,
-                //           color: Colors.green,
-                //           textStyle: TextStyle(color: Colors.white),
-                //           iconColor: Colors.white,
-                //         ),
-                //       ),
-                //     ],
-                //   )
-                // ],
                 content: SingleChildScrollView(
                   child: Container(
                       width: MediaQuery.of(context).size.width - 10,
                       height: 500,
                       child: Column(
                         children: [
-                          SizedBox(height: 15),
-                          Row(
-                            children: [
-                              TextButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue[900],
-                                  onPrimary: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'พร้อมทำงาน',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 13.0),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    statusLocation = false;
-                                  });
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-                                },
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              TextButton(
-                                style: ElevatedButton.styleFrom(
-                                  primary: Colors.red[900],
-                                  onPrimary: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'ไม่พร้อม',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 13.0),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    statusLocation = true;
-                                  });
-                                },
-                              ),
-                            ],
+                          SizedBox(height: 8),
+                          TextField(
+                            controller: textempdaily,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'รหัสพนักงาน',
+                            ),
                           ),
-                          statusLocation
-                              ? Expanded(
-                                  child: Container(
-                                  padding: const EdgeInsets.all(5.0),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Colors.grey.shade400),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(5)),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(height: 10),
-                                      Text('เวลาไม่พร้อม'),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text('เริ่ม : '),
-                                          OutlinedButton(
-                                              child:
-                                                  Text('${TextLocationStart}'),
-                                              onPressed: () => {
-                                                    Picker(
-                                                        hideHeader: true,
-                                                        cancelText: 'ยกเลิก',
-                                                        confirmText: 'ตกลง',
-                                                        cancelTextStyle:
-                                                            TextStyle(
-                                                                fontFamily:
-                                                                    Fonts
-                                                                        .fonts),
-                                                        confirmTextStyle:
-                                                            TextStyle(
-                                                                fontFamily:
-                                                                    Fonts
-                                                                        .fonts),
-                                                        adapter:
-                                                            DateTimePickerAdapter(
-                                                          minuteInterval: 15,
-                                                          value: LocationStart,
-                                                          customColumnType: [
-                                                            3,
-                                                            4
-                                                          ],
-                                                        ),
-                                                        title: Text(""),
-                                                        selectedTextStyle:
-                                                            TextStyle(
-                                                                color: Colors
-                                                                    .blue),
-                                                        onConfirm:
-                                                            (Picker picker,
-                                                                List value) {
-                                                          var result = (picker
-                                                                      .adapter
-                                                                  as DateTimePickerAdapter)
-                                                              .value;
-                                                          if (result != null) {
-                                                            setState(() {
-                                                              LocationStart =
-                                                                  result;
-                                                              TextLocationStart =
-                                                                  '${LocationStart.hour.toString().padLeft(2, '0')}:${LocationStart.minute.toString().padLeft(2, '0')}';
-                                                            });
-                                                          }
-                                                        }).showDialog(context),
-                                                  }),
-                                          Text(' ถึง '),
-                                          OutlinedButton(
-                                              child: Text('${TextLocationEnd}'),
-                                              onPressed: () => {
-                                                    Picker(
-                                                        cancelText: 'ยกเลิก',
-                                                        confirmText: 'ตกลง',
-                                                        cancelTextStyle:
-                                                            TextStyle(
-                                                                fontFamily:
-                                                                    Fonts
-                                                                        .fonts),
-                                                        confirmTextStyle:
-                                                            TextStyle(
-                                                                fontFamily:
-                                                                    Fonts
-                                                                        .fonts),
-                                                        hideHeader: true,
-                                                        adapter:
-                                                            DateTimePickerAdapter(
-                                                          minuteInterval: 15,
-                                                          value: LocationEnd,
-                                                          customColumnType: [
-                                                            3,
-                                                            4
-                                                          ],
-                                                        ),
-                                                        title: Text(""),
-                                                        selectedTextStyle:
-                                                            TextStyle(
-                                                                color: Colors
-                                                                    .blue),
-                                                        onConfirm:
-                                                            (Picker picker,
-                                                                List value) {
-                                                          var result = (picker
-                                                                      .adapter
-                                                                  as DateTimePickerAdapter)
-                                                              .value;
-                                                          if (result != null) {
-                                                            setState(() {
-                                                              LocationEnd =
-                                                                  result;
-                                                              TextLocationEnd =
-                                                                  '${LocationEnd.hour.toString().padLeft(2, '0')}:${LocationEnd.minute.toString().padLeft(2, '0')}';
-                                                            });
-                                                          }
-                                                        }).showDialog(context),
-                                                  }),
-                                        ],
-                                      ),
-                                      Text('รายละเอียด'),
-                                      DropdownButtonFormField(
-                                        hint: const Text('เลือกรายละเอียด'),
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                        ),
-                                        // dropdownColor:
-                                        //     Colors
-                                        //         .greenAccent,
-                                        value: dropdownValue,
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            dropdownValue = newValue!;
-                                          });
-                                        },
-                                        items: LocationDetail.map<
-                                                DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(
-                                              value,
-                                              style: TextStyle(fontSize: 20),
-                                            ),
-                                          );
-                                        }).toList(),
-                                      ),
-                                      Text('สาเหตุ'),
-                                      TextField(
-                                        // key: '',
-                                        // controller: remark,
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                        ),
-                                        maxLines: 2,
-                                      ),
-                                      SizedBox(height: 10),
-                                    ],
-                                  ),
-                                ))
-                              : const SizedBox(height: 0),
-                          SizedBox(height: 20),
-                          statusLocation
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                          TextButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.blue[900],
+                              onPrimary: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text(
+                              'ค้นหา',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 13.0),
+                            ),
+                            onPressed: () {
+                              if (textempdaily.text == '') {
+                                textempdaily.text = '';
+                              } else {
+                                setState(() {
+                                  GetEmpDailyEmployeeAPI(textempdaily.text);
+                                });
+                              }
+                            },
+                          ),
+                          searchempdaily
+                              ? Column(
                                   children: [
-                                    SizedBox(
-                                      width: 100,
-                                      child: IconsOutlineButton(
-                                        onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                        text: 'ไม่',
-                                        iconData: Icons.cancel_outlined,
-                                        color: Colors.white,
-                                        textStyle:
-                                            TextStyle(color: Colors.black),
-                                        iconColor: Colors.black,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text('รหัสพนักงาน : '),
+                                        Text('${empdaily[0].empCode}'),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 10,
+                                    Row(
+                                      children: [
+                                        Text('รหัสพนักงาน : '),
+                                        Text('${empdaily[0].empName}'),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      width: 100,
-                                      child: IconsButton(
-                                        onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                        text: 'ใช่',
-                                        iconData: Icons.check_circle_outline,
-                                        color: Colors.green,
-                                        textStyle:
-                                            TextStyle(color: Colors.white),
-                                        iconColor: Colors.white,
-                                      ),
+                                    Text(
+                                        'หัวหน้างาน : ${empdaily[0].supervisorCode} ${empdaily[0].supervisorName}'),
+                                    Row(
+                                      children: [
+                                        TextButton(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.blue[900],
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'ยกเลิก',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13.0),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          style: ElevatedButton.styleFrom(
+                                            primary: Colors.blue[900],
+                                            onPrimary: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: const Text(
+                                            'บันทึก',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13.0),
+                                          ),
+                                          onPressed: () {
+                                            DateTime NewDate = DateTime.now();
+                                            String formattedDate =
+                                                DateFormat('yyyy-MM-dd')
+                                                    .format(NewDate);
+
+                                            dataaddemployee(
+                                                '${formattedDate}',
+                                                '3900001',
+                                                empdaily[0].empCode,
+                                                'โครงการสายสีม่วง');
+                                            // setState(() {});
+
+                                            // Navigator.of(context,
+                                            //         rootNavigator: true)
+                                            //     .pop();
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 )
-                              : SizedBox(height: 20),
+                              : SizedBox(
+                                  height: 0,
+                                ),
+                          !(searchempdaily)
+                              ? TextButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.blue[900],
+                                    onPrimary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'ยกเลิก',
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 13.0),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
+                                  },
+                                )
+                              : SizedBox(
+                                  height: 0,
+                                ),
                         ],
                       )),
                 ));
@@ -789,9 +546,31 @@ class _MyHomePageState extends State<EmployeeList> {
   void initState() {
     GetEmpProfile();
 
-    _data = widget.listtimesheet;
+    GetAPI();
+
+    // _data = widget.listtimesheet;
     super.initState();
-    Locationstatus();
+  }
+
+  GetAPI() async {
+    itemsList = await GetEmployeeList();
+
+    setState(() {
+      _data = itemsList.where((res) => res.types == 'Main').toList();
+      _dataAdd = itemsList.where((res) => res.types == 'Add').toList();
+
+      // print(_data.length);
+      // print(_dataAdd.length);
+    });
+  }
+
+  GetEmpDailyEmployeeAPI(empcode) async {
+    empdaily = await GetEmpDailyEmployee(empcode);
+    empdaily = empdaily;
+    searchempdaily = true;
+    // setState(() {
+
+    // });
   }
 
   bool valall = false;
@@ -909,153 +688,99 @@ class _MyHomePageState extends State<EmployeeList> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'เลขที่ใบงาน : ${widget.manpower.jobNo}',
-                                  style: const TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                // const SizedBox(height: 15),
-                                ListView(
-                                  shrinkWrap: true,
-                                  children: [
-                                    Card(
-                                        child: ListTile(
-                                            // onTap: () {},
-                                            title: Row(
-                                      children: [
-                                        Text(
-                                          "สภาพหน้างาน",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.green[900]),
-                                        ),
-                                        TextButton(
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Colors.blue[900],
-                                            onPrimary: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'แก้ไข',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 13.0),
-                                          ),
-                                          onPressed: () {
-                                            Locationstatus();
-                                          },
-                                        ),
-                                      ],
-                                    )
-                                            // leading: Icon(Icons.ballot)
-                                            ))
-                                  ],
-                                ),
-                              ],
+                              children: [],
                             ),
                             const SizedBox(height: 15),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                ElevatedButton.icon(
-                                  icon: Icon(
-                                    FontAwesomeIcons.plus,
-                                    size: 10,
-                                  ),
-                                  label: Text(
-                                    'ใช้เวลาและกิจกรรมร่วมกัน',
-                                    style: GoogleFonts.getFont(Fonts.fonts),
-                                  ), //label text
-                                  style: ElevatedButton.styleFrom(
-                                      shape: new RoundedRectangleBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(8),
+                                Row(
+                                  children: [
+                                    ElevatedButton.icon(
+                                      icon: Icon(
+                                        FontAwesomeIcons.save,
+                                        size: 10,
                                       ),
-                                      primary: Colors.blue[900],
-                                      textStyle: TextStyle(
-                                        fontSize: 10,
-                                      )),
-                                  onPressed: () => {
-                                    if (valall == false)
-                                      {
-                                        setState(() {
-                                          valall = true;
-                                        }),
-                                        TextOTBeforeStart = "",
-                                        TextOTBeforeEnd = "",
-                                        TextDefultOneStart = "",
-                                        TextDefultOneEnd = "",
-                                        TextDefultTwoStart = "",
-                                        TextDefultTwoEnd = "",
-                                        TextOTAfterStart = "",
-                                        TextOTAfterEnd = "",
-                                        showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) {
-                                            return StatefulBuilder(
-                                              builder: (context, setState) {
-                                                return AlertDialog(
-                                                  backgroundColor:
-                                                      Dialogs.bcgColor,
-                                                  // content: Dialogs.holder,
-                                                  shape: Dialogs.dialogShape,
-                                                  title: Center(
-                                                    child: Text(
-                                                      "ทำงาน",
-                                                      style: Dialogs.titleStyle,
-                                                    ),
-                                                  ),
-                                                  actions: <Widget>[
-                                                    Column(
-                                                      children: [
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(5.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .blue
-                                                                    .shade400),
-                                                            borderRadius:
-                                                                BorderRadius
+                                      label: Text(
+                                        'บันทึกเวลาทำงาน',
+                                        style: GoogleFonts.getFont(Fonts.fonts),
+                                      ), //label text
+                                      style: ElevatedButton.styleFrom(
+                                          shape: new RoundedRectangleBorder(
+                                            borderRadius:
+                                                new BorderRadius.circular(8),
+                                          ),
+                                          primary: Colors.blue[900],
+                                          textStyle: TextStyle(
+                                            fontSize: 10,
+                                          )),
+                                      onPressed: () => {
+                                        if (valall == false)
+                                          {
+                                            setState(() {
+                                              valall = true;
+                                            }),
+                                            TextOTBeforeStart = "",
+                                            TextOTBeforeEnd = "",
+                                            TextDefultOneStart = "",
+                                            TextDefultOneEnd = "",
+                                            TextDefultTwoStart = "",
+                                            TextDefultTwoEnd = "",
+                                            TextOTAfterStart = "",
+                                            TextOTAfterEnd = "",
+                                            showDialog(
+                                              barrierDismissible: false,
+                                              context: context,
+                                              builder: (context) {
+                                                return StatefulBuilder(
+                                                  builder: (context, setState) {
+                                                    return AlertDialog(
+                                                      backgroundColor:
+                                                          Dialogs.bcgColor,
+                                                      // content: Dialogs.holder,
+                                                      shape:
+                                                          Dialogs.dialogShape,
+                                                      title: Center(
+                                                        child: Text(
+                                                          "ทำงาน",
+                                                          style: Dialogs
+                                                              .titleStyle,
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        Column(
+                                                          children: [
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .blue
+                                                                        .shade400),
+                                                                borderRadius: BorderRadius
                                                                     .all(Radius
                                                                         .circular(
                                                                             5)),
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                  'โอทีก่อน : เวลา '),
-                                                              OutlinedButton(
-                                                                onPressed: () =>
-                                                                    Picker(
-                                                                        hideHeader:
-                                                                            true,
-                                                                        cancelText:
-                                                                            'ยกเลิก',
-                                                                        confirmText:
-                                                                            'ตกลง',
-                                                                        cancelTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        confirmTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        adapter:
-                                                                            DateTimePickerAdapter(
+                                                              ),
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Text(
+                                                                      'โอทีก่อน : เวลา '),
+                                                                  OutlinedButton(
+                                                                    onPressed: () => Picker(
+                                                                        hideHeader: true,
+                                                                        cancelText: 'ยกเลิก',
+                                                                        confirmText: 'ตกลง',
+                                                                        cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                        confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                        adapter: DateTimePickerAdapter(
                                                                           minuteInterval:
                                                                               15,
                                                                           value:
@@ -1065,15 +790,9 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                             4
                                                                           ],
                                                                         ),
-                                                                        title: Text(
-                                                                            ""),
-                                                                        selectedTextStyle: TextStyle(
-                                                                            color: Colors
-                                                                                .blue),
-                                                                        onConfirm: (Picker
-                                                                                picker,
-                                                                            List
-                                                                                value) {
+                                                                        title: Text(""),
+                                                                        selectedTextStyle: TextStyle(color: Colors.blue),
+                                                                        onConfirm: (Picker picker, List value) {
                                                                           var result =
                                                                               (picker.adapter as DateTimePickerAdapter).value;
                                                                           if (result !=
@@ -1084,131 +803,15 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                             });
                                                                           }
                                                                         }).showDialog(context),
-                                                                child: Text(
-                                                                    '${TextOTBeforeStart}'),
-                                                              ),
-                                                              Text(' ถึง '),
-                                                              OutlinedButton(
-                                                                onPressed: () =>
-                                                                    // showPickerDateCustom(
-                                                                    //     context,
-                                                                    //     'OTBeforeEnd'),
-                                                                    Picker(
-                                                                        cancelText:
-                                                                            'ยกเลิก',
-                                                                        confirmText:
-                                                                            'ตกลง',
-                                                                        cancelTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        confirmTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        hideHeader:
-                                                                            true,
-                                                                        adapter:
-                                                                            DateTimePickerAdapter(
-                                                                          minuteInterval:
-                                                                              15,
-                                                                          value:
-                                                                              OTBeforeEnd,
-                                                                          customColumnType: [
-                                                                            3,
-                                                                            4
-                                                                          ],
-                                                                        ),
-                                                                        title: Text(
-                                                                            ""),
-                                                                        selectedTextStyle: TextStyle(
-                                                                            color: Colors
-                                                                                .blue),
-                                                                        onConfirm: (Picker
-                                                                                picker,
-                                                                            List
-                                                                                value) {
-                                                                          var result =
-                                                                              (picker.adapter as DateTimePickerAdapter).value;
-                                                                          if (result !=
-                                                                              null) {
-                                                                            setState(() {
-                                                                              OTBeforeEnd = result;
-                                                                              TextOTBeforeEnd = '${OTBeforeEnd.hour.toString().padLeft(2, '0')}:${OTBeforeEnd.minute.toString().padLeft(2, '0')}';
-                                                                            });
-                                                                          }
-                                                                        }).showDialog(context),
-                                                                child: Text(
-                                                                    '${TextOTBeforeEnd}'),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 30,
-                                                        ),
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(5.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .green
-                                                                    .shade400),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)),
-                                                          ),
-                                                          child: Column(
-                                                            children: [
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                      'ช่วงแรก : เวลา '),
-                                                                  OutlinedButton(
-                                                                    onPressed: () =>
-                                                                        // showPickerDateCustom(
-                                                                        //     context,
-                                                                        //     'DefultOneStart'),
-                                                                        Picker(
-                                                                            cancelText: 'ยกเลิก',
-                                                                            confirmText: 'ตกลง',
-                                                                            cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                                                            confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                                                            hideHeader: true,
-                                                                            adapter: DateTimePickerAdapter(
-                                                                              minuteInterval: 15,
-                                                                              value: DefultOneStart,
-                                                                              customColumnType: [
-                                                                                3,
-                                                                                4
-                                                                              ],
-                                                                            ),
-                                                                            title: Text(""),
-                                                                            selectedTextStyle: TextStyle(color: Colors.blue),
-                                                                            onConfirm: (Picker picker, List value) {
-                                                                              var result = (picker.adapter as DateTimePickerAdapter).value;
-                                                                              if (result != null) {
-                                                                                setState(() {
-                                                                                  DefultOneStart = result;
-                                                                                  TextDefultOneStart = '${DefultOneStart.hour.toString().padLeft(2, '0')}:${DefultOneStart.minute.toString().padLeft(2, '0')}';
-                                                                                });
-                                                                              }
-                                                                            }).showDialog(context),
                                                                     child: Text(
-                                                                        '${TextDefultOneStart}'),
+                                                                        '${TextOTBeforeStart}'),
                                                                   ),
                                                                   Text(' ถึง '),
                                                                   OutlinedButton(
                                                                     onPressed: () =>
                                                                         // showPickerDateCustom(
                                                                         //     context,
-                                                                        //     'DefultOneEnd'),
+                                                                        //     'OTBeforeEnd'),
                                                                         Picker(
                                                                             cancelText: 'ยกเลิก',
                                                                             confirmText: 'ตกลง',
@@ -1217,7 +820,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                             hideHeader: true,
                                                                             adapter: DateTimePickerAdapter(
                                                                               minuteInterval: 15,
-                                                                              value: DefultOneEnd,
+                                                                              value: OTBeforeEnd,
                                                                               customColumnType: [
                                                                                 3,
                                                                                 4
@@ -1229,28 +832,224 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                               var result = (picker.adapter as DateTimePickerAdapter).value;
                                                                               if (result != null) {
                                                                                 setState(() {
-                                                                                  DefultOneEnd = result;
-                                                                                  TextDefultOneEnd = '${DefultOneEnd.hour.toString().padLeft(2, '0')}:${DefultOneEnd.minute.toString().padLeft(2, '0')}';
+                                                                                  OTBeforeEnd = result;
+                                                                                  TextOTBeforeEnd = '${OTBeforeEnd.hour.toString().padLeft(2, '0')}:${OTBeforeEnd.minute.toString().padLeft(2, '0')}';
                                                                                 });
                                                                               }
                                                                             }).showDialog(context),
                                                                     child: Text(
-                                                                        '${TextDefultOneEnd}'),
+                                                                        '${TextOTBeforeEnd}'),
                                                                   ),
                                                                 ],
                                                               ),
-                                                              Row(
+                                                            ),
+                                                            SizedBox(
+                                                              height: 30,
+                                                            ),
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .green
+                                                                        .shade400),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5)),
+                                                              ),
+                                                              child: Column(
+                                                                children: [
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          'ช่วงแรก : เวลา '),
+                                                                      OutlinedButton(
+                                                                        onPressed: () =>
+                                                                            // showPickerDateCustom(
+                                                                            //     context,
+                                                                            //     'DefultOneStart'),
+                                                                            Picker(
+                                                                                cancelText: 'ยกเลิก',
+                                                                                confirmText: 'ตกลง',
+                                                                                cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                hideHeader: true,
+                                                                                adapter: DateTimePickerAdapter(
+                                                                                  minuteInterval: 15,
+                                                                                  value: DefultOneStart,
+                                                                                  customColumnType: [
+                                                                                    3,
+                                                                                    4
+                                                                                  ],
+                                                                                ),
+                                                                                title: Text(""),
+                                                                                selectedTextStyle: TextStyle(color: Colors.blue),
+                                                                                onConfirm: (Picker picker, List value) {
+                                                                                  var result = (picker.adapter as DateTimePickerAdapter).value;
+                                                                                  if (result != null) {
+                                                                                    setState(() {
+                                                                                      DefultOneStart = result;
+                                                                                      TextDefultOneStart = '${DefultOneStart.hour.toString().padLeft(2, '0')}:${DefultOneStart.minute.toString().padLeft(2, '0')}';
+                                                                                    });
+                                                                                  }
+                                                                                }).showDialog(context),
+                                                                        child: Text(
+                                                                            '${TextDefultOneStart}'),
+                                                                      ),
+                                                                      Text(
+                                                                          ' ถึง '),
+                                                                      OutlinedButton(
+                                                                        onPressed: () =>
+                                                                            // showPickerDateCustom(
+                                                                            //     context,
+                                                                            //     'DefultOneEnd'),
+                                                                            Picker(
+                                                                                cancelText: 'ยกเลิก',
+                                                                                confirmText: 'ตกลง',
+                                                                                cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                hideHeader: true,
+                                                                                adapter: DateTimePickerAdapter(
+                                                                                  minuteInterval: 15,
+                                                                                  value: DefultOneEnd,
+                                                                                  customColumnType: [
+                                                                                    3,
+                                                                                    4
+                                                                                  ],
+                                                                                ),
+                                                                                title: Text(""),
+                                                                                selectedTextStyle: TextStyle(color: Colors.blue),
+                                                                                onConfirm: (Picker picker, List value) {
+                                                                                  var result = (picker.adapter as DateTimePickerAdapter).value;
+                                                                                  if (result != null) {
+                                                                                    setState(() {
+                                                                                      DefultOneEnd = result;
+                                                                                      TextDefultOneEnd = '${DefultOneEnd.hour.toString().padLeft(2, '0')}:${DefultOneEnd.minute.toString().padLeft(2, '0')}';
+                                                                                    });
+                                                                                  }
+                                                                                }).showDialog(context),
+                                                                        child: Text(
+                                                                            '${TextDefultOneEnd}'),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .spaceBetween,
+                                                                    children: [
+                                                                      Text(
+                                                                          'ช่วงหลัง : เวลา '),
+                                                                      OutlinedButton(
+                                                                        onPressed: () =>
+                                                                            // showPickerDateCustom(
+                                                                            //     context,
+                                                                            //     'DefultTwoStart'),
+                                                                            Picker(
+                                                                                cancelText: 'ยกเลิก',
+                                                                                confirmText: 'ตกลง',
+                                                                                cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                hideHeader: true,
+                                                                                adapter: DateTimePickerAdapter(
+                                                                                  minuteInterval: 15,
+                                                                                  value: DefultTwoStart,
+                                                                                  customColumnType: [
+                                                                                    3,
+                                                                                    4
+                                                                                  ],
+                                                                                ),
+                                                                                title: Text(""),
+                                                                                selectedTextStyle: TextStyle(color: Colors.blue),
+                                                                                onConfirm: (Picker picker, List value) {
+                                                                                  var result = (picker.adapter as DateTimePickerAdapter).value;
+                                                                                  if (result != null) {
+                                                                                    setState(() {
+                                                                                      DefultTwoStart = result;
+                                                                                      TextDefultTwoStart = '${DefultTwoStart.hour.toString().padLeft(2, '0')}:${DefultTwoStart.minute.toString().padLeft(2, '0')}';
+                                                                                    });
+                                                                                  }
+                                                                                }).showDialog(context),
+                                                                        child: Text(
+                                                                            '${TextDefultTwoStart}'),
+                                                                      ),
+                                                                      Text(
+                                                                          ' ถึง '),
+                                                                      OutlinedButton(
+                                                                        onPressed: () =>
+                                                                            // showPickerDateCustom(
+                                                                            //     context,
+                                                                            //     'DefultTwoEnd'),
+                                                                            Picker(
+                                                                                cancelText: 'ยกเลิก',
+                                                                                confirmText: 'ตกลง',
+                                                                                cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
+                                                                                hideHeader: true,
+                                                                                adapter: DateTimePickerAdapter(
+                                                                                  minuteInterval: 15,
+                                                                                  value: DefultTwoEnd,
+                                                                                  customColumnType: [
+                                                                                    3,
+                                                                                    4
+                                                                                  ],
+                                                                                ),
+                                                                                title: Text(""),
+                                                                                selectedTextStyle: TextStyle(color: Colors.blue),
+                                                                                onConfirm: (Picker picker, List value) {
+                                                                                  var result = (picker.adapter as DateTimePickerAdapter).value;
+                                                                                  if (result != null) {
+                                                                                    setState(() {
+                                                                                      DefultTwoEnd = result;
+                                                                                      TextDefultTwoEnd = '${DefultTwoEnd.hour.toString().padLeft(2, '0')}:${DefultTwoEnd.minute.toString().padLeft(2, '0')}';
+                                                                                    });
+                                                                                  }
+                                                                                }).showDialog(context),
+                                                                        child: Text(
+                                                                            '${TextDefultTwoEnd}'),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 30,
+                                                            ),
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(5.0),
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                border: Border.all(
+                                                                    color: Colors
+                                                                        .orange
+                                                                        .shade400),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            5)),
+                                                              ),
+                                                              child: Row(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment
                                                                         .spaceBetween,
                                                                 children: [
                                                                   Text(
-                                                                      'ช่วงหลัง : เวลา '),
+                                                                      'โอทีหลัง : เวลา '),
                                                                   OutlinedButton(
                                                                     onPressed: () =>
                                                                         // showPickerDateCustom(
                                                                         //     context,
-                                                                        //     'DefultTwoStart'),
+                                                                        //     'OTAfterStart'),
                                                                         Picker(
                                                                             cancelText: 'ยกเลิก',
                                                                             confirmText: 'ตกลง',
@@ -1259,7 +1058,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                             hideHeader: true,
                                                                             adapter: DateTimePickerAdapter(
                                                                               minuteInterval: 15,
-                                                                              value: DefultTwoStart,
+                                                                              value: OTAfterStart,
                                                                               customColumnType: [
                                                                                 3,
                                                                                 4
@@ -1271,20 +1070,20 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                               var result = (picker.adapter as DateTimePickerAdapter).value;
                                                                               if (result != null) {
                                                                                 setState(() {
-                                                                                  DefultTwoStart = result;
-                                                                                  TextDefultTwoStart = '${DefultTwoStart.hour.toString().padLeft(2, '0')}:${DefultTwoStart.minute.toString().padLeft(2, '0')}';
+                                                                                  OTAfterStart = result;
+                                                                                  TextOTAfterStart = '${OTAfterStart.hour.toString().padLeft(2, '0')}:${OTAfterStart.minute.toString().padLeft(2, '0')}';
                                                                                 });
                                                                               }
                                                                             }).showDialog(context),
                                                                     child: Text(
-                                                                        '${TextDefultTwoStart}'),
+                                                                        '${TextOTAfterStart}'),
                                                                   ),
                                                                   Text(' ถึง '),
                                                                   OutlinedButton(
                                                                     onPressed: () =>
                                                                         // showPickerDateCustom(
                                                                         //     context,
-                                                                        //     'DefultTwoEnd'),
+                                                                        //     'OTAfterEnd'),
                                                                         Picker(
                                                                             cancelText: 'ยกเลิก',
                                                                             confirmText: 'ตกลง',
@@ -1293,7 +1092,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                             hideHeader: true,
                                                                             adapter: DateTimePickerAdapter(
                                                                               minuteInterval: 15,
-                                                                              value: DefultTwoEnd,
+                                                                              value: OTAfterEnd,
                                                                               customColumnType: [
                                                                                 3,
                                                                                 4
@@ -1305,481 +1104,306 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                               var result = (picker.adapter as DateTimePickerAdapter).value;
                                                                               if (result != null) {
                                                                                 setState(() {
-                                                                                  DefultTwoEnd = result;
-                                                                                  TextDefultTwoEnd = '${DefultTwoEnd.hour.toString().padLeft(2, '0')}:${DefultTwoEnd.minute.toString().padLeft(2, '0')}';
+                                                                                  OTAfterEnd = result;
+                                                                                  TextOTAfterEnd = '${OTAfterEnd.hour.toString().padLeft(2, '0')}:${OTAfterEnd.minute.toString().padLeft(2, '0')}';
                                                                                 });
                                                                               }
                                                                             }).showDialog(context),
                                                                     child: Text(
-                                                                        '${TextDefultTwoEnd}'),
+                                                                        '${TextOTAfterEnd}'),
                                                                   ),
                                                                 ],
                                                               ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 30,
-                                                        ),
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(5.0),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Colors
-                                                                    .orange
-                                                                    .shade400),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .all(Radius
-                                                                        .circular(
-                                                                            5)),
-                                                          ),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                  'โอทีหลัง : เวลา '),
-                                                              OutlinedButton(
-                                                                onPressed: () =>
-                                                                    // showPickerDateCustom(
-                                                                    //     context,
-                                                                    //     'OTAfterStart'),
-                                                                    Picker(
-                                                                        cancelText:
-                                                                            'ยกเลิก',
-                                                                        confirmText:
-                                                                            'ตกลง',
-                                                                        cancelTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        confirmTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        hideHeader:
-                                                                            true,
-                                                                        adapter:
-                                                                            DateTimePickerAdapter(
-                                                                          minuteInterval:
-                                                                              15,
-                                                                          value:
-                                                                              OTAfterStart,
-                                                                          customColumnType: [
-                                                                            3,
-                                                                            4
-                                                                          ],
-                                                                        ),
-                                                                        title: Text(
-                                                                            ""),
-                                                                        selectedTextStyle: TextStyle(
-                                                                            color: Colors
-                                                                                .blue),
-                                                                        onConfirm: (Picker
-                                                                                picker,
-                                                                            List
-                                                                                value) {
-                                                                          var result =
-                                                                              (picker.adapter as DateTimePickerAdapter).value;
-                                                                          if (result !=
-                                                                              null) {
-                                                                            setState(() {
-                                                                              OTAfterStart = result;
-                                                                              TextOTAfterStart = '${OTAfterStart.hour.toString().padLeft(2, '0')}:${OTAfterStart.minute.toString().padLeft(2, '0')}';
-                                                                            });
-                                                                          }
-                                                                        }).showDialog(context),
-                                                                child: Text(
-                                                                    '${TextOTAfterStart}'),
-                                                              ),
-                                                              Text(' ถึง '),
-                                                              OutlinedButton(
-                                                                onPressed: () =>
-                                                                    // showPickerDateCustom(
-                                                                    //     context,
-                                                                    //     'OTAfterEnd'),
-                                                                    Picker(
-                                                                        cancelText:
-                                                                            'ยกเลิก',
-                                                                        confirmText:
-                                                                            'ตกลง',
-                                                                        cancelTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        confirmTextStyle: TextStyle(
-                                                                            fontFamily: Fonts
-                                                                                .fonts),
-                                                                        hideHeader:
-                                                                            true,
-                                                                        adapter:
-                                                                            DateTimePickerAdapter(
-                                                                          minuteInterval:
-                                                                              15,
-                                                                          value:
-                                                                              OTAfterEnd,
-                                                                          customColumnType: [
-                                                                            3,
-                                                                            4
-                                                                          ],
-                                                                        ),
-                                                                        title: Text(
-                                                                            ""),
-                                                                        selectedTextStyle: TextStyle(
-                                                                            color: Colors
-                                                                                .blue),
-                                                                        onConfirm: (Picker
-                                                                                picker,
-                                                                            List
-                                                                                value) {
-                                                                          var result =
-                                                                              (picker.adapter as DateTimePickerAdapter).value;
-                                                                          if (result !=
-                                                                              null) {
-                                                                            setState(() {
-                                                                              OTAfterEnd = result;
-                                                                              TextOTAfterEnd = '${OTAfterEnd.hour.toString().padLeft(2, '0')}:${OTAfterEnd.minute.toString().padLeft(2, '0')}';
-                                                                            });
-                                                                          }
-                                                                        }).showDialog(context),
-                                                                child: Text(
-                                                                    '${TextOTAfterEnd}'),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 30,
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            SizedBox(
-                                                              width: 100,
-                                                              child:
-                                                                  IconsOutlineButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(
-                                                                          context,
-                                                                          rootNavigator:
-                                                                              true)
-                                                                      .pop();
-                                                                },
-                                                                text: 'ไม่',
-                                                                iconData: Icons
-                                                                    .cancel_outlined,
-                                                                color: Colors
-                                                                    .white,
-                                                                textStyle: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                                iconColor:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
                                                             ),
                                                             SizedBox(
-                                                              width: 10,
+                                                              height: 30,
                                                             ),
-                                                            SizedBox(
-                                                              width: 100,
-                                                              child:
-                                                                  IconsButton(
-                                                                text: 'ตกลง',
-                                                                iconData: Icons
-                                                                    .check_circle_outline,
-                                                                color: Colors
-                                                                    .green,
-                                                                textStyle: TextStyle(
+                                                            Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: 100,
+                                                                  child:
+                                                                      IconsOutlineButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context,
+                                                                              rootNavigator: true)
+                                                                          .pop();
+                                                                    },
+                                                                    text: 'ไม่',
+                                                                    iconData: Icons
+                                                                        .cancel_outlined,
                                                                     color: Colors
-                                                                        .white),
-                                                                iconColor:
-                                                                    Colors
                                                                         .white,
-                                                                onPressed: () {
-                                                                  //////function check time
+                                                                    textStyle: TextStyle(
+                                                                        color: Colors
+                                                                            .black),
+                                                                    iconColor:
+                                                                        Colors
+                                                                            .black,
+                                                                  ),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 10,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 100,
+                                                                  child:
+                                                                      IconsButton(
+                                                                    text:
+                                                                        'ตกลง',
+                                                                    iconData: Icons
+                                                                        .check_circle_outline,
+                                                                    color: Colors
+                                                                        .green,
+                                                                    textStyle: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                    iconColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    onPressed:
+                                                                        () {
+                                                                      //////function check time
 
-                                                                  var ckOTBefore =
-                                                                      "";
-                                                                  var ckOTBeforestart =
-                                                                      "";
-                                                                  var ckDefultOne =
-                                                                      "";
-                                                                  var ckDefultOnestart =
-                                                                      "";
-                                                                  var ckDefultTwo =
-                                                                      "";
-                                                                  var ckOTDefultTwostart =
-                                                                      "";
-                                                                  var ckOTAfter =
-                                                                      "";
-                                                                  var ckOTOTAfterstart =
-                                                                      "";
+                                                                      var ckOTBefore =
+                                                                          "";
+                                                                      var ckOTBeforestart =
+                                                                          "";
+                                                                      var ckDefultOne =
+                                                                          "";
+                                                                      var ckDefultOnestart =
+                                                                          "";
+                                                                      var ckDefultTwo =
+                                                                          "";
+                                                                      var ckOTDefultTwostart =
+                                                                          "";
+                                                                      var ckOTAfter =
+                                                                          "";
+                                                                      var ckOTOTAfterstart =
+                                                                          "";
 
-                                                                  ///check ค่าว่าง
-                                                                  if ((TextOTBeforeStart !=
-                                                                          "") ||
-                                                                      (TextOTBeforeEnd !=
-                                                                          "")) {
-                                                                    ckOTBefore =
-                                                                        'YES1';
+                                                                      ///check ค่าว่าง
+                                                                      if ((TextOTBeforeStart !=
+                                                                              "") ||
+                                                                          (TextOTBeforeEnd !=
+                                                                              "")) {
+                                                                        ckOTBefore =
+                                                                            'YES1';
 
-                                                                    if ((TextOTBeforeStart !=
-                                                                            "") &&
-                                                                        (TextOTBeforeEnd !=
-                                                                            "")) {
-                                                                      ckOTBefore =
-                                                                          '';
+                                                                        if ((TextOTBeforeStart !=
+                                                                                "") &&
+                                                                            (TextOTBeforeEnd !=
+                                                                                "")) {
+                                                                          ckOTBefore =
+                                                                              '';
 
-                                                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                                                      if (OTBeforeStart
-                                                                          .isAfter(
+                                                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                                                          if (OTBeforeStart.isAfter(
                                                                               OTBeforeEnd)) {
-                                                                        ckOTBeforestart =
-                                                                            'OVER1';
+                                                                            ckOTBeforestart =
+                                                                                'OVER1';
+                                                                          }
+                                                                        }
                                                                       }
-                                                                    }
-                                                                  }
 
-                                                                  if ((TextDefultOneStart !=
-                                                                          "") ||
-                                                                      (TextDefultOneEnd !=
-                                                                          "")) {
-                                                                    ckDefultOne =
-                                                                        'YES2';
+                                                                      if ((TextDefultOneStart !=
+                                                                              "") ||
+                                                                          (TextDefultOneEnd !=
+                                                                              "")) {
+                                                                        ckDefultOne =
+                                                                            'YES2';
 
-                                                                    if ((TextDefultOneStart !=
-                                                                            "") &&
-                                                                        (TextDefultOneEnd !=
-                                                                            "")) {
-                                                                      ckDefultOne =
-                                                                          '';
+                                                                        if ((TextDefultOneStart !=
+                                                                                "") &&
+                                                                            (TextDefultOneEnd !=
+                                                                                "")) {
+                                                                          ckDefultOne =
+                                                                              '';
 
-                                                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                                                      if (DefultOneStart
-                                                                          .isAfter(
+                                                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                                                          if (DefultOneStart.isAfter(
                                                                               DefultOneEnd)) {
-                                                                        ckDefultOnestart =
-                                                                            'OVER2';
+                                                                            ckDefultOnestart =
+                                                                                'OVER2';
+                                                                          }
+                                                                        }
                                                                       }
-                                                                    }
-                                                                  }
 
-                                                                  if ((TextDefultTwoStart !=
-                                                                          "") ||
-                                                                      (TextDefultTwoEnd !=
-                                                                          "")) {
-                                                                    ckDefultTwo =
-                                                                        'YES3';
+                                                                      if ((TextDefultTwoStart !=
+                                                                              "") ||
+                                                                          (TextDefultTwoEnd !=
+                                                                              "")) {
+                                                                        ckDefultTwo =
+                                                                            'YES3';
 
-                                                                    if ((TextDefultTwoStart !=
-                                                                            "") &&
-                                                                        (TextDefultTwoEnd !=
-                                                                            "")) {
-                                                                      ckDefultTwo =
-                                                                          '';
+                                                                        if ((TextDefultTwoStart !=
+                                                                                "") &&
+                                                                            (TextDefultTwoEnd !=
+                                                                                "")) {
+                                                                          ckDefultTwo =
+                                                                              '';
 
-                                                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                                                      if (DefultTwoStart
-                                                                          .isAfter(
+                                                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                                                          if (DefultTwoStart.isAfter(
                                                                               DefultTwoEnd)) {
-                                                                        ckOTDefultTwostart =
-                                                                            'OVER3';
+                                                                            ckOTDefultTwostart =
+                                                                                'OVER3';
+                                                                          }
+                                                                        }
                                                                       }
-                                                                    }
-                                                                  }
 
-                                                                  if ((TextOTAfterStart !=
-                                                                          "") ||
-                                                                      (TextOTAfterEnd !=
-                                                                          "")) {
-                                                                    ckOTAfter =
-                                                                        'YES4';
+                                                                      if ((TextOTAfterStart !=
+                                                                              "") ||
+                                                                          (TextOTAfterEnd !=
+                                                                              "")) {
+                                                                        ckOTAfter =
+                                                                            'YES4';
 
-                                                                    if ((TextOTAfterStart !=
-                                                                            "") &&
-                                                                        (TextOTAfterEnd !=
-                                                                            "")) {
-                                                                      ckOTAfter =
-                                                                          '';
+                                                                        if ((TextOTAfterStart !=
+                                                                                "") &&
+                                                                            (TextOTAfterEnd !=
+                                                                                "")) {
+                                                                          ckOTAfter =
+                                                                              '';
 
-                                                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                                                      if (OTAfterStart
-                                                                          .isAfter(
+                                                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                                                          if (OTAfterStart.isAfter(
                                                                               OTAfterEnd)) {
-                                                                        ckOTOTAfterstart =
-                                                                            'OVER4';
+                                                                            ckOTOTAfterstart =
+                                                                                'OVER4';
+                                                                          }
+                                                                        }
                                                                       }
-                                                                    }
-                                                                  }
 
-                                                                  if ((((ckOTBefore != "") ||
-                                                                              (ckDefultOne !=
-                                                                                  "") ||
-                                                                              (ckDefultTwo !=
-                                                                                  "") ||
-                                                                              (ckOTAfter !=
-                                                                                  "")) ||
-                                                                          ((ckOTBeforestart != "") ||
-                                                                              (ckDefultOnestart !=
-                                                                                  "") ||
-                                                                              (ckOTDefultTwostart !=
-                                                                                  "") ||
-                                                                              (ckOTOTAfterstart !=
-                                                                                  ""))) ||
-                                                                      ((TextOTBeforeStart == "") &&
-                                                                          (TextOTBeforeEnd ==
-                                                                              "") &&
-                                                                          (TextDefultOneStart ==
-                                                                              "") &&
-                                                                          (TextDefultOneEnd ==
-                                                                              "") &&
-                                                                          (TextDefultTwoStart ==
-                                                                              "") &&
-                                                                          (TextDefultTwoEnd ==
-                                                                              "") &&
-                                                                          (TextOTAfterStart ==
-                                                                              "") &&
-                                                                          (TextOTAfterEnd ==
-                                                                              ""))) {
-                                                                    Dialogs.materialDialog(
-                                                                        msg:
-                                                                            'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
-                                                                        title:
-                                                                            'ตรวจสอบข้อมูล',
-                                                                        context:
-                                                                            context,
-                                                                        actions: [
-                                                                          IconsButton(
-                                                                            onPressed:
-                                                                                () {
-                                                                              Navigator.of(context, rootNavigator: true).pop();
-                                                                            },
-                                                                            text:
-                                                                                'ตกลง',
-                                                                            iconData:
-                                                                                Icons.check_circle_outline,
-                                                                            color:
-                                                                                Colors.green,
-                                                                            textStyle:
-                                                                                TextStyle(color: Colors.white),
-                                                                            iconColor:
-                                                                                Colors.white,
-                                                                          ),
-                                                                        ]);
-                                                                  } else {
-                                                                    ///check การเรียงลำดับเวลา
-
-                                                                    String
-                                                                        arrayText =
-                                                                        "";
-
-                                                                    List<DateTime>
-                                                                        typetimestart =
-                                                                        [];
-                                                                    List<DateTime>
-                                                                        typetimeend =
-                                                                        [];
-                                                                    if (TextOTBeforeEnd !=
-                                                                        "") {
-                                                                      typetimestart
-                                                                          .add(
-                                                                              OTBeforeStart);
-                                                                      typetimeend
-                                                                          .add(
-                                                                              OTBeforeEnd);
-
-                                                                      arrayText =
-                                                                          '{"101": ["${OTBeforeStart}", "${OTBeforeEnd}"]';
-                                                                    }
-                                                                    if (TextDefultOneEnd !=
-                                                                        "") {
-                                                                      typetimestart
-                                                                          .add(
-                                                                              DefultOneStart);
-                                                                      typetimeend
-                                                                          .add(
-                                                                              DefultOneEnd);
-
-                                                                      if (arrayText ==
-                                                                          "") {
-                                                                        arrayText =
-                                                                            '{';
+                                                                      if ((((ckOTBefore != "") || (ckDefultOne != "") || (ckDefultTwo != "") || (ckOTAfter != "")) || ((ckOTBeforestart != "") || (ckDefultOnestart != "") || (ckOTDefultTwostart != "") || (ckOTOTAfterstart != ""))) ||
+                                                                          ((TextOTBeforeStart == "") &&
+                                                                              (TextOTBeforeEnd == "") &&
+                                                                              (TextDefultOneStart == "") &&
+                                                                              (TextDefultOneEnd == "") &&
+                                                                              (TextDefultTwoStart == "") &&
+                                                                              (TextDefultTwoEnd == "") &&
+                                                                              (TextOTAfterStart == "") &&
+                                                                              (TextOTAfterEnd == ""))) {
+                                                                        Dialogs.materialDialog(
+                                                                            msg:
+                                                                                'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
+                                                                            title:
+                                                                                'ตรวจสอบข้อมูล',
+                                                                            context:
+                                                                                context,
+                                                                            actions: [
+                                                                              IconsButton(
+                                                                                onPressed: () {
+                                                                                  Navigator.of(context, rootNavigator: true).pop();
+                                                                                },
+                                                                                text: 'ตกลง',
+                                                                                iconData: Icons.check_circle_outline,
+                                                                                color: Colors.green,
+                                                                                textStyle: TextStyle(color: Colors.white),
+                                                                                iconColor: Colors.white,
+                                                                              ),
+                                                                            ]);
                                                                       } else {
+                                                                        ///check การเรียงลำดับเวลา
+
+                                                                        String
+                                                                            arrayText =
+                                                                            "";
+
+                                                                        List<DateTime>
+                                                                            typetimestart =
+                                                                            [];
+                                                                        List<DateTime>
+                                                                            typetimeend =
+                                                                            [];
+                                                                        if (TextOTBeforeEnd !=
+                                                                            "") {
+                                                                          typetimestart
+                                                                              .add(OTBeforeStart);
+                                                                          typetimeend
+                                                                              .add(OTBeforeEnd);
+
+                                                                          arrayText =
+                                                                              '{"101": ["${OTBeforeStart}", "${OTBeforeEnd}"]';
+                                                                        }
+                                                                        if (TextDefultOneEnd !=
+                                                                            "") {
+                                                                          typetimestart
+                                                                              .add(DefultOneStart);
+                                                                          typetimeend
+                                                                              .add(DefultOneEnd);
+
+                                                                          if (arrayText ==
+                                                                              "") {
+                                                                            arrayText =
+                                                                                '{';
+                                                                          } else {
+                                                                            arrayText +=
+                                                                                ',';
+                                                                          }
+                                                                          arrayText +=
+                                                                              '"102": ["${DefultOneStart}", "${DefultOneEnd}"]';
+                                                                        }
+                                                                        if (TextDefultTwoEnd !=
+                                                                            "") {
+                                                                          typetimestart
+                                                                              .add(DefultTwoStart);
+                                                                          typetimeend
+                                                                              .add(DefultTwoEnd);
+
+                                                                          if (arrayText ==
+                                                                              "") {
+                                                                            arrayText =
+                                                                                '{';
+                                                                          } else {
+                                                                            arrayText +=
+                                                                                ',';
+                                                                          }
+                                                                          arrayText +=
+                                                                              '"103": ["${DefultTwoStart}", "${DefultTwoEnd}"]';
+                                                                        }
+                                                                        if (TextOTAfterEnd !=
+                                                                            "") {
+                                                                          typetimestart
+                                                                              .add(OTAfterStart);
+                                                                          typetimeend
+                                                                              .add(OTAfterEnd);
+
+                                                                          if (arrayText ==
+                                                                              "") {
+                                                                            arrayText +=
+                                                                                '{';
+                                                                          } else {
+                                                                            arrayText +=
+                                                                                ',';
+                                                                          }
+                                                                          arrayText +=
+                                                                              '"104": ["${OTAfterStart}", "${OTAfterEnd}"]';
+                                                                        }
+
                                                                         arrayText +=
-                                                                            ',';
-                                                                      }
-                                                                      arrayText +=
-                                                                          '"102": ["${DefultOneStart}", "${DefultOneEnd}"]';
-                                                                    }
-                                                                    if (TextDefultTwoEnd !=
-                                                                        "") {
-                                                                      typetimestart
-                                                                          .add(
-                                                                              DefultTwoStart);
-                                                                      typetimeend
-                                                                          .add(
-                                                                              DefultTwoEnd);
+                                                                            "}";
 
-                                                                      if (arrayText ==
-                                                                          "") {
-                                                                        arrayText =
-                                                                            '{';
-                                                                      } else {
-                                                                        arrayText +=
-                                                                            ',';
-                                                                      }
-                                                                      arrayText +=
-                                                                          '"103": ["${DefultTwoStart}", "${DefultTwoEnd}"]';
-                                                                    }
-                                                                    if (TextOTAfterEnd !=
-                                                                        "") {
-                                                                      typetimestart
-                                                                          .add(
-                                                                              OTAfterStart);
-                                                                      typetimeend
-                                                                          .add(
-                                                                              OTAfterEnd);
+                                                                        var savedata =
+                                                                            "";
 
-                                                                      if (arrayText ==
-                                                                          "") {
-                                                                        arrayText +=
-                                                                            '{';
-                                                                      } else {
-                                                                        arrayText +=
-                                                                            ',';
-                                                                      }
-                                                                      arrayText +=
-                                                                          '"104": ["${OTAfterStart}", "${OTAfterEnd}"]';
-                                                                    }
-
-                                                                    arrayText +=
-                                                                        "}";
-
-                                                                    var savedata =
-                                                                        "";
-
-                                                                    for (int i =
-                                                                            0;
-                                                                        i < typetimestart.length;
-                                                                        i++) {
-                                                                      if (!(i ==
-                                                                          (typetimestart.length -
-                                                                              1))) {
-                                                                        if (typetimeend[i].isAfter(typetimestart[i +
-                                                                            1])) {
-                                                                          Dialogs.materialDialog(
-                                                                              msg: 'กรุณาตรวจสอบการเรียงลำดับเวลาให้ถูกต้อง',
-                                                                              title: 'ตรวจสอบข้อมูล',
-                                                                              context: context,
-                                                                              actions: [
+                                                                        for (int i =
+                                                                                0;
+                                                                            i < typetimestart.length;
+                                                                            i++) {
+                                                                          if (!(i ==
+                                                                              (typetimestart.length - 1))) {
+                                                                            if (typetimeend[i].isAfter(typetimestart[i +
+                                                                                1])) {
+                                                                              Dialogs.materialDialog(msg: 'กรุณาตรวจสอบการเรียงลำดับเวลาให้ถูกต้อง', title: 'ตรวจสอบข้อมูล', context: context, actions: [
                                                                                 IconsButton(
                                                                                   onPressed: () {
                                                                                     Navigator.of(context, rootNavigator: true).pop();
@@ -1792,1024 +1416,111 @@ class _MyHomePageState extends State<EmployeeList> {
                                                                                 ),
                                                                               ]);
 
-                                                                          savedata =
-                                                                              'NO';
+                                                                              savedata = 'NO';
 
-                                                                          break;
-                                                                        }
-                                                                      }
-                                                                    }
-
-                                                                    if (savedata ==
-                                                                        "") {
-                                                                      var tagsJson =
-                                                                          jsonDecode(
-                                                                              arrayText);
-
-                                                                      // for (int i = 0;
-                                                                      //     i <
-                                                                      //         _data
-                                                                      //             .length;
-                                                                      //     i++) {
-                                                                      //   print(
-                                                                      //       _data.empCode!);
-                                                                      // }
-
-                                                                      var emplist =
-                                                                          "";
-                                                                      var empcostCenter =
-                                                                          "";
-                                                                      int i = 0;
-
-                                                                      for (final item
-                                                                          in _data) {
-                                                                        i++;
-                                                                        if (checkvalueHideEmp(
-                                                                            item.empCode!)) {
-                                                                          if (emplist ==
-                                                                              "") {
-                                                                            emplist =
-                                                                                item.empCode!;
-                                                                          } else {
-                                                                            emplist +=
-                                                                                ',${item.empCode!}';
+                                                                              break;
+                                                                            }
                                                                           }
                                                                         }
 
-                                                                        empcostCenter =
-                                                                            item.costCenter!;
-                                                                      }
+                                                                        if (savedata ==
+                                                                            "") {
+                                                                          var tagsJson =
+                                                                              jsonDecode(arrayText);
 
-                                                                      datasavetimesheet(
-                                                                          arrayText,
-                                                                          emplist,
-                                                                          empcostCenter,
-                                                                          '');
-                                                                      Navigator.of(
-                                                                              context,
-                                                                              rootNavigator: true)
-                                                                          .pop();
-                                                                    }
-                                                                  }
-                                                                },
-                                                              ),
+                                                                          // for (int i = 0;
+                                                                          //     i <
+                                                                          //         _data
+                                                                          //             .length;
+                                                                          //     i++) {
+                                                                          //   print(
+                                                                          //       _data.empCode!);
+                                                                          // }
+
+                                                                          var emplist =
+                                                                              "";
+                                                                          var empcostCenter =
+                                                                              "";
+                                                                          int i =
+                                                                              0;
+
+                                                                          for (final item
+                                                                              in _data) {
+                                                                            i++;
+                                                                            if (checkvalueHideEmp(item.empCode!)) {
+                                                                              if (emplist == "") {
+                                                                                emplist = item.empCode!;
+                                                                              } else {
+                                                                                emplist += ',${item.empCode!}';
+                                                                              }
+                                                                            }
+
+                                                                            // empcostCenter =
+                                                                            //     item.costCenter!;
+                                                                          }
+
+                                                                          datasavetimesheet(
+                                                                              arrayText,
+                                                                              emplist,
+                                                                              empcostCenter,
+                                                                              '');
+                                                                          Navigator.of(context, rootNavigator: true)
+                                                                              .pop();
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
                                                             ),
                                                           ],
                                                         ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
                                                       ],
-                                                    ),
-                                                  ],
+                                                    );
+                                                  },
                                                 );
                                               },
-                                            );
-                                          },
-                                        )
-                                      }
-                                    else
-                                      {
-                                        setState(() {
-                                          valall = false;
-                                        })
-                                      }
-                                  },
+                                            )
+                                          }
+                                        else
+                                          {
+                                            setState(() {
+                                              valall = false;
+                                            })
+                                          }
+                                      },
+                                    ),
+                                    TextButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.blue[900],
+                                        onPrimary: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'เพิ่มพนักงาน',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13.0),
+                                      ),
+                                      onPressed: () {
+                                        AddEmployee();
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                // CheckboxListTile(
-                                //   controlAffinity:
-                                //       ListTileControlAffinity.leading,
-                                //   contentPadding: EdgeInsets.zero,
-                                //   dense: true,
-                                //   title: Text(
-                                //     'ใช้เวลาและกิจกรรมร่วมกัน',
-                                //     style: const TextStyle(
-                                //       fontSize: 16.0,
-                                //       color: Colors.black,
-                                //     ),
-                                //   ),
-                                //   value: valall,
-                                //   onChanged: (value) {
-                                //     if (valall == false) {
-                                //       setState(() {
-                                //         valall = true;
-                                //       });
-                                //       TextOTBeforeStart = "";
-                                //       TextOTBeforeEnd = "";
-                                //       TextDefultOneStart = "";
-                                //       TextDefultOneEnd = "";
-                                //       TextDefultTwoStart = "";
-                                //       TextDefultTwoEnd = "";
-                                //       TextOTAfterStart = "";
-                                //       TextOTAfterEnd = "";
-                                //       showDialog(
-                                //         barrierDismissible: false,
-                                //         context: context,
-                                //         builder: (context) {
-                                //           return StatefulBuilder(
-                                //             builder: (context, setState) {
-                                //               return AlertDialog(
-                                //                 backgroundColor:
-                                //                     Dialogs.bcgColor,
-                                //                 // content: Dialogs.holder,
-                                //                 shape: Dialogs.dialogShape,
-                                //                 title: Center(
-                                //                   child: Text(
-                                //                     "ทำงาน",
-                                //                     style: Dialogs.titleStyle,
-                                //                   ),
-                                //                 ),
-                                //                 actions: <Widget>[
-                                //                   Column(
-                                //                     children: [
-                                //                       Container(
-                                //                         padding:
-                                //                             const EdgeInsets
-                                //                                 .all(5.0),
-                                //                         decoration:
-                                //                             BoxDecoration(
-                                //                           border: Border.all(
-                                //                               color: Colors.blue
-                                //                                   .shade400),
-                                //                           borderRadius:
-                                //                               BorderRadius.all(
-                                //                                   Radius
-                                //                                       .circular(
-                                //                                           5)),
-                                //                         ),
-                                //                         child: Row(
-                                //                           mainAxisAlignment:
-                                //                               MainAxisAlignment
-                                //                                   .spaceBetween,
-                                //                           children: [
-                                //                             Text(
-                                //                                 'โอทีก่อน : เวลา '),
-                                //                             OutlinedButton(
-                                //                               onPressed: () =>
-                                //                                   Picker(
-                                //                                       hideHeader:
-                                //                                           true,
-                                //                                       cancelText:
-                                //                                           'ยกเลิก',
-                                //                                       confirmText:
-                                //                                           'ตกลง',
-                                //                                       cancelTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       confirmTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       adapter:
-                                //                                           DateTimePickerAdapter(
-                                //                                         minuteInterval:
-                                //                                             15,
-                                //                                         value:
-                                //                                             OTBeforeStart,
-                                //                                         customColumnType: [
-                                //                                           3,
-                                //                                           4
-                                //                                         ],
-                                //                                       ),
-                                //                                       title: Text(
-                                //                                           ""),
-                                //                                       selectedTextStyle: TextStyle(
-                                //                                           color: Colors
-                                //                                               .blue),
-                                //                                       onConfirm: (Picker
-                                //                                               picker,
-                                //                                           List
-                                //                                               value) {
-                                //                                         var result =
-                                //                                             (picker.adapter as DateTimePickerAdapter).value;
-                                //                                         if (result !=
-                                //                                             null) {
-                                //                                           setState(
-                                //                                               () {
-                                //                                             OTBeforeStart =
-                                //                                                 result;
-                                //                                             TextOTBeforeStart =
-                                //                                                 '${OTBeforeStart.hour.toString().padLeft(2, '0')}:${OTBeforeStart.minute.toString().padLeft(2, '0')}';
-                                //                                           });
-                                //                                         }
-                                //                                       }).showDialog(context),
-                                //                               child: Text(
-                                //                                   '${TextOTBeforeStart}'),
-                                //                             ),
-                                //                             Text(' ถึง '),
-                                //                             OutlinedButton(
-                                //                               onPressed: () =>
-                                //                                   // showPickerDateCustom(
-                                //                                   //     context,
-                                //                                   //     'OTBeforeEnd'),
-                                //                                   Picker(
-                                //                                       cancelText:
-                                //                                           'ยกเลิก',
-                                //                                       confirmText:
-                                //                                           'ตกลง',
-                                //                                       cancelTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       confirmTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       hideHeader:
-                                //                                           true,
-                                //                                       adapter:
-                                //                                           DateTimePickerAdapter(
-                                //                                         minuteInterval:
-                                //                                             15,
-                                //                                         value:
-                                //                                             OTBeforeEnd,
-                                //                                         customColumnType: [
-                                //                                           3,
-                                //                                           4
-                                //                                         ],
-                                //                                       ),
-                                //                                       title: Text(
-                                //                                           ""),
-                                //                                       selectedTextStyle: TextStyle(
-                                //                                           color: Colors
-                                //                                               .blue),
-                                //                                       onConfirm: (Picker
-                                //                                               picker,
-                                //                                           List
-                                //                                               value) {
-                                //                                         var result =
-                                //                                             (picker.adapter as DateTimePickerAdapter).value;
-                                //                                         if (result !=
-                                //                                             null) {
-                                //                                           setState(
-                                //                                               () {
-                                //                                             OTBeforeEnd =
-                                //                                                 result;
-                                //                                             TextOTBeforeEnd =
-                                //                                                 '${OTBeforeEnd.hour.toString().padLeft(2, '0')}:${OTBeforeEnd.minute.toString().padLeft(2, '0')}';
-                                //                                           });
-                                //                                         }
-                                //                                       }).showDialog(context),
-                                //                               child: Text(
-                                //                                   '${TextOTBeforeEnd}'),
-                                //                             ),
-                                //                           ],
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 30,
-                                //                       ),
-                                //                       Container(
-                                //                         padding:
-                                //                             const EdgeInsets
-                                //                                 .all(5.0),
-                                //                         decoration:
-                                //                             BoxDecoration(
-                                //                           border: Border.all(
-                                //                               color: Colors
-                                //                                   .green
-                                //                                   .shade400),
-                                //                           borderRadius:
-                                //                               BorderRadius.all(
-                                //                                   Radius
-                                //                                       .circular(
-                                //                                           5)),
-                                //                         ),
-                                //                         child: Column(
-                                //                           children: [
-                                //                             Row(
-                                //                               mainAxisAlignment:
-                                //                                   MainAxisAlignment
-                                //                                       .spaceBetween,
-                                //                               children: [
-                                //                                 Text(
-                                //                                     'ช่วงแรก : เวลา '),
-                                //                                 OutlinedButton(
-                                //                                   onPressed: () =>
-                                //                                       // showPickerDateCustom(
-                                //                                       //     context,
-                                //                                       //     'DefultOneStart'),
-                                //                                       Picker(
-                                //                                           cancelText: 'ยกเลิก',
-                                //                                           confirmText: 'ตกลง',
-                                //                                           cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           hideHeader: true,
-                                //                                           adapter: DateTimePickerAdapter(
-                                //                                             minuteInterval:
-                                //                                                 15,
-                                //                                             value:
-                                //                                                 DefultOneStart,
-                                //                                             customColumnType: [
-                                //                                               3,
-                                //                                               4
-                                //                                             ],
-                                //                                           ),
-                                //                                           title: Text(""),
-                                //                                           selectedTextStyle: TextStyle(color: Colors.blue),
-                                //                                           onConfirm: (Picker picker, List value) {
-                                //                                             var result =
-                                //                                                 (picker.adapter as DateTimePickerAdapter).value;
-                                //                                             if (result !=
-                                //                                                 null) {
-                                //                                               setState(() {
-                                //                                                 DefultOneStart = result;
-                                //                                                 TextDefultOneStart = '${DefultOneStart.hour.toString().padLeft(2, '0')}:${DefultOneStart.minute.toString().padLeft(2, '0')}';
-                                //                                               });
-                                //                                             }
-                                //                                           }).showDialog(context),
-                                //                                   child: Text(
-                                //                                       '${TextDefultOneStart}'),
-                                //                                 ),
-                                //                                 Text(' ถึง '),
-                                //                                 OutlinedButton(
-                                //                                   onPressed: () =>
-                                //                                       // showPickerDateCustom(
-                                //                                       //     context,
-                                //                                       //     'DefultOneEnd'),
-                                //                                       Picker(
-                                //                                           cancelText: 'ยกเลิก',
-                                //                                           confirmText: 'ตกลง',
-                                //                                           cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           hideHeader: true,
-                                //                                           adapter: DateTimePickerAdapter(
-                                //                                             minuteInterval:
-                                //                                                 15,
-                                //                                             value:
-                                //                                                 DefultOneEnd,
-                                //                                             customColumnType: [
-                                //                                               3,
-                                //                                               4
-                                //                                             ],
-                                //                                           ),
-                                //                                           title: Text(""),
-                                //                                           selectedTextStyle: TextStyle(color: Colors.blue),
-                                //                                           onConfirm: (Picker picker, List value) {
-                                //                                             var result =
-                                //                                                 (picker.adapter as DateTimePickerAdapter).value;
-                                //                                             if (result !=
-                                //                                                 null) {
-                                //                                               setState(() {
-                                //                                                 DefultOneEnd = result;
-                                //                                                 TextDefultOneEnd = '${DefultOneEnd.hour.toString().padLeft(2, '0')}:${DefultOneEnd.minute.toString().padLeft(2, '0')}';
-                                //                                               });
-                                //                                             }
-                                //                                           }).showDialog(context),
-                                //                                   child: Text(
-                                //                                       '${TextDefultOneEnd}'),
-                                //                                 ),
-                                //                               ],
-                                //                             ),
-                                //                             Row(
-                                //                               mainAxisAlignment:
-                                //                                   MainAxisAlignment
-                                //                                       .spaceBetween,
-                                //                               children: [
-                                //                                 Text(
-                                //                                     'ช่วงหลัง : เวลา '),
-                                //                                 OutlinedButton(
-                                //                                   onPressed: () =>
-                                //                                       // showPickerDateCustom(
-                                //                                       //     context,
-                                //                                       //     'DefultTwoStart'),
-                                //                                       Picker(
-                                //                                           cancelText: 'ยกเลิก',
-                                //                                           confirmText: 'ตกลง',
-                                //                                           cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           hideHeader: true,
-                                //                                           adapter: DateTimePickerAdapter(
-                                //                                             minuteInterval:
-                                //                                                 15,
-                                //                                             value:
-                                //                                                 DefultTwoStart,
-                                //                                             customColumnType: [
-                                //                                               3,
-                                //                                               4
-                                //                                             ],
-                                //                                           ),
-                                //                                           title: Text(""),
-                                //                                           selectedTextStyle: TextStyle(color: Colors.blue),
-                                //                                           onConfirm: (Picker picker, List value) {
-                                //                                             var result =
-                                //                                                 (picker.adapter as DateTimePickerAdapter).value;
-                                //                                             if (result !=
-                                //                                                 null) {
-                                //                                               setState(() {
-                                //                                                 DefultTwoStart = result;
-                                //                                                 TextDefultTwoStart = '${DefultTwoStart.hour.toString().padLeft(2, '0')}:${DefultTwoStart.minute.toString().padLeft(2, '0')}';
-                                //                                               });
-                                //                                             }
-                                //                                           }).showDialog(context),
-                                //                                   child: Text(
-                                //                                       '${TextDefultTwoStart}'),
-                                //                                 ),
-                                //                                 Text(' ถึง '),
-                                //                                 OutlinedButton(
-                                //                                   onPressed: () =>
-                                //                                       // showPickerDateCustom(
-                                //                                       //     context,
-                                //                                       //     'DefultTwoEnd'),
-                                //                                       Picker(
-                                //                                           cancelText: 'ยกเลิก',
-                                //                                           confirmText: 'ตกลง',
-                                //                                           cancelTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           confirmTextStyle: TextStyle(fontFamily: Fonts.fonts),
-                                //                                           hideHeader: true,
-                                //                                           adapter: DateTimePickerAdapter(
-                                //                                             minuteInterval:
-                                //                                                 15,
-                                //                                             value:
-                                //                                                 DefultTwoEnd,
-                                //                                             customColumnType: [
-                                //                                               3,
-                                //                                               4
-                                //                                             ],
-                                //                                           ),
-                                //                                           title: Text(""),
-                                //                                           selectedTextStyle: TextStyle(color: Colors.blue),
-                                //                                           onConfirm: (Picker picker, List value) {
-                                //                                             var result =
-                                //                                                 (picker.adapter as DateTimePickerAdapter).value;
-                                //                                             if (result !=
-                                //                                                 null) {
-                                //                                               setState(() {
-                                //                                                 DefultTwoEnd = result;
-                                //                                                 TextDefultTwoEnd = '${DefultTwoEnd.hour.toString().padLeft(2, '0')}:${DefultTwoEnd.minute.toString().padLeft(2, '0')}';
-                                //                                               });
-                                //                                             }
-                                //                                           }).showDialog(context),
-                                //                                   child: Text(
-                                //                                       '${TextDefultTwoEnd}'),
-                                //                                 ),
-                                //                               ],
-                                //                             ),
-                                //                           ],
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 30,
-                                //                       ),
-                                //                       Container(
-                                //                         padding:
-                                //                             const EdgeInsets
-                                //                                 .all(5.0),
-                                //                         decoration:
-                                //                             BoxDecoration(
-                                //                           border: Border.all(
-                                //                               color: Colors
-                                //                                   .orange
-                                //                                   .shade400),
-                                //                           borderRadius:
-                                //                               BorderRadius.all(
-                                //                                   Radius
-                                //                                       .circular(
-                                //                                           5)),
-                                //                         ),
-                                //                         child: Row(
-                                //                           mainAxisAlignment:
-                                //                               MainAxisAlignment
-                                //                                   .spaceBetween,
-                                //                           children: [
-                                //                             Text(
-                                //                                 'โอทีหลัง : เวลา '),
-                                //                             OutlinedButton(
-                                //                               onPressed: () =>
-                                //                                   // showPickerDateCustom(
-                                //                                   //     context,
-                                //                                   //     'OTAfterStart'),
-                                //                                   Picker(
-                                //                                       cancelText:
-                                //                                           'ยกเลิก',
-                                //                                       confirmText:
-                                //                                           'ตกลง',
-                                //                                       cancelTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       confirmTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       hideHeader:
-                                //                                           true,
-                                //                                       adapter:
-                                //                                           DateTimePickerAdapter(
-                                //                                         minuteInterval:
-                                //                                             15,
-                                //                                         value:
-                                //                                             OTAfterStart,
-                                //                                         customColumnType: [
-                                //                                           3,
-                                //                                           4
-                                //                                         ],
-                                //                                       ),
-                                //                                       title: Text(
-                                //                                           ""),
-                                //                                       selectedTextStyle: TextStyle(
-                                //                                           color: Colors
-                                //                                               .blue),
-                                //                                       onConfirm: (Picker
-                                //                                               picker,
-                                //                                           List
-                                //                                               value) {
-                                //                                         var result =
-                                //                                             (picker.adapter as DateTimePickerAdapter).value;
-                                //                                         if (result !=
-                                //                                             null) {
-                                //                                           setState(
-                                //                                               () {
-                                //                                             OTAfterStart =
-                                //                                                 result;
-                                //                                             TextOTAfterStart =
-                                //                                                 '${OTAfterStart.hour.toString().padLeft(2, '0')}:${OTAfterStart.minute.toString().padLeft(2, '0')}';
-                                //                                           });
-                                //                                         }
-                                //                                       }).showDialog(context),
-                                //                               child: Text(
-                                //                                   '${TextOTAfterStart}'),
-                                //                             ),
-                                //                             Text(' ถึง '),
-                                //                             OutlinedButton(
-                                //                               onPressed: () =>
-                                //                                   // showPickerDateCustom(
-                                //                                   //     context,
-                                //                                   //     'OTAfterEnd'),
-                                //                                   Picker(
-                                //                                       cancelText:
-                                //                                           'ยกเลิก',
-                                //                                       confirmText:
-                                //                                           'ตกลง',
-                                //                                       cancelTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       confirmTextStyle: TextStyle(
-                                //                                           fontFamily: Fonts
-                                //                                               .fonts),
-                                //                                       hideHeader:
-                                //                                           true,
-                                //                                       adapter:
-                                //                                           DateTimePickerAdapter(
-                                //                                         minuteInterval:
-                                //                                             15,
-                                //                                         value:
-                                //                                             OTAfterEnd,
-                                //                                         customColumnType: [
-                                //                                           3,
-                                //                                           4
-                                //                                         ],
-                                //                                       ),
-                                //                                       title: Text(
-                                //                                           ""),
-                                //                                       selectedTextStyle: TextStyle(
-                                //                                           color: Colors
-                                //                                               .blue),
-                                //                                       onConfirm: (Picker
-                                //                                               picker,
-                                //                                           List
-                                //                                               value) {
-                                //                                         var result =
-                                //                                             (picker.adapter as DateTimePickerAdapter).value;
-                                //                                         if (result !=
-                                //                                             null) {
-                                //                                           setState(
-                                //                                               () {
-                                //                                             OTAfterEnd =
-                                //                                                 result;
-                                //                                             TextOTAfterEnd =
-                                //                                                 '${OTAfterEnd.hour.toString().padLeft(2, '0')}:${OTAfterEnd.minute.toString().padLeft(2, '0')}';
-                                //                                           });
-                                //                                         }
-                                //                                       }).showDialog(context),
-                                //                               child: Text(
-                                //                                   '${TextOTAfterEnd}'),
-                                //                             ),
-                                //                           ],
-                                //                         ),
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 30,
-                                //                       ),
-                                //                       Row(
-                                //                         mainAxisAlignment:
-                                //                             MainAxisAlignment
-                                //                                 .center,
-                                //                         crossAxisAlignment:
-                                //                             CrossAxisAlignment
-                                //                                 .center,
-                                //                         children: [
-                                //                           SizedBox(
-                                //                             width: 100,
-                                //                             child:
-                                //                                 IconsOutlineButton(
-                                //                               onPressed: () {
-                                //                                 Navigator.of(
-                                //                                         context,
-                                //                                         rootNavigator:
-                                //                                             true)
-                                //                                     .pop();
-                                //                               },
-                                //                               text: 'ไม่',
-                                //                               iconData: Icons
-                                //                                   .cancel_outlined,
-                                //                               color:
-                                //                                   Colors.white,
-                                //                               textStyle: TextStyle(
-                                //                                   color: Colors
-                                //                                       .black),
-                                //                               iconColor:
-                                //                                   Colors.black,
-                                //                             ),
-                                //                           ),
-                                //                           SizedBox(
-                                //                             width: 10,
-                                //                           ),
-                                //                           SizedBox(
-                                //                             width: 100,
-                                //                             child: IconsButton(
-                                //                               text: 'ตกลง',
-                                //                               iconData: Icons
-                                //                                   .check_circle_outline,
-                                //                               color:
-                                //                                   Colors.green,
-                                //                               textStyle: TextStyle(
-                                //                                   color: Colors
-                                //                                       .white),
-                                //                               iconColor:
-                                //                                   Colors.white,
-                                //                               onPressed: () {
-                                //                                 //////function check time
-
-                                //                                 var ckOTBefore =
-                                //                                     "";
-                                //                                 var ckOTBeforestart =
-                                //                                     "";
-                                //                                 var ckDefultOne =
-                                //                                     "";
-                                //                                 var ckDefultOnestart =
-                                //                                     "";
-                                //                                 var ckDefultTwo =
-                                //                                     "";
-                                //                                 var ckOTDefultTwostart =
-                                //                                     "";
-                                //                                 var ckOTAfter =
-                                //                                     "";
-                                //                                 var ckOTOTAfterstart =
-                                //                                     "";
-
-                                //                                 ///check ค่าว่าง
-                                //                                 if ((TextOTBeforeStart !=
-                                //                                         "") ||
-                                //                                     (TextOTBeforeEnd !=
-                                //                                         "")) {
-                                //                                   ckOTBefore =
-                                //                                       'YES1';
-
-                                //                                   if ((TextOTBeforeStart !=
-                                //                                           "") &&
-                                //                                       (TextOTBeforeEnd !=
-                                //                                           "")) {
-                                //                                     ckOTBefore =
-                                //                                         '';
-
-                                //                                     ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                //                                     if (OTBeforeStart
-                                //                                         .isAfter(
-                                //                                             OTBeforeEnd)) {
-                                //                                       ckOTBeforestart =
-                                //                                           'OVER1';
-                                //                                     }
-                                //                                   }
-                                //                                 }
-
-                                //                                 if ((TextDefultOneStart !=
-                                //                                         "") ||
-                                //                                     (TextDefultOneEnd !=
-                                //                                         "")) {
-                                //                                   ckDefultOne =
-                                //                                       'YES2';
-
-                                //                                   if ((TextDefultOneStart !=
-                                //                                           "") &&
-                                //                                       (TextDefultOneEnd !=
-                                //                                           "")) {
-                                //                                     ckDefultOne =
-                                //                                         '';
-
-                                //                                     ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                //                                     if (DefultOneStart
-                                //                                         .isAfter(
-                                //                                             DefultOneEnd)) {
-                                //                                       ckDefultOnestart =
-                                //                                           'OVER2';
-                                //                                     }
-                                //                                   }
-                                //                                 }
-
-                                //                                 if ((TextDefultTwoStart !=
-                                //                                         "") ||
-                                //                                     (TextDefultTwoEnd !=
-                                //                                         "")) {
-                                //                                   ckDefultTwo =
-                                //                                       'YES3';
-
-                                //                                   if ((TextDefultTwoStart !=
-                                //                                           "") &&
-                                //                                       (TextDefultTwoEnd !=
-                                //                                           "")) {
-                                //                                     ckDefultTwo =
-                                //                                         '';
-
-                                //                                     ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                //                                     if (DefultTwoStart
-                                //                                         .isAfter(
-                                //                                             DefultTwoEnd)) {
-                                //                                       ckOTDefultTwostart =
-                                //                                           'OVER3';
-                                //                                     }
-                                //                                   }
-                                //                                 }
-
-                                //                                 if ((TextOTAfterStart !=
-                                //                                         "") ||
-                                //                                     (TextOTAfterEnd !=
-                                //                                         "")) {
-                                //                                   ckOTAfter =
-                                //                                       'YES4';
-
-                                //                                   if ((TextOTAfterStart !=
-                                //                                           "") &&
-                                //                                       (TextOTAfterEnd !=
-                                //                                           "")) {
-                                //                                     ckOTAfter =
-                                //                                         '';
-
-                                //                                     ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                //                                     if (OTAfterStart
-                                //                                         .isAfter(
-                                //                                             OTAfterEnd)) {
-                                //                                       ckOTOTAfterstart =
-                                //                                           'OVER4';
-                                //                                     }
-                                //                                   }
-                                //                                 }
-
-                                //                                 if ((((ckOTBefore != "") ||
-                                //                                             (ckDefultOne !=
-                                //                                                 "") ||
-                                //                                             (ckDefultTwo !=
-                                //                                                 "") ||
-                                //                                             (ckOTAfter !=
-                                //                                                 "")) ||
-                                //                                         ((ckOTBeforestart != "") ||
-                                //                                             (ckDefultOnestart !=
-                                //                                                 "") ||
-                                //                                             (ckOTDefultTwostart !=
-                                //                                                 "") ||
-                                //                                             (ckOTOTAfterstart !=
-                                //                                                 ""))) ||
-                                //                                     ((TextOTBeforeStart == "") &&
-                                //                                         (TextOTBeforeEnd ==
-                                //                                             "") &&
-                                //                                         (TextDefultOneStart ==
-                                //                                             "") &&
-                                //                                         (TextDefultOneEnd ==
-                                //                                             "") &&
-                                //                                         (TextDefultTwoStart ==
-                                //                                             "") &&
-                                //                                         (TextDefultTwoEnd ==
-                                //                                             "") &&
-                                //                                         (TextOTAfterStart ==
-                                //                                             "") &&
-                                //                                         (TextOTAfterEnd ==
-                                //                                             ""))) {
-                                //                                   Dialogs.materialDialog(
-                                //                                       msg:
-                                //                                           'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
-                                //                                       title:
-                                //                                           'ตรวจสอบข้อมูล',
-                                //                                       context:
-                                //                                           context,
-                                //                                       actions: [
-                                //                                         IconsButton(
-                                //                                           onPressed:
-                                //                                               () {
-                                //                                             Navigator.of(context, rootNavigator: true).pop();
-                                //                                           },
-                                //                                           text:
-                                //                                               'ตกลง',
-                                //                                           iconData:
-                                //                                               Icons.check_circle_outline,
-                                //                                           color:
-                                //                                               Colors.green,
-                                //                                           textStyle:
-                                //                                               TextStyle(color: Colors.white),
-                                //                                           iconColor:
-                                //                                               Colors.white,
-                                //                                         ),
-                                //                                       ]);
-                                //                                 } else {
-                                //                                   ///check การเรียงลำดับเวลา
-
-                                //                                   String
-                                //                                       arrayText =
-                                //                                       "";
-
-                                //                                   List<DateTime>
-                                //                                       typetimestart =
-                                //                                       [];
-                                //                                   List<DateTime>
-                                //                                       typetimeend =
-                                //                                       [];
-                                //                                   if (TextOTBeforeEnd !=
-                                //                                       "") {
-                                //                                     typetimestart
-                                //                                         .add(
-                                //                                             OTBeforeStart);
-                                //                                     typetimeend.add(
-                                //                                         OTBeforeEnd);
-
-                                //                                     arrayText =
-                                //                                         '{"101": ["${OTBeforeStart}", "${OTBeforeEnd}"]';
-                                //                                   }
-                                //                                   if (TextDefultOneEnd !=
-                                //                                       "") {
-                                //                                     typetimestart
-                                //                                         .add(
-                                //                                             DefultOneStart);
-                                //                                     typetimeend.add(
-                                //                                         DefultOneEnd);
-
-                                //                                     if (arrayText ==
-                                //                                         "") {
-                                //                                       arrayText =
-                                //                                           '{';
-                                //                                     } else {
-                                //                                       arrayText +=
-                                //                                           ',';
-                                //                                     }
-                                //                                     arrayText +=
-                                //                                         '"102": ["${DefultOneStart}", "${DefultOneEnd}"]';
-                                //                                   }
-                                //                                   if (TextDefultTwoEnd !=
-                                //                                       "") {
-                                //                                     typetimestart
-                                //                                         .add(
-                                //                                             DefultTwoStart);
-                                //                                     typetimeend.add(
-                                //                                         DefultTwoEnd);
-
-                                //                                     if (arrayText ==
-                                //                                         "") {
-                                //                                       arrayText =
-                                //                                           '{';
-                                //                                     } else {
-                                //                                       arrayText +=
-                                //                                           ',';
-                                //                                     }
-                                //                                     arrayText +=
-                                //                                         '"103": ["${DefultTwoStart}", "${DefultTwoEnd}"]';
-                                //                                   }
-                                //                                   if (TextOTAfterEnd !=
-                                //                                       "") {
-                                //                                     typetimestart
-                                //                                         .add(
-                                //                                             OTAfterStart);
-                                //                                     typetimeend.add(
-                                //                                         OTAfterEnd);
-
-                                //                                     if (arrayText ==
-                                //                                         "") {
-                                //                                       arrayText +=
-                                //                                           '{';
-                                //                                     } else {
-                                //                                       arrayText +=
-                                //                                           ',';
-                                //                                     }
-                                //                                     arrayText +=
-                                //                                         '"104": ["${OTAfterStart}", "${OTAfterEnd}"]';
-                                //                                   }
-
-                                //                                   arrayText +=
-                                //                                       "}";
-
-                                //                                   var savedata =
-                                //                                       "";
-
-                                //                                   for (int i =
-                                //                                           0;
-                                //                                       i <
-                                //                                           typetimestart
-                                //                                               .length;
-                                //                                       i++) {
-                                //                                     if (!(i ==
-                                //                                         (typetimestart.length -
-                                //                                             1))) {
-                                //                                       if (typetimeend[
-                                //                                               i]
-                                //                                           .isAfter(typetimestart[i +
-                                //                                               1])) {
-                                //                                         Dialogs.materialDialog(
-                                //                                             msg:
-                                //                                                 'กรุณาตรวจสอบการเรียงลำดับเวลาให้ถูกต้อง',
-                                //                                             title:
-                                //                                                 'ตรวจสอบข้อมูล',
-                                //                                             context:
-                                //                                                 context,
-                                //                                             actions: [
-                                //                                               IconsButton(
-                                //                                                 onPressed: () {
-                                //                                                   Navigator.of(context, rootNavigator: true).pop();
-                                //                                                 },
-                                //                                                 text: 'ตกลง',
-                                //                                                 iconData: Icons.check_circle_outline,
-                                //                                                 color: Colors.green,
-                                //                                                 textStyle: TextStyle(color: Colors.white),
-                                //                                                 iconColor: Colors.white,
-                                //                                               ),
-                                //                                             ]);
-
-                                //                                         savedata =
-                                //                                             'NO';
-
-                                //                                         break;
-                                //                                       }
-                                //                                     }
-                                //                                   }
-
-                                //                                   if (savedata ==
-                                //                                       "") {
-                                //                                     var tagsJson =
-                                //                                         jsonDecode(
-                                //                                             arrayText);
-
-                                //                                     // for (int i = 0;
-                                //                                     //     i <
-                                //                                     //         _data
-                                //                                     //             .length;
-                                //                                     //     i++) {
-                                //                                     //   print(
-                                //                                     //       _data.empCode!);
-                                //                                     // }
-
-                                //                                     var emplist =
-                                //                                         "";
-                                //                                     var empcostCenter =
-                                //                                         "";
-                                //                                     int i = 0;
-
-                                //                                     for (final item
-                                //                                         in _data) {
-                                //                                       i++;
-                                //                                       if (checkvalueHideEmp(
-                                //                                           item.empCode!)) {
-                                //                                         if (emplist ==
-                                //                                             "") {
-                                //                                           emplist =
-                                //                                               item.empCode!;
-                                //                                         } else {
-                                //                                           emplist +=
-                                //                                               ',${item.empCode!}';
-                                //                                         }
-                                //                                       }
-
-                                //                                       empcostCenter =
-                                //                                           item.costCenter!;
-                                //                                     }
-
-                                //                                     datasavetimesheet(
-                                //                                         arrayText,
-                                //                                         emplist,
-                                //                                         empcostCenter,
-                                //                                         '');
-                                //                                     Navigator.of(
-                                //                                             context,
-                                //                                             rootNavigator:
-                                //                                                 true)
-                                //                                         .pop();
-                                //                                   }
-                                //                                 }
-                                //                               },
-                                //                             ),
-                                //                           ),
-                                //                         ],
-                                //                       ),
-                                //                       SizedBox(
-                                //                         height: 10,
-                                //                       ),
-                                //                     ],
-                                //                   ),
-                                //                 ],
-                                //               );
-                                //             },
-                                //           );
-                                //         },
-                                //       );
-                                //     } else {
-                                //       setState(() {
-                                //         valall = false;
-                                //       });
-                                //     }
-                                //   },
-                                // ),
+                                Text('จำนวนพนักงาน 4 คน'),
                                 const SizedBox(height: 15),
-                                _buildtimesheet(),
+                                _buildEmployeeTypeMain(),
+                                const SizedBox(height: 15),
+                                Text('พนักงานที่เพิ่ม'),
+                                const SizedBox(height: 15),
+                                _buildEmployeeTypeAdd(),
                               ],
                             ),
                           ],
@@ -2822,108 +1533,172 @@ class _MyHomePageState extends State<EmployeeList> {
             )));
   }
 
-  Widget _buildtimesheet() {
+  Widget _buildEmployeeTypeMain() {
     return ExpansionPanelList(
       expansionCallback: (int index, bool isExpanded) {
         setState(() {
           _data[index].isExpanded = !isExpanded;
         });
       },
-      children: _data.map<ExpansionPanel>((ManpowerEmpData item) {
+      children: _data.map<ExpansionPanel>((Employeelist item) {
         return ExpansionPanel(
-          canTapOnHeader: true,
-          headerBuilder: (BuildContext context, bool isExpanded) {
-            return ListTile(
-              enabled: checkvalueHideEmp(item.empCode!) ? true : false,
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${item.empCode!} ${item.empName!}',
-                    style: TextStyle(fontSize: 10),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: checkvalueHideEmp(item.empCode!)
-                                ? _buildaddtimesheet(item)
-                                : SizedBox(
-                                    width: 0,
-                                  )),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        checkvalueHideEmp(item.empCode!)
-                            ? _buildtakeoutEmp(item)
-                            : _buildimportEmp(item)
-                      ],
+            canTapOnHeader: true,
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return ListTile(
+                enabled: checkvalueHideEmp(item.empCode!) ? true : false,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${item.empCode!} ${item.empName!}',
+                      style: TextStyle(fontSize: 10),
                     ),
-                  )
-                ],
-              ),
-              subtitle: Text(
-                  '(${item.SumTime != null ? CustomCountTime(item.SumTime!) : ''})'),
-            );
-          },
-          body: ListTile(
-            tileColor: Colors.grey[100],
-            subtitle: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    child: Text(FormatDate('date')),
-                  ),
-                  Container(
-                    // padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          height: 300.0,
-                          child: ListView.builder(
-                            itemCount: item.lstDaily.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return item.lstDaily[index].status != '300'
-                                  ? Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                            '${ReplaceStatusTime(item.lstDaily[index].status)} : ${CustomTime(item.lstDaily[index].timeIn)} - ${CustomTime(item.lstDaily[index].timeOut)} (${CustomCountTime(item.lstDaily[index].dateDiffs)})'),
-                                        //Text(
-                                        //    "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
-                                        Row(
-                                          children: <Widget>[
-                                            _buildedittimesheet(
-                                                item.lstDaily[index]),
-                                            SizedBox(
-                                              width: 6,
-                                            ),
-                                            _builddeletetimesheet(
-                                                item.lstDaily[index]),
-                                          ],
-                                        ),
-                                      ],
-                                    )
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: checkvalueHideEmp(item.empCode!)
+                                  ? _buildaddtimesheet(item)
                                   : SizedBox(
                                       width: 0,
-                                    );
-                            },
+                                    )),
+                          SizedBox(
+                            width: 8,
                           ),
-                        ),
-                      ],
+                          checkvalueHideEmp(item.empCode!)
+                              ? _buildtakeoutEmp(item)
+                              : _buildimportEmp(item)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                subtitle: Text(''),
+              );
+            },
+            body: ListTile(
+              tileColor: Colors.grey[100],
+              subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ]),
-            // isThreeLine: true,
-          ),
-          isExpanded:
-              checkvalueHideEmp(item.empCode!) ? item.isExpanded : false,
-        );
+                    Container(
+                      child: Text(FormatDate('date')),
+                    ),
+                    // Container(
+                    //   // padding: EdgeInsets.only(top: 10),
+                    //   child: Column(
+                    //     children: <Widget>[
+                    //       Container(
+                    //         height: 300.0,
+                    //         child: ListView.builder(
+                    //           itemCount: item.lstDaily.length,
+                    //           itemBuilder: (BuildContext context, int index) {
+                    //             return item.lstDaily[index].status != '300'
+                    //                 ? Row(
+                    //                     mainAxisAlignment:
+                    //                         MainAxisAlignment.spaceBetween,
+                    //                     children: [
+                    //                       Text(
+                    //                           '${ReplaceStatusTime(item.lstDaily[index].status)} : ${CustomTime(item.lstDaily[index].timeIn)} - ${CustomTime(item.lstDaily[index].timeOut)} (${CustomCountTime(item.lstDaily[index].dateDiffs)})'),
+                    //                       //Text(
+                    //                       //    "ช่วงแรก : 08:00 - 12:00 (4 ชั่วโมง 0 นาที)"),
+                    //                       Row(
+                    //                         children: <Widget>[
+                    //                           _buildedittimesheet(
+                    //                               item.lstDaily[index]),
+                    //                           SizedBox(
+                    //                             width: 6,
+                    //                           ),
+                    //                           _builddeletetimesheet(
+                    //                               item.lstDaily[index]),
+                    //                         ],
+                    //                       ),
+                    //                     ],
+                    //                   )
+                    //                 : SizedBox(
+                    //                     width: 0,
+                    //                   );
+                    //           },
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                  ]),
+              // isThreeLine: true,
+            ),
+            isExpanded:
+                // checkvalueHideEmp(item.empCode!) ? item.isExpanded : false,
+                false);
+      }).toList(),
+    );
+  }
+
+  Widget _buildEmployeeTypeAdd() {
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setState(() {
+          _dataAdd[index].isExpanded = !isExpanded;
+        });
+      },
+      children: _dataAdd.map<ExpansionPanel>((Employeelist item) {
+        return ExpansionPanel(
+            canTapOnHeader: true,
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return ListTile(
+                enabled: checkvalueHideEmp(item.empCode!) ? true : false,
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${item.empCode!} ${item.empName!}',
+                      style: TextStyle(fontSize: 10),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: checkvalueHideEmp(item.empCode!)
+                                  ? _buildaddtimesheet(item)
+                                  : SizedBox(
+                                      width: 0,
+                                    )),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          checkvalueHideEmp(item.empCode!)
+                              ? _buildtakeoutEmp(item)
+                              : _buildimportEmp(item)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                subtitle: Text(''),
+              );
+            },
+            body: ListTile(
+              tileColor: Colors.grey[100],
+              subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      child: Text(FormatDate('date')),
+                    ),
+                  ]),
+              // isThreeLine: true,
+            ),
+            isExpanded:
+                // checkvalueHideEmp(item.empCode!) ? item.isExpanded : false,
+                false);
       }).toList(),
     );
   }
