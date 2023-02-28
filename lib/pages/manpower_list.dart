@@ -1,30 +1,10 @@
-import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:k2mobileapp/NoPermission.dart';
-import 'package:k2mobileapp/example/datepicker.dart';
-import 'package:k2mobileapp/home.dart';
-import 'package:k2mobileapp/login.dart';
-import 'package:k2mobileapp/main.dart';
-import 'package:k2mobileapp/models/EmployeeData.dart';
-import 'package:k2mobileapp/models/TimesheetData.dart';
-import 'package:k2mobileapp/pages/addtimesheet.dart';
-import 'package:k2mobileapp/pages/addtimesheet_break.dart';
-import 'package:k2mobileapp/pages/addtimesheet_leave.dart';
-import 'package:k2mobileapp/pages/addtimesheet_leave_value.dart';
-import 'package:k2mobileapp/pages/employee_list.dart';
-import 'package:k2mobileapp/profile.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:confirm_dialog/confirm_dialog.dart';
-import 'package:k2mobileapp/theme.dart';
-import 'package:material_dialogs/material_dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import 'package:k2mobileapp/models/EmployeeData.dart';
+import 'package:k2mobileapp/pages/employee_list.dart';
+import 'package:k2mobileapp/widgets/my_scaffold.dart';
 
 import '../models/ManpowerEmpData.dart';
 import '../models/ManpowerJobDetail.dart';
@@ -196,39 +176,33 @@ class _MyHomePageState extends State<ManpowerList> {
   //   }
   // }
 
-  EmployeeData empdata = new EmployeeData(
-      empCode: '',
-      empCompName: '',
-      empDepartmentName: '',
-      empName: '',
-      empNationality: '',
-      empPositionName: '');
+  EmployeeData empData = EmployeeData(
+    empCode: '',
+    empCompName: '',
+    empDepartmentName: '',
+    empName: '',
+    empNationality: '',
+    empPositionName: '',
+  );
 
-  void GetEmpProfile() async {
+  void getEmpProfile() async {
     var client = http.Client();
     var uri = Uri.parse(
         "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      print(response.body);
-
       final parsedJson = jsonDecode(response.body);
 
       setState(() {
-        empdata.empCode = parsedJson['emp_Code'];
-        empdata.empCompName = parsedJson['emp_Comp_Name'];
-        empdata.empDepartmentName = parsedJson['emp_Department_Name'];
-        empdata.empName = parsedJson['emp_Name'];
-        empdata.empNationality = parsedJson['emp_Nationality'];
-        empdata.empPositionName = parsedJson['emp_Position_Name'];
+        empData = EmployeeData.fromJson(parsedJson);
       });
     }
   }
 
   @override
   void initState() {
-    GetEmpProfile();
+    super.initState();
+    getEmpProfile();
 
     // dateInput.text = "";
     // _data = widget.listtimesheet;
@@ -271,165 +245,71 @@ class _MyHomePageState extends State<ManpowerList> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: basicTheme(),
-        home: Scaffold(
-          body: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-            ])),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Table(
-                    children: [
-                      TableRow(children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'บันทึกเวลาทำงาน',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                            Container(
-                              child: Text(
-                                'สำหรับรายวัน',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            TextButton.icon(
-                              style: TextButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 14),
-                                padding: EdgeInsets.zero,
-                                alignment: Alignment.centerLeft,
-                                // tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              icon: Icon(
-                                Icons.logout,
-                                color: Colors.white,
-                              ),
-                              label: Text('ออกจากระบบ',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: Fonts.fonts)),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Login()),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Center(
-                              child: Text(
-                                '${widget.EmpCode}  ${empdata.empName}',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ]),
-                    ],
+    return MyScaffold(
+      empCode: widget.EmpCode,
+      empName: empData.empName ?? '',
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // const SizedBox(height: 15),
+            Container(
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Column(
+                children: [
+                  const Text(
+                    "ใบขอกำลังคน",
+                    style: TextStyle(fontSize: 18),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)),
-                    ),
-                    padding: const EdgeInsets.all(10),
-                    child: SingleChildScrollView(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // const SizedBox(height: 15),
-                        Container(
-                            padding: const EdgeInsets.all(10),
-                            margin: EdgeInsets.only(top: 10, bottom: 10),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "ใบขอกำลังคน",
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                                Text(
-                                  "จำนวน ${widget.listtimesheet.length} ใบ",
-                                  style: TextStyle(fontSize: 18),
-                                ),
-                              ],
-                            )),
-                        Column(
-                          children: <Widget>[
-                            ListViewHomeLayout(),
-                          ],
-                        )
-                      ],
-                    )),
+                  Text(
+                    "จำนวน ${widget.listtimesheet.length} ใบ",
+                    style: const TextStyle(fontSize: 18),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ));
+            Column(
+              children: <Widget>[
+                _buildListViewHomeLayout(),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget ListViewHomeLayout() {
+  Widget _buildListViewHomeLayout() {
     return ListView.builder(
-        itemCount: widget.listtimesheet.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return Card(
-              child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EmployeeList(
-                              index: widget.index,
-                              listtimesheet: widget.listEmp,
-                              EmpCode: widget.EmpCode,
-                              url: widget.url,
-                              manpower: widget.listtimesheet[index])),
-                    );
-                  },
-                  title: Text(
-                    "เลขที่งาน ${widget.listtimesheet[index].jobNo}",
-                    style: TextStyle(fontSize: 18, color: Colors.green[900]),
+      itemCount: widget.listtimesheet.length,
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        return Card(
+          child: ListTile(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EmployeeList(
+                    index: widget.index,
+                    listtimesheet: widget.listEmp,
+                    EmpCode: widget.EmpCode,
+                    url: widget.url,
+                    manpower: widget.listtimesheet[index],
                   ),
-                  leading: Icon(Icons.ballot)));
-        });
+                ),
+              );
+            },
+            title: Text(
+              "เลขที่งาน ${widget.listtimesheet[index].jobNo}",
+              style: TextStyle(fontSize: 18, color: Colors.green[900]),
+            ),
+            leading: const Icon(Icons.ballot),
+          ),
+        );
+      },
+    );
   }
 }

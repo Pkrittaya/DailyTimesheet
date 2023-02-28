@@ -24,13 +24,13 @@ class EmployeeData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['emp_Code'] = this.empCode;
-    data['emp_Name'] = this.empName;
-    data['emp_Comp_Name'] = this.empCompName;
-    data['emp_Department_Name'] = this.empDepartmentName;
-    data['emp_Position_Name'] = this.empPositionName;
-    data['emp_Nationality'] = this.empNationality;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['emp_Code'] = empCode;
+    data['emp_Name'] = empName;
+    data['emp_Comp_Name'] = empCompName;
+    data['emp_Department_Name'] = empDepartmentName;
+    data['emp_Position_Name'] = empPositionName;
+    data['emp_Nationality'] = empNationality;
     return data;
   }
 }

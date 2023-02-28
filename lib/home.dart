@@ -1,16 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/models/DailyTimeSheet.dart';
 import 'package:k2mobileapp/models/TimesheetData.dart';
-import 'package:k2mobileapp/pages/employee_list.dart';
 import 'package:k2mobileapp/pages/manpower_list.dart';
-import 'package:k2mobileapp/pages/timesheet.dart';
-import 'package:k2mobileapp/profile.dart';
 import 'package:k2mobileapp/theme.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -52,11 +46,12 @@ List<ManpowerEmpData> EmpList = [];
 
 class _homepageState extends State<homepage> {
   int index = 0;
+
   @override
   void initState() {
     super.initState();
-    GetManpowerList();
-    GetManpowerEmployeeList();
+    getManpowerList();
+    getManpowerEmployeeList();
     //getlsttimesheet();
     // _data = widget.listtimesheet;
     index = widget.index;
@@ -83,7 +78,7 @@ class _homepageState extends State<homepage> {
     });
   }
 
-  void GetManpowerList() async {
+  void getManpowerList() async {
     try {
       var _baseUrl =
           "https://dev-unique.com:9012/api/Interface/RequestDailyManpower?Emp_Code=4300001";
@@ -124,17 +119,15 @@ class _homepageState extends State<homepage> {
           List<ManpowerEmpData> itemsList = List<ManpowerEmpData>.from(
               parsedListJson.map<ManpowerEmpData>(
                   (dynamic i) => ManpowerEmpData.fromJson(i)));
-
-        } 
+        }
       }
-
 */
     } catch (err) {
       print('Something went wrong');
     }
   }
 
-  void GetManpowerEmployeeList() async {
+  void getManpowerEmployeeList() async {
     try {
       var _baseUrl =
           "https://dev-unique.com:9012/api/Interface/GetDailyEmployee?Emp_Code=4300001";
@@ -209,9 +202,6 @@ class _homepageState extends State<homepage> {
     }
   }
 
-  late TabController _tabController;
-
-  int _selectedTab = 0;
   int currentIndex = 0;
 
   @override
@@ -227,9 +217,6 @@ class _homepageState extends State<homepage> {
     ];
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Tab Demo"),
-      // ),
       backgroundColor: Colors.white,
       body: IndexedStack(
         index: currentIndex,

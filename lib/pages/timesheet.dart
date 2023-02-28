@@ -1,25 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:k2mobileapp/NoPermission.dart';
-import 'package:k2mobileapp/example/datepicker.dart';
 import 'package:k2mobileapp/home.dart';
 import 'package:k2mobileapp/login.dart';
-import 'package:k2mobileapp/main.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
 import 'package:k2mobileapp/models/TimesheetData.dart';
 import 'package:k2mobileapp/pages/addtimesheet.dart';
-import 'package:k2mobileapp/pages/addtimesheet_break.dart';
-import 'package:k2mobileapp/pages/addtimesheet_leave.dart';
 import 'package:k2mobileapp/pages/addtimesheet_leave_value.dart';
-import 'package:k2mobileapp/profile.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:k2mobileapp/theme.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -345,7 +339,7 @@ class _MyHomePageState extends State<Timesheet> {
                 bottom: TabBar(
                     isScrollable: false,
                     labelPadding: EdgeInsets.symmetric(horizontal: 5.0),
-                    labelColor: Palette.Colortheme,
+                    labelColor: Palette.colorTheme,
                     unselectedLabelColor: Colors.white,
                     indicatorSize: TabBarIndicatorSize.label,
                     indicator: BoxDecoration(

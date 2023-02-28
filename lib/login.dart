@@ -1,29 +1,20 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:k2mobileapp/example/datepicker.dart';
-import 'package:k2mobileapp/example/expandable-demo.dart';
-import 'package:k2mobileapp/example/expandable.dart';
+import 'package:http/http.dart' as http;
 import 'package:k2mobileapp/home.dart';
-import 'package:k2mobileapp/models/TimesheetData.dart';
-import 'package:k2mobileapp/pages/timesheet.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'main.dart';
-import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   static const String id = 'mentor sample 1';
-  String? myurl, para1;
-  Login({Key? key, this.myurl, this.para1}) : super(key: key);
+  final String? myUrl, para1;
+
+  const Login({Key? key, this.myUrl, this.para1}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> with WidgetsBindingObserver {
@@ -31,61 +22,55 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
 
   TextEditingController controllerUser = TextEditingController();
   TextEditingController controllerPwd = TextEditingController();
-  var webconfig = "";
-  var _domain = r"Unique\";
+  var webConfig = "";
 
-  bool Flag = false;
-  var _Emp_code = '';
-  var _Showpopup = '';
+  bool flag = false;
+  var _empCode = '';
+  var _showPopup = '';
 
   loadJson() async {
     String data = await rootBundle.loadString('assets/config.json');
     final parsedJson = jsonDecode(data);
-    webconfig = parsedJson['WebAPIConfig'];
+    webConfig = parsedJson['WebAPIConfig'];
   }
 
-  void ValidateLogIn() async {
+  void validateLogin() async {
     try {
-      String ShowPopUp = "";
-      String UserName = "";
-      String _authEncode = _authAPI(UserName, controllerPwd.text);
-      var _baseUrl =
-          "${webconfig}/api/Interface/GetLogOn?Username=${controllerUser.text}&Password=${controllerPwd.text}";
+      String showPopUp = "";
+      String username = "";
+      String authEncode = _authAPI(username, controllerPwd.text);
+      var baseUrl =
+          "$webConfig/api/Interface/GetLogOn?Username=${controllerUser.text}&Password=${controllerPwd.text}";
       final res = await http.get(
-        Uri.parse("$_baseUrl"),
+        Uri.parse(baseUrl),
       );
 
       if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
-        //   print(res.body);
-
         final parsedJson = jsonDecode(res.body);
 
         if (parsedJson['type'] == "S") {
-          Flag = true;
+          flag = true;
           if (parsedJson['typeCode'] == "S001") {
-            ShowPopUp = "1";
+            showPopUp = "1";
           }
-          UserName = parsedJson['description'];
+          username = parsedJson['description'];
         } else {
-          Flag = false;
+          flag = false;
         }
       } else {
-        Flag = false;
+        flag = false;
       }
 
       setState(() {
         if (res.statusCode == 200) {
-          final jsonData = json.decode(res.body);
-
           final parsedJson = jsonDecode(res.body);
           if (parsedJson['type'] == "S") {
-            Flag = true;
-            _Emp_code = UserName;
-            _Showpopup = ShowPopUp;
-            loadpage();
+            flag = true;
+            _empCode = username;
+            _showPopup = showPopUp;
+            loadPage();
           } else {
-            Flag = false;
+            flag = false;
 
             Dialogs.materialDialog(
                 msg: 'login ไม่สำเร็จ',
@@ -99,115 +84,115 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                     text: 'ตกลง',
                     iconData: Icons.check_circle_outline,
                     color: Colors.green,
-                    textStyle: TextStyle(color: Colors.white),
+                    textStyle: const TextStyle(color: Colors.white),
                     iconColor: Colors.white,
                   ),
                 ]);
           }
         } else {
-          Flag = false;
+          flag = false;
         }
       });
     } catch (err) {
-      Flag = false;
+      flag = false;
       print('Something went wrong');
     }
   }
 
-  void ValidateToken() async {
+  void validateToken() async {
     try {
-      var _baseUrl = "https://dev-unique.com:9018/api/Interface/GetUserByToken";
+      var baseUrl = "https://dev-unique.com:9018/api/Interface/GetUserByToken";
 
       Map<String, String> body = {
-        'method': '${widget.para1!}',
+        'method': widget.para1!,
       };
       print(json.encode(body));
-      var UserName = '';
-      final res = await http.post(Uri.parse("${_baseUrl}"),
+      var username = '';
+      final res = await http.post(Uri.parse(baseUrl),
           headers: {"Content-Type": "application/json"},
           body: json.encode(body));
 
       if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
-
         final parsedJson = jsonDecode(res.body);
 
         if (parsedJson['code'] == "200") {
-          Flag = true;
+          flag = true;
 
-          UserName = parsedJson['messages'];
+          username = parsedJson['messages'];
         } else {
-          Flag = false;
+          flag = false;
         }
       } else {
-        Flag = false;
+        flag = false;
       }
 
       setState(() {
         if (res.statusCode == 200) {
-          final jsonData = json.decode(res.body);
-
           final parsedJson = jsonDecode(res.body);
 
           if (parsedJson['code'] == "200") {
-            Flag = true;
-            _Emp_code = UserName;
+            flag = true;
+            _empCode = username;
 
-            loadpage();
+            loadPage();
           }
         } else {
-          Flag = false;
+          flag = false;
         }
       });
     } catch (err) {
-      Flag = false;
+      flag = false;
       print('Something went wrong');
     }
   }
 
-  String _authAPI(_username, _password) {
-    String _baase64encode = '${_username}:${_password}';
+  String _authAPI(username, password) {
+    String base64Encode = '$username:$password';
     Codec<String, String> stringToBase64 = utf8.fuse(base64);
-    String encoded = stringToBase64.encode(_baase64encode);
-    String basicAuth = 'Basic ${encoded}';
+    String encoded = stringToBase64.encode(base64Encode);
+    String basicAuth = 'Basic $encoded';
 
     return basicAuth;
   }
 
   bool _isObscure = true;
-  void loadpage() async {
-    var client = http.Client();
-    DateTime NewDate = DateTime.now();
 
-    Duration work_yesterday = Duration(hours: 9, minutes: 00);
+  void loadPage() async {
+    //var client = http.Client();
+    DateTime newDate = DateTime.now();
 
-    if ((NewDate.hour < work_yesterday.inHours) ||
-        ((NewDate.hour == work_yesterday.inHours) &&
-            (NewDate.minute <= work_yesterday.inMinutes.remainder(60)))) {
-      NewDate = DateTime.now().add(new Duration(days: -1));
+    Duration workYesterday = const Duration(hours: 9, minutes: 00);
+
+    if ((newDate.hour < workYesterday.inHours) ||
+        ((newDate.hour == workYesterday.inHours) &&
+            (newDate.minute <= workYesterday.inMinutes.remainder(60)))) {
+      newDate = DateTime.now().add(const Duration(days: -1));
     } else {
-      NewDate = DateTime.now();
+      newDate = DateTime.now();
     }
 
-    String formattedDate = DateFormat('yyyy-MM-dd').format(NewDate);
+    //String formattedDate = DateFormat('yyyy-MM-dd').format(newDate);
 
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => homepage(
-              index: 1,
-              listtimesheet: [],
-              EmpCode: _Emp_code,
-              ShowPopup: _Showpopup,
-              url: webconfig)),
+        builder: (context) => homepage(
+          index: 1,
+          listtimesheet: const [],
+          EmpCode: _empCode,
+          ShowPopup: _showPopup,
+          url: webConfig,
+        ),
+      ),
     );
   }
 
   @override
   void initState() {
+    super.initState();
     loadJson();
 
-    if (widget.para1 != null || widget.para1 != '') ValidateToken();
+    if (widget.para1 != null || widget.para1 != '') validateToken();
   }
 
   @override
@@ -215,15 +200,16 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-          // Color.fromRGBO(94, 33, 35, 1),
-          // Color.fromRGBO(118, 41, 40, 1),
-          // Color.fromRGBO(120, 42, 33, 1),
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-        ])),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -235,20 +221,23 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.asset('assets/images/Logo.png',
-                        width: 500, height: 150),
+                    child: Image.asset(
+                      'assets/images/Logo.png',
+                      width: 500,
+                      height: 150,
+                    ),
                   ),
                 ],
               ),
             ),
-
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(60),
-                      topRight: Radius.circular(60)),
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60),
+                  ),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
@@ -265,9 +254,10 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: const [
                               BoxShadow(
-                                  color: Color.fromRGBO(171, 171, 171, .7),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10)),
+                                color: Color.fromRGBO(171, 171, 171, .7),
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                              ),
                             ],
                           ),
                           child: Column(
@@ -276,14 +266,16 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                   border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade200)),
+                                    bottom:
+                                        BorderSide(color: Colors.grey.shade200),
+                                  ),
                                 ),
                                 child: TextField(
                                   controller: controllerUser,
                                   decoration: InputDecoration(
                                     hintText: "ชื่อผู้ใช้งาน",
-                                    hintStyle: TextStyle(color: Colors.grey),
+                                    hintStyle:
+                                        const TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                     errorText: _validate
                                         ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
@@ -295,8 +287,9 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
                                     border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey.shade200)),
+                                      bottom: BorderSide(
+                                          color: Colors.grey.shade200),
+                                    ),
                                   ),
                                   child: TextField(
                                     controller: controllerPwd,
@@ -304,7 +297,8 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                     decoration: InputDecoration(
                                       // labelText: 'Password',
                                       hintText: "รหัสผ่าน",
-                                      hintStyle: TextStyle(color: Colors.grey),
+                                      hintStyle:
+                                          const TextStyle(color: Colors.grey),
                                       border: InputBorder.none,
                                       suffixIcon: IconButton(
                                           icon: Icon(_isObscure
@@ -330,8 +324,9 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                           child: ElevatedButton(
                             onPressed: () {
                               if (controllerPwd.text.isNotEmpty &&
-                                  controllerUser.text.isNotEmpty)
-                                ValidateLogIn();
+                                  controllerUser.text.isNotEmpty) {
+                                validateLogin();
+                              }
 
                               setState(() {
                                 (controllerPwd.text.isEmpty ||
@@ -345,29 +340,22 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                               //       builder: (context) => Timesheet()),
                               //  );
                             },
-                            child: Text(
-                              'เข้าสู่ระบบ',
-                              style: GoogleFonts.getFont('Kanit'),
-                            ),
                             style: ElevatedButton.styleFrom(
-                                shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
-                                primary: Color.fromRGBO(114, 41, 34, 1),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 10),
-                                textStyle: TextStyle(
-                                  fontSize: 18,
-                                )),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 50,
+                                  vertical: 10,
+                                ),
+                                textStyle: const TextStyle(fontSize: 18)),
+                            child: const Text('เข้าสู่ระบบ'),
                           ),
                         ),
                         const SizedBox(height: 30),
                         const Text(
                           'Version 0.2.0',
-                          style: TextStyle(
-                            // fontSize: 40,
-                            color: Colors.grey,
-                          ),
+                          style: TextStyle(color: Colors.grey),
                         ),
                         // #login SNS
                         // const Text(
