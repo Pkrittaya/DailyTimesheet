@@ -11,6 +11,7 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:http/http.dart' as http;
 
+import 'models/DailyTimeSheet.dart';
 import 'models/EmpDailyEmployee.dart';
 import 'models/EmployeeList.dart';
 import 'models/JobList.dart';
@@ -22,6 +23,7 @@ List<Employeelist> itemsList = [];
 List<EmpDailyEmployee> empdaily = [];
 List<JobMaster> jobms = [];
 List<LocationMaster> locationms = [];
+List<DailyTimeSheet> timesheet = [];
 
 Future<List<Employeelist>> GetEmployeeList() async {
   try {
@@ -139,5 +141,30 @@ Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
     print('Something went wrong');
 
     return <LocationMaster>[];
+  }
+}
+
+///// Timesheet
+Future<List<DailyTimeSheet>> GetDailyTimesheet(var empcode, var type) async {
+  try {
+    var _baseUrl =
+        "https://dev-unique.com:9012/api/Daily/GetDailyTimeSheet?empcode=${empcode}&type=${type}";
+    final res = await http.get(
+      Uri.parse("$_baseUrl"),
+    );
+
+    // if (res.statusCode == 200) {
+    final jsonData = json.decode(res.body);
+
+    List<dynamic> parsedListJson = jsonDecode(res.body);
+
+    timesheet = List<DailyTimeSheet>.from(parsedListJson
+        .map<DailyTimeSheet>((dynamic i) => DailyTimeSheet.fromJson(i)));
+
+    return timesheet;
+  } catch (err) {
+    print('Something went wrong');
+
+    return <DailyTimeSheet>[];
   }
 }

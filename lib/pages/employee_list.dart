@@ -17,6 +17,7 @@ import '../models/EmpDailyEmployee.dart';
 import '../models/EmployeeList.dart';
 import '../models/JobList.dart';
 import '../models/LocationList.dart';
+import 'employee_data.dart';
 
 class EmployeeList extends StatefulWidget {
   final int index;
@@ -849,38 +850,48 @@ class _MyHomePageState extends State<EmployeeList> {
             canTapOnHeader: true,
             headerBuilder: (BuildContext context, bool isExpanded) {
               return ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: CheckboxListTile(
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                      title: Text(
-                        '${item.empCode!} ${item.empName!}',
-                        style: TextStyle(fontSize: 10),
-                      ),
-                      value: (ckboxEmp.length == 0)
-                          ? false
-                          : !checkboxEmp(item.empCode!),
-                      onChanged: (value) {
-                        setState(() {
-                          valall = false;
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                          child: CheckboxListTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        title: Text(
+                          '${item.empCode!} ${item.empName!}',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                        value: (ckboxEmp.length == 0)
+                            ? false
+                            : !checkboxEmp(item.empCode!),
+                        onChanged: (value) {
+                          setState(() {
+                            valall = false;
 
-                          if (checkboxEmp(item.empCode!)) {
-                            ckboxEmp.add(item.empCode!);
-                          } else {
-                            ckboxEmp.remove(item.empCode!);
-                          }
+                            if (checkboxEmp(item.empCode!)) {
+                              ckboxEmp.add(item.empCode!);
+                            } else {
+                              ckboxEmp.remove(item.empCode!);
+                            }
 
-                          print(ckboxEmp);
-                        });
-                      },
-                    )),
-                  ],
-                ),
-              );
+                            print(ckboxEmp);
+                          });
+                        },
+                      )),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EmployeeDetail(
+                              index: 1,
+                              EmpCode: widget.EmpCode,
+                              EmpDetail: item,
+                              url: widget.url)),
+                    );
+                  });
             },
             body: ListTile(
               tileColor: Colors.grey[100],
