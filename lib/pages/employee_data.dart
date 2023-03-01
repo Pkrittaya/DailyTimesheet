@@ -40,6 +40,7 @@ class _MyHomePageState extends State<EmployeeDetail>
 
   List<DailyTimeSheet> timesheetCurrent = [];
   List<DailyTimeSheet> timesheetHistory = [];
+  List<DailyTimeSheet> workdayHistory = [];
   late TabController _tabController;
   final _selectedColor = Color(0xff1a73e8);
   final _tabs = [
@@ -105,12 +106,16 @@ class _MyHomePageState extends State<EmployeeDetail>
   }
 
   GetAPI() async {
-    timesheetCurrent = await GetDailyTimesheet('5100024', 'CURRENT');
-    timesheetHistory = await GetDailyTimesheet('5100024', 'HISTORY');
+    // var seen = Set<String>();
+
+    var Current = await GetDailyTimesheet('5100024', 'CURRENT');
+    var History = await GetDailyTimesheet('5100024', 'HISTORY');
 
     setState(() {
-      timesheetCurrent = timesheetCurrent;
-      timesheetHistory = timesheetHistory;
+      timesheetCurrent = Current;
+      // workdayHistory = Current.where((res) => seen.add(res.workDay!)).toList();
+      timesheetHistory = History;
+      // print(timesheetHistory[0].timeIn);
     });
   }
 
@@ -135,6 +140,76 @@ class _MyHomePageState extends State<EmployeeDetail>
     return statustext.toString();
   }
 
+  void datasavetimesheet(DailyTimeSheet timesheet) async {
+    const JsonDecoder decoder = JsonDecoder();
+    var Datenow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
+
+    String totext = "[";
+    totext += '{';
+    totext += '"emp_Code": "${timesheet.empCode}",';
+    totext += '"time_In": "${timesheet.timeIn}",';
+    totext += '"time_Out": "${timesheet.timeOut}",';
+    totext += '"type": "Labour",';
+    totext += '"supervisor_Code": "${widget.EmpCode}",';
+    totext += '"status": "400",';
+    totext += '"remark": "${timesheet.remark}",';
+    totext += '"costCenter": "${timesheet.costCenter}",';
+    totext += '"jobId": "${timesheet.jobId}",';
+    totext += '"start_Date": "${Datenow}",';
+    totext += '"create_By": "${widget.EmpCode}",';
+    totext += '"project_Code": "${timesheet.projectCode}",';
+    totext += '"job_Group": "${timesheet.jobGroup}",';
+    totext += '"job_Code": "${timesheet.jobCode}",';
+    totext += '"location_Code": "${timesheet.locationCode}"';
+    totext += '}';
+    totext += ']';
+
+    var tojsontext = decoder.convert(totext);
+    // print(totext);
+
+    final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
+    final res = await http.post(Uri.parse("${_baseUrl}"),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(tojsontext));
+
+    setState(() {
+      final jsonData = json.decode(res.body);
+
+      final parsedJson = jsonDecode(res.body);
+      if (res.body == "1") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EmployeeDetail(
+              index: 1,
+              EmpCode: widget.EmpCode,
+              EmpDetail: widget.EmpDetail,
+              url: widget.url,
+            ),
+          ),
+        );
+      } else {
+        Dialogs.materialDialog(
+            msg: '${parsedJson['description']}',
+            title: 'ตรวจสอบข้อมูล',
+            context: context,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  //getlsttimesheet();
+                },
+                text: 'ตกลง',
+                iconData: Icons.check_circle_outline,
+                color: Colors.green,
+                textStyle: TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -155,212 +230,221 @@ class _MyHomePageState extends State<EmployeeDetail>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: basicTheme(),
-        home: Scaffold(
-          body: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-              Color.fromARGB(255, 165, 29, 8),
-            ])),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 15),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Table(
+    final titleStyle =
+        Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white);
+
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).primaryColor,
+            ],
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 28.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      TableRow(children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'บันทึกเวลาทำงาน',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                            Container(
-                              child: Text(
-                                'สำหรับรายวัน',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 16),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            TextButton.icon(
-                              style: TextButton.styleFrom(
-                                textStyle: TextStyle(fontSize: 14),
-                                padding: EdgeInsets.zero,
-                                alignment: Alignment.centerLeft,
-                                // tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              icon: Icon(
-                                Icons.logout,
-                                color: Colors.white,
-                              ),
-                              label: Text('ออกจากระบบ',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: Fonts.fonts)),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Login()),
-                                );
-                              },
-                            ),
-                          ],
+                      Text(
+                        'บันทึกเวลาทำงาน',
+                        style: titleStyle!.copyWith(
+                          fontSize: 22.0,
+                          color: Colors.white,
                         ),
-                      ]),
+                      ),
+                      Text(widget.EmpCode, style: titleStyle),
                     ],
                   ),
-                ),
-                Expanded(
-                    child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('สำหรับรายวัน', style: titleStyle),
+                      Text('${empdata.empName}', style: titleStyle),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        style: TextButton.styleFrom(
+                          textStyle: const TextStyle(fontSize: 14),
+                          padding: EdgeInsets.zero,
+                          alignment: Alignment.centerLeft,
                         ),
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              const SizedBox(height: 15),
-                              ElevatedButton.icon(
-                                icon: Icon(
-                                  FontAwesomeIcons.arrowLeft,
-                                  size: 10,
-                                  color: Colors.black,
-                                ),
-                                label: Text(
-                                  'กลับ',
-                                  style: TextStyle(
-                                    fontFamily: Fonts.fonts,
-                                    color: Colors.black,
-                                  ),
-                                ), //label text
-                                style: ElevatedButton.styleFrom(
-                                    shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(8),
-                                    ),
-                                    primary: Colors.white,
-                                    textStyle: TextStyle(
-                                      fontSize: 10,
-                                    )),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EmployeeList(
-                                        index: widget.index,
-                                        EmpCode: widget.EmpCode,
-                                        url: widget.url,
-                                      ),
-                                    ),
-                                  );
-                                },
+                        icon: const Icon(
+                          Icons.logout,
+                          color: Colors.white,
+                        ),
+                        label: Text('ออกจากระบบ', style: titleStyle),
+                        onPressed: () {
+                          showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          return;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Login(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0),
+                ],
+              ),
+            ),
+            Expanded(
+                child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(height: 15),
+                          ElevatedButton.icon(
+                            icon: Icon(
+                              FontAwesomeIcons.arrowLeft,
+                              size: 10,
+                              color: Colors.black,
+                            ),
+                            label: Text(
+                              'กลับ',
+                              style: TextStyle(
+                                fontFamily: Fonts.fonts,
+                                color: Colors.black,
                               ),
-                              const SizedBox(height: 15),
-                              Card(
-                                shape: RoundedRectangleBorder(
-                                  // side: BorderSide(
-                                  //   color: Palette.Colortheme,
-                                  // ),
-                                  borderRadius: BorderRadius.circular(10.0),
+                            ), //label text
+                            style: ElevatedButton.styleFrom(
+                                shape: new RoundedRectangleBorder(
+                                  borderRadius: new BorderRadius.circular(8),
                                 ),
-                                child: SizedBox(
-                                  // width: 300,
-                                  // height: 100,
-                                  child: Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.all(20),
-                                    child: Row(
+                                primary: Colors.white,
+                                textStyle: TextStyle(
+                                  fontSize: 10,
+                                )),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => EmployeeList(
+                                    index: widget.index,
+                                    EmpCode: widget.EmpCode,
+                                    url: widget.url,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                              // side: BorderSide(
+                              //   color: Palette.Colortheme,
+                              // ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: SizedBox(
+                              // width: 300,
+                              // height: 100,
+                              child: Expanded(
+                                  child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                                "รหัสพนักงาน : ${widget.EmpDetail.empCode}"),
-                                            Text(
-                                                "ชื่อ : ${widget.EmpDetail.empName}"),
-                                            Text(
-                                                "แผนก : ${widget.EmpDetail.empDepartmentName}"),
-                                          ],
-                                        ),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(""),
-                                            Text(""),
-                                            Text(""),
-                                          ],
-                                        )
+                                        Text(
+                                            "รหัสพนักงาน : ${widget.EmpDetail.empCode}"),
+                                        Text(
+                                            "ชื่อ : ${widget.EmpDetail.empName}"),
+                                        Text(
+                                            "แผนก : ${widget.EmpDetail.empDepartmentName}"),
                                       ],
                                     ),
-                                  )),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(""),
+                                        Text(""),
+                                        Text(""),
+                                      ],
+                                    )
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 15),
-                              Container(
-                                height: kToolbarHeight - 8.0,
+                              )),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          Container(
+                            height: kToolbarHeight - 8.0,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: TabBar(
+                              controller: _tabController,
+                              indicator: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  color: _selectedColor),
+                              labelColor: Colors.white,
+                              unselectedLabelColor: Colors.black,
+                              tabs: _tabs,
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
                                 decoration: BoxDecoration(
                                   color: Colors.grey.shade200,
-                                  borderRadius: BorderRadius.circular(8.0),
+                                  // borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                child: TabBar(
+                                child: TabBarView(
                                   controller: _tabController,
-                                  indicator: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      color: _selectedColor),
-                                  labelColor: Colors.white,
-                                  unselectedLabelColor: Colors.black,
-                                  tabs: _tabs,
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      // borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    child: TabBarView(
-                                      controller: _tabController,
-                                      children: <Widget>[
-                                        // SingleChildScrollView(
-                                        //   child:
-                                        _buildTimesheetCrrent(),
-                                        // ),
-                                        //_buildTimesheetHistoly(),
-                                        Text('History')
-                                      ],
-                                    )),
-                              ),
-                            ]))),
-              ],
-            ),
-          ),
-        ));
+                                  children: <Widget>[
+                                    (timesheetCurrent.length != 0)
+                                        ? _buildTimesheetCrrent()
+                                        : Center(
+                                            child: Text('ไม่มีข้อมูล'),
+                                          ),
+                                    (timesheetHistory.length != 0)
+                                        ? _buildTimesheetHistoly()
+                                        : Center(
+                                            child: Text('ไม่มีข้อมูล'),
+                                          ),
+                                  ],
+                                )),
+                          ),
+                        ]))),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildTimesheetCrrent() {
@@ -373,21 +457,25 @@ class _MyHomePageState extends State<EmployeeDetail>
           child: ListView.builder(
             itemCount: timesheetCurrent.length,
             itemBuilder: (BuildContext context, int index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}'),
-                  Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 6,
-                      ),
-                      _builddeletetimesheet(timesheetCurrent[index]),
-                    ],
-                  ),
-                ],
-              );
+              return timesheetCurrent[index].status != '400'
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}'),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 6,
+                            ),
+                            _builddeletetimesheet(timesheetCurrent[index]),
+                          ],
+                        ),
+                      ],
+                    )
+                  : SizedBox(
+                      width: 0,
+                    );
             },
           ),
         )
@@ -399,27 +487,31 @@ class _MyHomePageState extends State<EmployeeDetail>
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Text('วันที่ ${FormatDate(GetDateTimeCurrent())}'),
+        Text('วันที่ ${timesheetHistory[0].workDay}'),
         Text('${CustomCountTimeSum(timesheetHistory[0].sumtimes)}'),
         Expanded(
           child: ListView.builder(
             itemCount: timesheetHistory.length,
             itemBuilder: (BuildContext context, int index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                      '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}'),
-                  Row(
-                    children: <Widget>[
-                      SizedBox(
-                        width: 6,
-                      ),
-                      _builddeletetimesheet(timesheetHistory[index]),
-                    ],
-                  ),
-                ],
-              );
+              return timesheetHistory[index].status != '400'
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                            '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}'),
+                        Row(
+                          children: <Widget>[
+                            SizedBox(
+                              width: 6,
+                            ),
+                            _builddeletetimesheet(timesheetHistory[index]),
+                          ],
+                        ),
+                      ],
+                    )
+                  : SizedBox(
+                      width: 0,
+                    );
             },
           ),
         )
@@ -427,7 +519,7 @@ class _MyHomePageState extends State<EmployeeDetail>
     );
   }
 
-  Widget _builddeletetimesheet(var item) {
+  Widget _builddeletetimesheet(DailyTimeSheet item) {
     return Ink(
       decoration: const ShapeDecoration(
         color: Colors.red,
@@ -461,12 +553,9 @@ class _MyHomePageState extends State<EmployeeDetail>
                   textStyle: TextStyle(color: Colors.white),
                   iconColor: Colors.white,
                   onPressed: () {
-                    //////
-                    String arrayText = '{"400": ["", ""]}';
+                    datasavetimesheet(item);
 
-                    var tagsJson = jsonDecode(arrayText);
-
-                    Navigator.of(context, rootNavigator: true).pop();
+                    // Navigator.of(context, rootNavigator: true).pop();
                   },
                 ),
               ]);
@@ -474,4 +563,47 @@ class _MyHomePageState extends State<EmployeeDetail>
       ),
     );
   }
+
+  // Widget _buildTimesheetHistoly() {
+  //   return ExpansionPanelList(
+  //     expansionCallback: (int index, bool isExpanded) {
+  //       setState(() {
+  //         // workdayHistory[index].isExpanded = !isExpanded;
+  //       });
+  //     },
+  //     children: workdayHistory.map<ExpansionPanel>((workdayHistory) {
+  //       return ExpansionPanel(
+  //           canTapOnHeader: true,
+  //           headerBuilder: (BuildContext context, bool isExpanded) {
+  //             return ListTile(
+  //               title: Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Expanded(
+  //                     child: ListTileTheme(
+  //                       horizontalTitleGap: 2.0,
+  //                       child: Text(
+  //                         '${workdayHistory.timeIn!}',
+  //                         style: Theme.of(context).textTheme.titleMedium,
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             );
+  //           },
+  //           body: ListTile(
+  //             tileColor: Colors.grey[100],
+  //             subtitle: Column(
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: const [
+  //                   SizedBox(height: 10),
+  //                 ]),
+  //             // isThreeLine: true,
+  //           ),
+  //           isExpanded: true);
+  //     }).toList(),
+  //   );
+  // }
 }
