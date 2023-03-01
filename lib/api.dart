@@ -13,11 +13,15 @@ import 'package:http/http.dart' as http;
 
 import 'models/EmpDailyEmployee.dart';
 import 'models/EmployeeList.dart';
+import 'models/JobList.dart';
+import 'models/LocationList.dart';
 
 ///// เรียกรายชื่อลูกน้อง
 
 List<Employeelist> itemsList = [];
 List<EmpDailyEmployee> empdaily = [];
+List<JobMaster> jobms = [];
+List<LocationMaster> locationms = [];
 
 Future<List<Employeelist>> GetEmployeeList() async {
   try {
@@ -85,5 +89,55 @@ PostTempEmployeeDaily(var tojsontext) async {
     print('Something went wrong');
 
     return [];
+  }
+}
+
+/////Job MS
+Future<List<JobMaster>> GetJobMaster(var projectcode) async {
+  try {
+    var _baseUrl =
+        "https://dev-unique.com:9012/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
+    final res = await http.get(
+      Uri.parse("$_baseUrl"),
+    );
+
+    // if (res.statusCode == 200) {
+    final jsonData = json.decode(res.body);
+
+    List<dynamic> parsedListJson = jsonDecode(res.body);
+
+    jobms = List<JobMaster>.from(
+        parsedListJson.map<JobMaster>((dynamic i) => JobMaster.fromJson(i)));
+
+    return jobms;
+  } catch (err) {
+    print('Something went wrong');
+
+    return <JobMaster>[];
+  }
+}
+
+/////Location MS
+Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
+  try {
+    var _baseUrl =
+        "https://dev-unique.com:9012/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
+    final res = await http.get(
+      Uri.parse("$_baseUrl"),
+    );
+
+    // if (res.statusCode == 200) {
+    final jsonData = json.decode(res.body);
+
+    List<dynamic> parsedListJson = jsonDecode(res.body);
+
+    locationms = List<LocationMaster>.from(parsedListJson
+        .map<LocationMaster>((dynamic i) => LocationMaster.fromJson(i)));
+
+    return locationms;
+  } catch (err) {
+    print('Something went wrong');
+
+    return <LocationMaster>[];
   }
 }
