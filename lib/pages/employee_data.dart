@@ -1,25 +1,19 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_picker/flutter_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:k2mobileapp/home.dart';
-import 'package:k2mobileapp/login.dart';
-import 'package:k2mobileapp/main.dart';
-import 'package:k2mobileapp/models/EmployeeData.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:k2mobileapp/login.dart';
+import 'package:k2mobileapp/models/EmployeeData.dart';
 import 'package:k2mobileapp/theme.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+
 import '../api.dart';
 import '../models/DailyTimeSheet.dart';
-import '../models/EmpDailyEmployee.dart';
 import '../models/EmployeeList.dart';
-import '../models/JobList.dart';
-import '../models/LocationList.dart';
 import 'employee_list.dart';
 
 class EmployeeDetail extends StatefulWidget {
@@ -357,7 +351,8 @@ class _MyHomePageState extends State<EmployeeDetail>
                                         //   child:
                                         _buildTimesheetCrrent(),
                                         // ),
-                                        _buildTimesheetHistoly(),
+                                        //_buildTimesheetHistoly(),
+                                        Text('History')
                                       ],
                                     )),
                               ),

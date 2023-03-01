@@ -4,11 +4,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
+import 'package:k2mobileapp/pages/employee_data.dart';
 import 'package:k2mobileapp/theme.dart';
+import 'package:k2mobileapp/widgets/my_button.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 
@@ -17,7 +20,6 @@ import '../models/EmpDailyEmployee.dart';
 import '../models/EmployeeList.dart';
 import '../models/JobList.dart';
 import '../models/LocationList.dart';
-import 'employee_data.dart';
 
 class EmployeeList extends StatefulWidget {
   final int index;
@@ -822,59 +824,72 @@ class _MyHomePageState extends State<EmployeeList> {
             canTapOnHeader: true,
             headerBuilder: (BuildContext context, bool isExpanded) {
               return ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ListTileTheme(
-                        horizontalTitleGap: 2.0,
-                        child: CheckboxListTile(
-                          controlAffinity: ListTileControlAffinity.leading,
-                          contentPadding: EdgeInsets.zero,
-                          dense: true,
-                          title: Row(
-                            children: [
-                              Text(
-                                item.empCode!,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      color: Colors.black45,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: GoogleFonts.jetBrainsMono()
-                                          .fontFamily,
-                                    ),
-                              ),
-                              const SizedBox(width: 8.0),
-                              Text(
-                                item.empName!,
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ],
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ListTileTheme(
+                          horizontalTitleGap: 2.0,
+                          child: CheckboxListTile(
+                            controlAffinity: ListTileControlAffinity.leading,
+                            contentPadding: EdgeInsets.zero,
+                            dense: true,
+                            title: Row(
+                              children: [
+                                Text(
+                                  item.empCode!,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Colors.black45,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: GoogleFonts.jetBrainsMono()
+                                            .fontFamily,
+                                      ),
+                                ),
+                                const SizedBox(width: 8.0),
+                                Text(
+                                  item.empName!,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                            value: (ckboxEmp.isEmpty)
+                                ? false
+                                : !checkboxEmp(item.empCode!),
+                            onChanged: (value) {
+                              setState(() {
+                                valall = false;
+
+                                if (checkboxEmp(item.empCode!)) {
+                                  ckboxEmp.add(item.empCode!);
+                                } else {
+                                  ckboxEmp.remove(item.empCode!);
+                                }
+
+                                print(ckboxEmp);
+                              });
+                            },
                           ),
-                          value: (ckboxEmp.isEmpty)
-                              ? false
-                              : !checkboxEmp(item.empCode!),
-                          onChanged: (value) {
-                            setState(() {
-                              valall = false;
-
-                              if (checkboxEmp(item.empCode!)) {
-                                ckboxEmp.add(item.empCode!);
-                              } else {
-                                ckboxEmp.remove(item.empCode!);
-                              }
-
-                              print(ckboxEmp);
-                            });
-                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmployeeDetail(
+                          index: 1,
+                          EmpCode: widget.EmpCode,
+                          EmpDetail: item,
+                          url: widget.url,
+                        ),
+                      ),
+                    );
+                  });
             },
             body: ListTile(
               tileColor: Colors.grey[100],
