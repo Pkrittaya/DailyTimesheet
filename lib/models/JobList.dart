@@ -3,7 +3,7 @@ class JobMaster {
   String? jobGroupCode;
   String? jobCode;
   String? jobName;
-  Null? jobDesc;
+  String? jobDesc;
   String? createBy;
   String? createDate;
   String? updateBy;

@@ -50,7 +50,7 @@ class _MyHomePageState extends State<EmployeeList> {
   TextEditingController timestart = TextEditingController();
   TextEditingController textempdaily = TextEditingController();
   TextEditingController editingController = TextEditingController();
-
+  TextEditingController editingRemark = TextEditingController();
   bool searchempdaily = false;
   bool valall = false;
 
@@ -131,6 +131,8 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextDefultOneEnd = "";
   String TextOTAfterStart = "";
   String TextOTAfterEnd = "";
+  String jobdetail = "J001";
+  String locationName = "L001";
 
 //ลาป่วยบางช่วงเวลา
   DateTime LeavesickStart = DateTime.now();
@@ -253,6 +255,15 @@ class _MyHomePageState extends State<EmployeeList> {
     var Datenow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
     Map decoded = jsonDecode(arrayText);
     int i = 0;
+    String chkEmp = '';
+
+    for (var emp in ckboxEmp) {
+      if (chkEmp != '')
+        chkEmp = emp;
+      else
+        chkEmp = chkEmp + ',' + emp;
+    }
+
     String totext = "[";
 
     decoded.forEach((key, value) {
@@ -267,32 +278,36 @@ class _MyHomePageState extends State<EmployeeList> {
       if (i > 1) {
         totext += ',';
       }
+
       totext += '{';
-      totext += '"emp_Code": "${empcode}",';
+      totext += '"emp_Code": "${chkEmp}",';
       totext += '"time_In": "${Datestart}",';
       totext += '"time_Out": "${DateEnd}",';
-      totext += '"jobNo": "",';
-      totext += '"revise_No": "",';
+
       totext += '"type": "Labour",';
       totext += '"supervisor_Code": "${widget.EmpCode}",';
-      totext += '"location_Status": "",';
       totext += '"status": "${key}",';
-      totext += '"remark": "",';
+      totext += '"remark": "${editingRemark.text}",';
       totext += '"costCenter": "${costCenter}",';
       if (jobcode != '') {
-        totext += '"jobCode": "${jobcode}",';
+        totext += '"jobId": "${jobcode}",';
       }
+
       totext += '"start_Date": "${Datenow}",';
-      totext += '"create_By": "${widget.EmpCode}"';
+      totext += '"create_By": "${widget.EmpCode}",';
+      totext += '"project_Code": "P0001",';
+      totext += '"job_Group": "G001",';
+      totext += '"job_Code": "${jobdetail}",';
+      totext += '"location_Code": "${locationName}"';
       totext += '}';
     });
 
     totext += ']';
-
+    print(totext);
     var tojsontext = decoder.convert(totext);
     // print(tojsontext);
 
-    final _baseUrl = '${widget.url}/api/Interface/SaveDailyTimeSheet';
+    final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
     final res = await http.post(Uri.parse("${_baseUrl}"),
         headers: {"Content-Type": "application/json"},
         body: json.encode(tojsontext));
@@ -543,15 +558,25 @@ class _MyHomePageState extends State<EmployeeList> {
 
   GetAPI() async {
     itemsList = await GetEmployeeList();
-    jobms = await GetJobMaster('');
-    locationms = await GetLocationMaster('');
+    var jobmsapi = await GetJobMaster('p0001');
+    var locationmsapi = await GetLocationMaster('p0001');
 
+    //  var loc = locationms[0].locationCode!;
+    //  var Job = jobms[0].jobCode!;
+
+    // print(loc);
+    //print(Job);
     setState(() {
       _data = itemsList.where((res) => res.types == 'Main').toList();
       _dataAdd = itemsList.where((res) => res.types == 'Add').toList();
-      jobms = jobms;
-      locationms = locationms;
+      jobms = jobmsapi;
+      locationms = locationmsapi;
+      //locationName = locationms[0].locationCode!;
+      //jobdetail = "J001";
     });
+    //print(locationms[0].locationCode!);
+    //
+    //print(jobdetail);
   }
 
   GetEmpDailyEmployeeAPI(empcode) async {
@@ -1517,30 +1542,71 @@ class _MyHomePageState extends State<EmployeeList> {
                                         SizedBox(
                                           height: 20,
                                         ),
-
-                                        //                     Text('เนื้องาน'),
-                                        // DropdownButtonFormField(
-                                        //   isExpanded: true,
-                                        //   decoration: InputDecoration(
-                                        //     border: OutlineInputBorder(),
-                                        //   ),
-                                        //   hint: const Text('เลือกรายละเอียด'),
-                                        //   value: jobdetail.text,
-                                        //   icon: Icon(Icons.keyboard_arrow_down),
-                                        //   items: jobdetailoption
-                                        //       .map((DropDownData jobdetailtop) => DropdownMenuItem(
-                                        //             // alignment: AlignmentDirectional.center,
-                                        //             value: jobdetailtop.values,
-                                        //             child: Text(jobdetailtop.description!),
-                                        //           ))
-                                        //       .toList(),
-                                        //   onChanged: (val) {
-                                        //     setState(() {
-                                        //       jobdetail.text = val.toString();
-                                        //     });
-                                        //   },
-                                        // ),
-
+                                        Text('เนื้องาน'),
+                                        DropdownButtonFormField(
+                                          isExpanded: true,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          hint: const Text('เลือกรายละเอียด'),
+                                          // value: 'J001',
+                                          icon: Icon(Icons.keyboard_arrow_down),
+                                          items: jobms
+                                              .map((JobMaster jobdetailtop) =>
+                                                  DropdownMenuItem(
+                                                    // alignment: AlignmentDirectional.center,
+                                                    value: jobdetailtop.jobCode,
+                                                    child: Text(
+                                                        jobdetailtop.jobName!),
+                                                  ))
+                                              .toList(),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              jobdetail = val.toString();
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text('สถานที่'),
+                                        DropdownButtonFormField(
+                                          isExpanded: true,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          hint: const Text('เลือกรายละเอียด'),
+                                          //  value: locationName, //locationName,
+                                          icon: Icon(Icons.keyboard_arrow_down),
+                                          items: locationms
+                                              .map((LocationMaster
+                                                      jobdetailtop) =>
+                                                  DropdownMenuItem(
+                                                    // alignment: AlignmentDirectional.center,
+                                                    value: jobdetailtop
+                                                        .locationCode,
+                                                    child: Text(jobdetailtop
+                                                        .locationName!),
+                                                  ))
+                                              .toList(),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              locationName = val.toString();
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Text('หมายเหตุ'),
+                                        TextField(
+                                          style: TextStyle(fontSize: 12),
+                                          controller: editingRemark,
+                                          maxLines: 5,
+                                          onChanged: (value) {
+                                            // filterSearchResults(value);
+                                          },
+                                        ),
                                         SizedBox(
                                           height: 20,
                                         ),
@@ -1666,7 +1732,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                   typetimeend.add(OTBeforeEnd);
 
                                                   arrayText =
-                                                      '{"101": ["${OTBeforeStart}", "${OTBeforeEnd}"]';
+                                                      '{"201": ["${OTBeforeStart}", "${OTBeforeEnd}"]';
                                                 }
                                                 if (TextDefultOneEnd != "") {
                                                   typetimestart
@@ -1679,7 +1745,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                     arrayText += ',';
                                                   }
                                                   arrayText +=
-                                                      '"102": ["${DefultOneStart}", "${DefultOneEnd}"]';
+                                                      '"100": ["${DefultOneStart}", "${DefultOneEnd}"]';
                                                 }
                                                 if (TextOTAfterEnd != "") {
                                                   typetimestart
@@ -1692,7 +1758,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                                     arrayText += ',';
                                                   }
                                                   arrayText +=
-                                                      '"103": ["${OTAfterStart}", "${OTAfterEnd}"]';
+                                                      '"202": ["${OTAfterStart}", "${OTAfterEnd}"]';
                                                 }
 
                                                 arrayText += "}";

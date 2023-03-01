@@ -121,7 +121,7 @@ Future<List<JobMaster>> GetJobMaster(var projectcode) async {
 Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
   try {
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
+        "https://dev-unique.com:9012/api/Daily/GetDropDownLocation?projectcode=${projectcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
