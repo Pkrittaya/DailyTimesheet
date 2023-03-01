@@ -1,23 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:k2mobileapp/example/datepicker.dart';
-import 'package:k2mobileapp/example/expandable-demo.dart';
-import 'package:k2mobileapp/example/expandable.dart';
 import 'package:k2mobileapp/home.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'main.dart';
-import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   static const String id = 'mentor sample 1';
   String? myurl, para1;
+
   Login({Key? key, this.myurl, this.para1}) : super(key: key);
 
   @override
@@ -173,6 +168,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
   }
 
   bool _isObscure = true;
+
   void loadpage() async {
     var client = http.Client();
     DateTime NewDate = DateTime.now();
@@ -202,9 +198,13 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    super.initState();
     loadJson();
 
     if (widget.para1 != null || widget.para1 != '') ValidateToken();
+
+    controllerUser.text = 'mk001';
+    controllerPwd.text = 'pass';
   }
 
   @override
@@ -212,15 +212,16 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
-          // Color.fromRGBO(94, 33, 35, 1),
-          // Color.fromRGBO(118, 41, 40, 1),
-          // Color.fromRGBO(120, 42, 33, 1),
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-          Color.fromARGB(255, 255, 255, 255),
-        ])),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            colors: [
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -342,20 +343,22 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                               //       builder: (context) => Timesheet()),
                               //  );
                             },
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              backgroundColor:
+                                  const Color.fromRGBO(114, 41, 34, 1),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 50,
+                                vertical: 10,
+                              ),
+                              textStyle: const TextStyle(fontSize: 18),
+                            ),
                             child: Text(
                               'เข้าสู่ระบบ',
                               style: GoogleFonts.getFont('Kanit'),
                             ),
-                            style: ElevatedButton.styleFrom(
-                                shape: new RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(50),
-                                ),
-                                primary: Color.fromRGBO(114, 41, 34, 1),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 10),
-                                textStyle: TextStyle(
-                                  fontSize: 18,
-                                )),
                           ),
                         ),
                         const SizedBox(height: 30),

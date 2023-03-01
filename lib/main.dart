@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:k2mobileapp/login.dart';
+import 'package:k2mobileapp/pages/employee_list.dart';
 import 'package:k2mobileapp/theme.dart';
 
 void main() {
@@ -13,6 +13,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   String? myurl, para1;
+
   MyApp({Key? key, this.myurl, this.para1}) : super(key: key);
 
   //con MyApp({this.myurl, this.para1});
@@ -20,11 +21,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-      supportedLocales: [const Locale('en'), const Locale('th', 'TH')],
+      localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+      supportedLocales: const [Locale('en'), Locale('th', 'TH')],
       title: 'Daily Timesheet',
       theme: basicTheme(),
-      home: Login(myurl: myurl, para1: para1),
+      //home: Login(myurl: myurl, para1: para1),
+      home: const EmployeeList(
+        index: 1,
+        EmpCode: '9900001',
+        url: 'https://dev-unique.com:9012',
+      ),
     );
   }
 }
@@ -40,7 +46,6 @@ class Item {
   String headerValue;
   bool isExpanded;
 }
-
 
 // class MyHomePage extends StatefulWidget {
 //   const MyHomePage({Key? key, required this.title}) : super(key: key);
