@@ -39,7 +39,7 @@ ThemeData basicTheme() {
       bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),*/
 
       titleLarge: TextStyle(fontSize: 22.0),
-      titleMedium: TextStyle(fontSize: 16.0, color: Colors.white),
+      titleMedium: TextStyle(fontSize: 16.0, color: Colors.black),
       titleSmall: TextStyle(fontSize: 14.0),
     ),
   );
