@@ -4,9 +4,11 @@ class MyButton extends StatelessWidget {
   final String text;
   final Color buttonColor;
   final Color textColor;
+  final double verticalPadding;
   final VoidCallback onPressed;
 
   static const minimumWidth = 120.0;
+  static const defaultPadding = 6.0;
 
   const MyButton({
     Key? key,
@@ -14,6 +16,7 @@ class MyButton extends StatelessWidget {
     required this.text,
     required this.buttonColor,
     required this.textColor,
+    this.verticalPadding = defaultPadding,
   }) : super(key: key);
 
   @override
@@ -29,7 +32,10 @@ class MyButton extends StatelessWidget {
       ),
       onPressed: onPressed,
       child: Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: defaultPadding,
+          vertical: verticalPadding,
+        ),
         child: Text(
           text,
           style: Theme.of(context)
