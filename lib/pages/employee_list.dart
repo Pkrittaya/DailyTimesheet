@@ -151,8 +151,8 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextDefultOneEnd = "";
   String TextOTAfterStart = "";
   String TextOTAfterEnd = "";
-  String jobdetail = "J001";
-  String locationName = "L001";
+  String jobdetail = "";
+  String locationName = "";
 
 //ลาป่วยบางช่วงเวลา
   DateTime LeavesickStart = DateTime.now();
@@ -389,28 +389,6 @@ class _MyHomePageState extends State<EmployeeList> {
       empNationality: '',
       empPositionName: '');
 
-  void GetEmpProfile() async {
-    var client = http.Client();
-    var uri = Uri.parse(
-        "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
-    var response = await client.get(uri);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      print(response.body);
-
-      final parsedJson = jsonDecode(response.body);
-
-      setState(() {
-        empdata.empCode = parsedJson['emp_Code'];
-        empdata.empCompName = parsedJson['emp_Comp_Name'];
-        empdata.empDepartmentName = parsedJson['emp_Department_Name'];
-        empdata.empName = parsedJson['emp_Name'];
-        empdata.empNationality = parsedJson['emp_Nationality'];
-        empdata.empPositionName = parsedJson['emp_Position_Name'];
-      });
-    }
-  }
-
   void addEmployee() async {
     await Future.delayed(const Duration(milliseconds: 10));
     if (!mounted) return;
@@ -599,23 +577,20 @@ class _MyHomePageState extends State<EmployeeList> {
     itemsList = await GetEmployeeList();
     var jobmsapi = await GetJobMaster('p0001');
     var locationmsapi = await GetLocationMaster('p0001');
+    var Profile = await GetEmpProfile(widget.EmpCode);
 
-    //  var loc = locationms[0].locationCode!;
-    //  var Job = jobms[0].jobCode!;
-
-    // print(loc);
-    //print(Job);
     setState(() {
       _data = itemsList.where((res) => res.types == '0').toList();
       _dataAdd = itemsList.where((res) => res.types == '1').toList();
       jobms = jobmsapi;
       locationms = locationmsapi;
-      //locationName = locationms[0].locationCode!;
-      //jobdetail = "J001";
+      empdata.empCode = Profile['emp_Code'];
+      empdata.empCompName = Profile['emp_Comp_Name'];
+      empdata.empDepartmentName = Profile['emp_Department_Name'];
+      empdata.empName = Profile['emp_Name'];
+      empdata.empNationality = Profile['emp_Nationality'];
+      empdata.empPositionName = Profile['emp_Position_Name'];
     });
-    //print(locationms[0].locationCode!);
-    //
-    //print(jobdetail);
   }
 
   getEmpDailyEmployeeAPI(empCode) async {
@@ -626,8 +601,6 @@ class _MyHomePageState extends State<EmployeeList> {
 
   @override
   void initState() {
-    GetEmpProfile();
-
     GetAPI();
 
     // _data = widget.listtimesheet;

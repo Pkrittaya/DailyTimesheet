@@ -33,9 +33,11 @@ var filejson = "assets/config.json";
 
 ///// Get File Json
 Future<String> readJsonFile(String filePath) async {
-  var input = await File(filePath).readAsString();
-  var map = jsonDecode(input);
-  return map['WebAPIConfig'];
+  String data = await rootBundle.loadString('assets/config.json');
+  final parsedJson = jsonDecode(data);
+  webconfig = parsedJson['WebAPIConfig'];
+
+  return webconfig;
 }
 
 ///// Get Profile
