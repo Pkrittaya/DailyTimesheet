@@ -606,8 +606,8 @@ class _MyHomePageState extends State<EmployeeList> {
     // print(loc);
     //print(Job);
     setState(() {
-      _data = itemsList.where((res) => res.types == 'Main').toList();
-      _dataAdd = itemsList.where((res) => res.types == 'Add').toList();
+      _data = itemsList.where((res) => res.types == '0').toList();
+      _dataAdd = itemsList.where((res) => res.types == '1').toList();
       jobms = jobmsapi;
       locationms = locationmsapi;
       //locationName = locationms[0].locationCode!;
