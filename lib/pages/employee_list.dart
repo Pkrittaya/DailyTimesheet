@@ -55,6 +55,8 @@ class _MyHomePageState extends State<EmployeeList> {
   TextEditingController textempdaily = TextEditingController();
   TextEditingController editingController = TextEditingController();
   TextEditingController editingRemark = TextEditingController();
+  TextEditingController LeaveStartDate = TextEditingController();
+  TextEditingController LeaveEndDate = TextEditingController();
   bool searchempdaily = false;
   bool valall = false;
 
@@ -153,12 +155,15 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextLeaveunpaidEnd = "";
 
 //ลาป่วยทั้งวัน
-  DateTime LeavesickAllStart =
-      DateTime.now().subtract(Duration(hours: 08, minutes: 00));
-  DateTime LeavesickAllEnd =
-      DateTime.now().subtract(Duration(hours: 17, minutes: 30));
+  DateTime LeavesickAllStart = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day)
+      .add(Duration(hours: 08, minutes: 30));
 
-  String TextLeavesickAllStart = "08:00";
+  DateTime LeavesickAllEnd = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day)
+      .add(Duration(hours: 17, minutes: 30));
+
+  String TextLeavesickAllStart = "08:30";
   String TextLeavesickAllEnd = "17:30";
 
 //ลาไม่รับค่าจ้างบางช่วงเวลา
@@ -263,9 +268,9 @@ class _MyHomePageState extends State<EmployeeList> {
 
     for (var emp in ckboxEmp) {
       if (chkEmp != '')
-        chkEmp = emp;
-      else
         chkEmp = chkEmp + ',' + emp;
+      else
+        chkEmp = emp;
     }
 
     String totext = "[";
@@ -1483,7 +1488,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                               //////function check time
 
                                               String arrayText =
-                                                  '{"203": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
+                                                  '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
 
                                               var tagsJson =
                                                   jsonDecode(arrayText);
@@ -1545,6 +1550,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                   actions: <Widget>[
                                     Column(
                                       children: [
+                                        Text('วันที่เริ่มลา :'),
                                         Container(
                                           padding: const EdgeInsets.all(5.0),
                                           decoration: BoxDecoration(
@@ -1555,17 +1561,124 @@ class _MyHomePageState extends State<EmployeeList> {
                                               Radius.circular(5),
                                             ),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text('ลาทั้งวัน : เวลา '),
-                                              OutlinedButton(
-                                                onPressed: () {},
-                                                child: Text(
-                                                    '$TextLeaveunpaidAllStart - $TextLeaveunpaidAllEnd'),
+                                          child: SizedBox(
+                                            child: TextField(
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                              controller: LeaveStartDate,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                hintText: "เลือกวันที่",
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                suffixIcon: Align(
+                                                  widthFactor: 1.0,
+                                                  heightFactor: 1.0,
+                                                  child: Icon(
+                                                    Icons.calendar_today,
+                                                  ),
+                                                ),
                                               ),
-                                            ],
+                                              onTap: () async {
+                                                DateTime? pickedDate =
+                                                    await showDatePicker(
+                                                        context: context,
+                                                        locale: const Locale(
+                                                            "th", "TH"),
+                                                        initialDate:
+                                                            new DateTime(
+                                                                DateTime
+                                                                            .now()
+                                                                        .year +
+                                                                    543,
+                                                                DateTime.now()
+                                                                    .month,
+                                                                DateTime.now()
+                                                                    .day),
+                                                        firstDate:
+                                                            DateTime(2500),
+                                                        //DateTime.now() - not to allow to choose before today.
+                                                        lastDate:
+                                                            DateTime(3000));
+
+                                                var formattedDate =
+                                                    DateFormat("dd/MM/yyyy'")
+                                                        .format(new DateTime(
+                                                            pickedDate!.year,
+                                                            pickedDate!.month,
+                                                            pickedDate!.day));
+                                                setState(() {
+                                                  LeaveStartDate.text =
+                                                      formattedDate;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text('วันที่สิ้นสุดลา :'),
+                                        Container(
+                                          padding: const EdgeInsets.all(5.0),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey.shade400),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(5),
+                                            ),
+                                          ),
+                                          child: SizedBox(
+                                            child: TextField(
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                              controller: LeaveEndDate,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                hintText: "เลือกวันที่",
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                suffixIcon: Align(
+                                                  widthFactor: 1.0,
+                                                  heightFactor: 1.0,
+                                                  child: Icon(
+                                                    Icons.calendar_today,
+                                                  ),
+                                                ),
+                                              ),
+                                              onTap: () async {
+                                                DateTime? pickedDate =
+                                                    await showDatePicker(
+                                                        context: context,
+                                                        locale: const Locale(
+                                                            "th", "TH"),
+                                                        initialDate:
+                                                            new DateTime(
+                                                                DateTime
+                                                                            .now()
+                                                                        .year +
+                                                                    543,
+                                                                DateTime.now()
+                                                                    .month,
+                                                                DateTime.now()
+                                                                    .day),
+                                                        firstDate:
+                                                            DateTime(2500),
+                                                        //DateTime.now() - not to allow to choose before today.
+                                                        lastDate:
+                                                            DateTime(3000));
+
+                                                var formattedDate =
+                                                    DateFormat("dd/MM/yyyy'")
+                                                        .format(new DateTime(
+                                                            pickedDate!.year,
+                                                            pickedDate!.month,
+                                                            pickedDate!.day));
+                                                setState(() {
+                                                  LeaveEndDate.text =
+                                                      formattedDate;
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(height: 10),
@@ -1574,9 +1687,30 @@ class _MyHomePageState extends State<EmployeeList> {
                                           child: IconsButton(
                                             onPressed: () {
                                               //////function check time
+                                              DateTime valdateStart =
+                                                  DateFormat('dd/MM/yyyy')
+                                                      .parse(
+                                                          LeaveStartDate.text);
+                                              DateTime valdateEnd =
+                                                  DateFormat('dd/MM/yyyy')
+                                                      .parse(LeaveEndDate.text);
+
+                                              DateTime dtStart = new DateTime(
+                                                      valdateStart.year + 543,
+                                                      valdateStart.month,
+                                                      valdateStart.day)
+                                                  .add(new Duration(
+                                                      hours: 8, minutes: 30));
+
+                                              DateTime dtEnd = new DateTime(
+                                                      valdateEnd.year + 543,
+                                                      valdateEnd.month,
+                                                      valdateEnd.day)
+                                                  .add(new Duration(
+                                                      hours: 17, minutes: 30));
 
                                               String arrayText =
-                                                  '{"204": ["$LeaveunpaidAllStart", "$LeaveunpaidAllEnd"]}';
+                                                  '{"302": ["$dtStart", "$dtEnd"]}';
 
                                               var tagsJson =
                                                   jsonDecode(arrayText);
