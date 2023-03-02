@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -39,8 +38,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
       String UserName = "";
       String _authEncode = _authAPI(UserName, controllerPwd.text);
 
-      final res =
-          await GetValidateLogIn(controllerUser.text, controllerPwd.text);
+      final res = await GetValidateLogIn(controllerUser.text, controllerPwd.text);
 
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
@@ -74,22 +72,18 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
           } else {
             Flag = false;
 
-            Dialogs.materialDialog(
-                msg: 'login ไม่สำเร็จ',
-                title: 'ตรวจสอบข้อมูล',
-                context: context,
-                actions: [
-                  IconsButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    text: 'ตกลง',
-                    iconData: Icons.check_circle_outline,
-                    color: Colors.green,
-                    textStyle: TextStyle(color: Colors.white),
-                    iconColor: Colors.white,
-                  ),
-                ]);
+            Dialogs.materialDialog(msg: 'login ไม่สำเร็จ', title: 'ตรวจสอบข้อมูล', context: context, actions: [
+              IconsButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                text: 'ตกลง',
+                iconData: Icons.check_circle_outline,
+                color: Colors.green,
+                textStyle: TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
           }
         } else {
           Flag = false;
@@ -162,8 +156,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     Duration work_yesterday = Duration(hours: 9, minutes: 00);
 
     if ((NewDate.hour < work_yesterday.inHours) ||
-        ((NewDate.hour == work_yesterday.inHours) &&
-            (NewDate.minute <= work_yesterday.inMinutes.remainder(60)))) {
+        ((NewDate.hour == work_yesterday.inHours) && (NewDate.minute <= work_yesterday.inMinutes.remainder(60)))) {
       NewDate = DateTime.now().add(new Duration(days: -1));
     } else {
       NewDate = DateTime.now();
@@ -174,11 +167,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => homepage(
-              index: 1,
-              EmpCode: _Emp_code,
-              ShowPopup: _Showpopup,
-              url: webconfig)),
+          builder: (context) => homepage(index: 1, EmpCode: _Emp_code, ShowPopup: _Showpopup, url: webconfig)),
     );
   }
 
@@ -218,8 +207,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.asset('assets/images/Logo.png',
-                        width: 500, height: 150),
+                    child: Image.asset('assets/images/Logo.png', width: 500, height: 150),
                   ),
                 ],
               ),
@@ -229,9 +217,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(60),
-                      topRight: Radius.circular(60)),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(60), topRight: Radius.circular(60)),
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
@@ -247,10 +233,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: const [
-                              BoxShadow(
-                                  color: Color.fromRGBO(171, 171, 171, .7),
-                                  blurRadius: 20,
-                                  offset: Offset(0, 10)),
+                              BoxShadow(color: Color.fromRGBO(171, 171, 171, .7), blurRadius: 20, offset: Offset(0, 0)),
                             ],
                           ),
                           child: Column(
@@ -258,9 +241,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  border: Border(
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade200)),
+                                  border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
                                 ),
                                 child: TextField(
                                   controller: controllerUser,
@@ -268,18 +249,14 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                     hintText: "ชื่อผู้ใช้งาน",
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
-                                    errorText: _validate
-                                        ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
-                                        : null,
+                                    errorText: _validate ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง' : null,
                                   ),
                                 ),
                               ),
                               Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            color: Colors.grey.shade200)),
+                                    border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
                                   ),
                                   child: TextField(
                                     controller: controllerPwd,
@@ -290,35 +267,28 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                                       hintStyle: TextStyle(color: Colors.grey),
                                       border: InputBorder.none,
                                       suffixIcon: IconButton(
-                                          icon: Icon(_isObscure
-                                              ? Icons.visibility
-                                              : Icons.visibility_off),
+                                          icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
                                           onPressed: () {
                                             setState(() {
                                               _isObscure = !_isObscure;
                                             });
                                           }),
-                                      errorText: _validate
-                                          ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
-                                          : null,
+                                      errorText: _validate ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง' : null,
                                     ),
                                   ))
                             ],
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 60),
                         Container(
                           height: 50,
                           margin: const EdgeInsets.symmetric(horizontal: 50),
                           child: ElevatedButton(
                             onPressed: () {
-                              if (controllerPwd.text.isNotEmpty &&
-                                  controllerUser.text.isNotEmpty)
-                                ValidateLogIn();
+                              if (controllerPwd.text.isNotEmpty && controllerUser.text.isNotEmpty) ValidateLogIn();
 
                               setState(() {
-                                (controllerPwd.text.isEmpty ||
-                                        controllerUser.text.isEmpty)
+                                (controllerPwd.text.isEmpty || controllerUser.text.isEmpty)
                                     ? _validate = true
                                     : _validate = false;
                               });
@@ -332,8 +302,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              backgroundColor:
-                                  const Color.fromRGBO(114, 41, 34, 1),
+                              backgroundColor: Theme.of(context).primaryColor,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 50,
                                 vertical: 10,
