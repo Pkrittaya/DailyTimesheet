@@ -102,30 +102,6 @@ class _MyHomePageState extends State<EmployeeList> {
     return date;
   }
 
-  ReplaceStatusTime(text) {
-    var statustext = "";
-    if (text == '100') {
-      statustext = 'ทำงาน';
-    } else if (text == '101') {
-      statustext = 'โอทีก่อน';
-    } else if (text == '102') {
-      statustext = 'ช่วงแรก';
-    } else if (text == '103') {
-      statustext = 'ช่วงหลัง';
-    } else if (text == '104') {
-      statustext = 'โอทีหลัง';
-    } else if (text == '201' ||
-        text == '202' ||
-        text == '203' ||
-        text == '204') {
-      statustext = 'ลา';
-    } else {
-      statustext = 'ไม่มี';
-    }
-
-    return statustext.toString();
-  }
-
   checkboxEmp(emp) {
     final index = ckboxEmp.indexWhere((note) => note.startsWith(emp));
     if (index < 0) {
@@ -330,7 +306,7 @@ class _MyHomePageState extends State<EmployeeList> {
     var tojsontext = decoder.convert(totext);
     // print(tojsontext);
 
-    final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
+    final _baseUrl = '${await SaveTimesheet()}';
     final res = await http.post(Uri.parse("${_baseUrl}"),
         headers: {"Content-Type": "application/json"},
         body: json.encode(tojsontext));
@@ -567,14 +543,14 @@ class _MyHomePageState extends State<EmployeeList> {
 
     dataaddemployee(
       formattedDate,
-      '3900001',
+      widget.EmpCode,
       empdaily[0].empCode,
       'โครงการสายสีม่วง',
     );
   }
 
   GetAPI() async {
-    itemsList = await GetEmployeeList();
+    itemsList = await GetEmployeeList(widget.EmpCode);
     var jobmsapi = await GetJobMaster('p0001');
     var locationmsapi = await GetLocationMaster('p0001');
     var Profile = await GetEmpProfile(widget.EmpCode);
