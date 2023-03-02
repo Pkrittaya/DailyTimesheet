@@ -53,9 +53,10 @@ class _MyHomePageState extends State<EmployeeDetail>
     if ((Date.hour < work_yesterday.inHours) ||
         ((Date.hour == work_yesterday.inHours) &&
             (Date.minute <= work_yesterday.inMinutes.remainder(60)))) {
-      Date = DateTime.now().add(new Duration(days: -1));
+      Date = new DateTime(Date.year, Date.month, Date.day)
+          .add(new Duration(days: -1));
     } else {
-      Date = DateTime.now();
+      Date = new DateTime(Date.year, Date.month, Date.day);
     }
 
     return Date;
@@ -149,72 +150,103 @@ class _MyHomePageState extends State<EmployeeDetail>
 
   void datasavetimesheet(DailyTimeSheet timesheet) async {
     const JsonDecoder decoder = JsonDecoder();
-    var Datenow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
+    var currentDate = GetDateTimeCurrent();
+    if (FormatDateTH(currentDate) == FormatDateTextTH(timesheet.workDay!)) {
+      var Datenow =
+          DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
 
-    String totext = "[";
-    totext += '{';
-    totext += '"emp_Code": "${timesheet.empCode}",';
-    totext += '"time_In": "${timesheet.timeIn}",';
-    totext += '"time_Out": "${timesheet.timeOut}",';
-    totext += '"type": "Labour",';
-    totext += '"supervisor_Code": "${widget.EmpCode}",';
-    totext += '"status": "400",';
-    totext += '"remark": "${timesheet.remark}",';
-    totext += '"costCenter": "${timesheet.costCenter}",';
-    totext += '"jobId": "${timesheet.jobId}",';
-    totext += '"start_Date": "${Datenow}",';
-    totext += '"create_By": "${widget.EmpCode}",';
-    totext += '"project_Code": "${timesheet.projectCode}",';
-    totext += '"job_Group": "${timesheet.jobGroup}",';
-    totext += '"job_Code": "${timesheet.jobCode}",';
-    totext += '"location_Code": "${timesheet.locationCode}"';
-    totext += '}';
-    totext += ']';
+      String totext = "[";
+      totext += '{';
+      totext += '"emp_Code": "${timesheet.empCode}",';
+      totext += '"time_In": "${timesheet.timeIn}",';
+      totext += '"time_Out": "${timesheet.timeOut}",';
+      totext += '"type": "Labour",';
+      totext += '"supervisor_Code": "${widget.EmpCode}",';
+      totext += '"status": "400",';
+      totext += '"remark": "${timesheet.remark}",';
+      totext += '"costCenter": "${timesheet.costCenter}",';
+      totext += '"jobId": "${timesheet.jobId}",';
+      totext += '"start_Date": "${Datenow}",';
+      totext += '"create_By": "${widget.EmpCode}",';
+      totext += '"project_Code": "${timesheet.projectCode}",';
+      totext += '"job_Group": "${timesheet.jobGroup}",';
+      totext += '"job_Code": "${timesheet.jobCode}",';
+      totext += '"location_Code": "${timesheet.locationCode}"';
+      totext += '}';
+      totext += ']';
 
-    var tojsontext = decoder.convert(totext);
-    // print(totext);
-    print(json.encode(tojsontext));
+      var tojsontext = decoder.convert(totext);
+      // print(totext);
+      print(json.encode(tojsontext));
 
-    final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
-    final res = await http.post(Uri.parse("${_baseUrl}"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(tojsontext));
+      final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
+      final res = await http.post(Uri.parse("${_baseUrl}"),
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(tojsontext));
 
-    setState(() {
-      final jsonData = json.decode(res.body);
-      final parsedJson = jsonDecode(res.body);
-      if (parsedJson['type'] == "S") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EmployeeDetail(
-              index: 1,
-              EmpCode: widget.EmpCode,
-              EmpDetail: widget.EmpDetail,
-              url: widget.url,
-            ),
-          ),
-        );
-      } else {
-        Dialogs.materialDialog(
-            msg: '${parsedJson['description']}',
-            title: 'ตรวจสอบข้อมูล',
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  //getlsttimesheet();
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
+      setState(() {
+        final jsonData = json.decode(res.body);
+        final parsedJson = jsonDecode(res.body);
+        if (parsedJson['type'] == "S") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmployeeDetail(
+                index: 1,
+                EmpCode: widget.EmpCode,
+                EmpDetail: widget.EmpDetail,
+                url: widget.url,
               ),
-            ]);
-      }
-    });
+            ),
+          );
+        } else {
+          Dialogs.materialDialog(
+              msg: '${parsedJson['description']}',
+              title: 'ตรวจสอบข้อมูล',
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    //getlsttimesheet();
+                  },
+                  text: 'ตกลง',
+                  iconData: Icons.check_circle_outline,
+                  color: Colors.green,
+                  textStyle: TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ]);
+        }
+      });
+    } else {
+      Dialogs.materialDialog(
+          msg: 'ไม่สามารถลบได้เนื่องจากวันที่ทำงานกับวันที่สร้างไม่ตรงกัน',
+          title: 'ตรวจสอบข้อมูล',
+          context: context,
+          actions: [
+            IconsButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EmployeeDetail(
+                      index: 1,
+                      EmpCode: widget.EmpCode,
+                      EmpDetail: widget.EmpDetail,
+                      url: widget.url,
+                    ),
+                  ),
+                );
+              },
+              text: 'ตกลง',
+              iconData: Icons.check_circle_outline,
+              color: Colors.green,
+              textStyle: TextStyle(color: Colors.white),
+              iconColor: Colors.white,
+            ),
+          ]);
+    }
   }
 
   @override

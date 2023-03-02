@@ -62,6 +62,22 @@ class _MyHomePageState extends State<EmployeeList> {
 
   /// custom date
 
+  GetDateTimeCurrent() {
+    DateTime Date = DateTime.now();
+    if ((Date.hour < work_yesterday.inHours) ||
+        ((Date.hour == work_yesterday.inHours) &&
+            (Date.minute <= work_yesterday.inMinutes.remainder(60)))) {
+      Date = new DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)
+          .add(new Duration(days: -1));
+    } else {
+      Date = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    }
+
+    return Date;
+  }
+
   CustomTime(texttime) {
     DateTime valDate = DateTime.parse(texttime);
     String date = DateFormat("HH:mm").format(valDate);
@@ -137,8 +153,8 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextDefultOneEnd = "";
   String TextOTAfterStart = "";
   String TextOTAfterEnd = "";
-  String jobdetail = "J001";
-  String locationName = "L001";
+  String jobdetail = "";
+  String locationName = "";
 
 //ลาป่วยบางช่วงเวลา
   DateTime LeavesickStart = DateTime.now();
@@ -245,17 +261,60 @@ class _MyHomePageState extends State<EmployeeList> {
 
     // var tojsontext = decoder.convert(totext);
 
-    var res = PostTempEmployeeDaily(tojsontext);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EmployeeList(
-          index: widget.index,
-          EmpCode: widget.EmpCode,
-          url: widget.url,
-        ),
-      ),
-    );
+    var res = await PostTempEmployeeDaily(tojsontext);
+    setState(() {
+      final jsonData = json.decode(res.body);
+      print(res.body);
+
+      //final parsedJson = jsonDecode(res.body);
+      if (jsonData == 1) {
+        Dialogs.materialDialog(
+            msg: 'บันทึกข้อมูลสำเร็จ',
+            title: 'ตรวจสอบข้อมูล',
+            context: context,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EmployeeList(
+                        index: widget.index,
+                        EmpCode: widget.EmpCode,
+                        url: widget.url,
+                      ),
+                    ),
+                  );
+                },
+                text: 'ตกลง',
+                iconData: Icons.check_circle_outline,
+                color: Colors.green,
+                textStyle: TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      } else {
+        Dialogs.materialDialog(
+            msg: 'บันทึกไม่สำเร็จ',
+            title: 'ตรวจสอบข้อมูล',
+            context: context,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  //getlsttimesheet();
+                },
+                text: 'ตกลง',
+                iconData: Icons.check_circle_outline,
+                color: Colors.green,
+                textStyle: TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      }
+    });
+/*
+   */
   }
 
   void datasavetimesheet(
@@ -1358,6 +1417,32 @@ class _MyHomePageState extends State<EmployeeList> {
                                                         iconColor: Colors.white,
                                                       ),
                                                     ]);
+                                              } else if (locationName == '' ||
+                                                  jobdetail == '') {
+                                                Dialogs.materialDialog(
+                                                    msg:
+                                                        'กรุณาตรวจสอบ งาน และ สถานที่ทำงาน',
+                                                    title: 'ตรวจสอบข้อมูล',
+                                                    context: context,
+                                                    actions: [
+                                                      IconsButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .pop();
+                                                        },
+                                                        text: 'ตกลง',
+                                                        iconData: Icons
+                                                            .check_circle_outline,
+                                                        color: Colors.green,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                        iconColor: Colors.white,
+                                                      ),
+                                                    ]);
                                               } else {
                                                 String arrayText = "";
 
@@ -1696,29 +1781,89 @@ class _MyHomePageState extends State<EmployeeList> {
                                                       .parse(LeaveEndDate.text);
 
                                               DateTime dtStart = new DateTime(
-                                                      valdateStart.year + 543,
+                                                      valdateStart.year - 543,
                                                       valdateStart.month,
                                                       valdateStart.day)
                                                   .add(new Duration(
                                                       hours: 8, minutes: 30));
 
                                               DateTime dtEnd = new DateTime(
-                                                      valdateEnd.year + 543,
+                                                      valdateEnd.year - 543,
                                                       valdateEnd.month,
                                                       valdateEnd.day)
                                                   .add(new Duration(
                                                       hours: 17, minutes: 30));
 
-                                              String arrayText =
-                                                  '{"302": ["$dtStart", "$dtEnd"]}';
+                                              DateTime CurrentDate =
+                                                  GetDateTimeCurrent();
+                                              print(CurrentDate);
+                                              print(dtStart);
+                                              if (dtEnd.isBefore(dtStart)) {
+                                                Dialogs.materialDialog(
+                                                    msg:
+                                                        'กรุณาตรวจสอบวันที่การลา เวลาสิ้นสุด ต้องมากกว่าเวลาเริ่ม',
+                                                    title: 'ตรวจสอบข้อมูล',
+                                                    context: context,
+                                                    actions: [
+                                                      IconsButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .pop();
+                                                        },
+                                                        text: 'ตกลง',
+                                                        iconData: Icons
+                                                            .check_circle_outline,
+                                                        color: Colors.green,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                        iconColor: Colors.white,
+                                                      ),
+                                                    ]);
+                                              } else if (CurrentDate.isAfter(
+                                                  new DateTime(
+                                                      valdateStart.year - 543,
+                                                      valdateStart.month,
+                                                      valdateStart.day))) {
+                                                Dialogs.materialDialog(
+                                                    msg:
+                                                        'กรุณาตรวจสอบวันที่การลาไม่ให้ลงย้อนหลัง',
+                                                    title: 'ตรวจสอบข้อมูล',
+                                                    context: context,
+                                                    actions: [
+                                                      IconsButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context,
+                                                                  rootNavigator:
+                                                                      true)
+                                                              .pop();
+                                                        },
+                                                        text: 'ตกลง',
+                                                        iconData: Icons
+                                                            .check_circle_outline,
+                                                        color: Colors.green,
+                                                        textStyle:
+                                                            const TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                        iconColor: Colors.white,
+                                                      ),
+                                                    ]);
+                                              } else {
+                                                String arrayText =
+                                                    '{"302": ["$dtStart", "$dtEnd"]}';
 
-                                              var tagsJson =
-                                                  jsonDecode(arrayText);
-                                              datasavetimesheet(
-                                                  arrayText, '', '', '');
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop();
+                                                var tagsJson =
+                                                    jsonDecode(arrayText);
+                                                datasavetimesheet(
+                                                    arrayText, '', '', '');
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              }
                                             },
                                             text: 'ตกลง',
                                             iconData:
