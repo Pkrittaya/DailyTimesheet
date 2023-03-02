@@ -4,18 +4,22 @@ class MyTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? hintText;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final EdgeInsetsGeometry? contentPadding;
   final int? maxLines;
   final void Function(String)? onChanged;
+  final void Function()? onTap;
 
   const MyTextField({
     Key? key,
     required this.controller,
     this.hintText,
     this.prefixIcon,
+    this.suffixIcon,
     this.contentPadding,
     this.maxLines = 1,
     this.onChanged,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -26,6 +30,7 @@ class MyTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
         contentPadding: contentPadding ??
             EdgeInsets.symmetric(
               vertical: 2.0,
@@ -38,6 +43,7 @@ class MyTextField extends StatelessWidget {
         ),
       ),
       onChanged: onChanged,
+      onTap: onTap,
     );
   }
 }

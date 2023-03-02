@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class MyPickerButton extends StatelessWidget {
-  final String label;
+  final String? label;
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const MyPickerButton({
     Key? key,
-    required this.label,
+    this.label,
     required this.text,
-    required this.onPressed,
+    this.onPressed,
   }) : super(key: key);
 
   @override
@@ -17,10 +17,11 @@ class MyPickerButton extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        if (label != null)
+          Text(
+            label!,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
         OutlinedButton(
           onPressed: onPressed,
           style: OutlinedButton.styleFrom(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MyBox extends StatelessWidget {
-  final String title;
+  final String? title;
   final Widget child;
   final Color? borderColor;
 
   const MyBox({
     Key? key,
-    required this.title,
+    this.title,
     required this.child,
     this.borderColor,
   }) : super(key: key);
@@ -18,7 +18,7 @@ class MyBox extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            if (title != null) Text(title!, style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
         const SizedBox(height: 2.0),
@@ -30,18 +30,17 @@ class MyBox extends StatelessWidget {
             top: 16.0,
           ),
           decoration: BoxDecoration(
-            border: borderColor != null
-                ? Border.all(color: borderColor!)
-                : Border.all(),
+            border: borderColor != null ? Border.all(color: borderColor!) : Border.all(),
             borderRadius: const BorderRadius.all(
               Radius.circular(4),
             ),
           ),
           child: Column(
             children: [
-              Row(
+              child,
+              /*Row(
                 children: [child],
-              ),
+              ),*/
             ],
           ),
         ),
