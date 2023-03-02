@@ -265,9 +265,9 @@ class _MyHomePageState extends State<EmployeeList> {
 
     for (var emp in ckboxEmp) {
       if (chkEmp != '')
-        chkEmp = emp;
-      else
         chkEmp = chkEmp + ',' + emp;
+      else
+        chkEmp = emp;
     }
 
     String totext = "[";
