@@ -36,8 +36,6 @@ class EmployeeDetail extends StatefulWidget {
 
 class _MyHomePageState extends State<EmployeeDetail>
     with SingleTickerProviderStateMixin {
-  Duration work_yesterday = Duration(hours: 9, minutes: 00);
-
   List<DailyTimeSheet> timesheetCurrent = [];
   List<DailyTimeSheet> timesheetHistory = [];
   List<DailyTimeSheet> workdayHistory = [];
@@ -49,13 +47,15 @@ class _MyHomePageState extends State<EmployeeDetail>
   ];
 
   GetDateTimeCurrent() {
+    Duration work_yesterday = Duration(hours: 9, minutes: 00);
     DateTime Date = DateTime.now();
     if ((Date.hour < work_yesterday.inHours) ||
         ((Date.hour == work_yesterday.inHours) &&
             (Date.minute <= work_yesterday.inMinutes.remainder(60)))) {
-      Date = DateTime.now().add(new Duration(days: -1));
+      Date = new DateTime(Date.year, Date.month, Date.day)
+          .add(new Duration(days: -1));
     } else {
-      Date = DateTime.now();
+      Date = new DateTime(Date.year, Date.month, Date.day);
     }
 
     return Date;
@@ -90,39 +90,24 @@ class _MyHomePageState extends State<EmployeeDetail>
       empNationality: '',
       empPositionName: '');
 
-  void GetEmpProfile() async {
-    var client = http.Client();
-    var uri = Uri.parse(
-        "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
-    var response = await client.get(uri);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      print(response.body);
-
-      final parsedJson = jsonDecode(response.body);
-
-      setState(() {
-        empdata.empCode = parsedJson['emp_Code'];
-        empdata.empCompName = parsedJson['emp_Comp_Name'];
-        empdata.empDepartmentName = parsedJson['emp_Department_Name'];
-        empdata.empName = parsedJson['emp_Name'];
-        empdata.empNationality = parsedJson['emp_Nationality'];
-        empdata.empPositionName = parsedJson['emp_Position_Name'];
-      });
-    }
-  }
-
   GetAPI() async {
     var seen = Set<String>();
 
     var Current = await GetDailyTimesheet(widget.EmpDetail.empCode, 'CURRENT');
     var History = await GetDailyTimesheet('5100024', 'HISTORY');
+    var Profile = await GetEmpProfile(widget.EmpCode);
 
     setState(() {
       timesheetCurrent = Current;
       workdayHistory = History.where((res) => seen.add(res.workDay!)).toList();
       timesheetHistory = History;
-      // print(timesheetHistory[0].timeIn);
+
+      empdata.empCode = Profile['emp_Code'];
+      empdata.empCompName = Profile['emp_Comp_Name'];
+      empdata.empDepartmentName = Profile['emp_Department_Name'];
+      empdata.empName = Profile['emp_Name'];
+      empdata.empNationality = Profile['emp_Nationality'];
+      empdata.empPositionName = Profile['emp_Position_Name'];
     });
   }
 
@@ -149,82 +134,110 @@ class _MyHomePageState extends State<EmployeeDetail>
 
   void datasavetimesheet(DailyTimeSheet timesheet) async {
     const JsonDecoder decoder = JsonDecoder();
-    var Datenow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
+    var currentDate = GetDateTimeCurrent();
+    if (FormatDateTH(currentDate) == FormatDateTextTH(timesheet.workDay!)) {
+      var Datenow =
+          DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
 
-    String totext = "[";
-    totext += '{';
-    totext += '"emp_Code": "${timesheet.empCode}",';
-    totext += '"time_In": "${timesheet.timeIn}",';
-    totext += '"time_Out": "${timesheet.timeOut}",';
-    totext += '"type": "Labour",';
-    totext += '"supervisor_Code": "${widget.EmpCode}",';
-    totext += '"status": "400",';
-    totext += '"remark": "${timesheet.remark}",';
-    totext += '"costCenter": "${timesheet.costCenter}",';
-    totext += '"jobId": "${timesheet.jobId}",';
-    totext += '"start_Date": "${Datenow}",';
-    totext += '"create_By": "${widget.EmpCode}",';
-    totext += '"project_Code": "${timesheet.projectCode}",';
-    totext += '"job_Group": "${timesheet.jobGroup}",';
-    totext += '"job_Code": "${timesheet.jobCode}",';
-    totext += '"location_Code": "${timesheet.locationCode}"';
-    totext += '}';
-    totext += ']';
+      String totext = "[";
+      totext += '{';
+      totext += '"emp_Code": "${timesheet.empCode}",';
+      totext += '"time_In": "${timesheet.timeIn}",';
+      totext += '"time_Out": "${timesheet.timeOut}",';
+      totext += '"type": "Labour",';
+      totext += '"supervisor_Code": "${widget.EmpCode}",';
+      totext += '"status": "400",';
+      totext += '"remark": "${timesheet.remark}",';
+      totext += '"costCenter": "${timesheet.costCenter}",';
+      totext += '"jobId": "${timesheet.jobId}",';
+      totext += '"start_Date": "${Datenow}",';
+      totext += '"create_By": "${widget.EmpCode}",';
+      totext += '"project_Code": "${timesheet.projectCode}",';
+      totext += '"job_Group": "${timesheet.jobGroup}",';
+      totext += '"job_Code": "${timesheet.jobCode}",';
+      totext += '"location_Code": "${timesheet.locationCode}"';
+      totext += '}';
+      totext += ']';
 
-    var tojsontext = decoder.convert(totext);
-    // print(totext);
-    print(json.encode(tojsontext));
+      var tojsontext = decoder.convert(totext);
+      // print(totext);
+      print(json.encode(tojsontext));
 
-    final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
-    final res = await http.post(Uri.parse("${_baseUrl}"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(tojsontext));
+      final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
+      final res = await http.post(Uri.parse("${_baseUrl}"),
+          headers: {"Content-Type": "application/json"},
+          body: json.encode(tojsontext));
 
-    setState(() {
-      final jsonData = json.decode(res.body);
-      final parsedJson = jsonDecode(res.body);
-      if (parsedJson['type'] == "S") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EmployeeDetail(
-              index: 1,
-              EmpCode: widget.EmpCode,
-              EmpDetail: widget.EmpDetail,
-              url: widget.url,
-            ),
-          ),
-        );
-      } else {
-        Dialogs.materialDialog(
-            msg: '${parsedJson['description']}',
-            title: 'ตรวจสอบข้อมูล',
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  //getlsttimesheet();
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
+      setState(() {
+        final jsonData = json.decode(res.body);
+        final parsedJson = jsonDecode(res.body);
+        if (parsedJson['type'] == "S") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmployeeDetail(
+                index: 1,
+                EmpCode: widget.EmpCode,
+                EmpDetail: widget.EmpDetail,
+                url: widget.url,
               ),
-            ]);
-      }
-    });
+            ),
+          );
+        } else {
+          Dialogs.materialDialog(
+              msg: '${parsedJson['description']}',
+              title: 'ตรวจสอบข้อมูล',
+              context: context,
+              actions: [
+                IconsButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    //getlsttimesheet();
+                  },
+                  text: 'ตกลง',
+                  iconData: Icons.check_circle_outline,
+                  color: Colors.green,
+                  textStyle: TextStyle(color: Colors.white),
+                  iconColor: Colors.white,
+                ),
+              ]);
+        }
+      });
+    } else {
+      Dialogs.materialDialog(
+          msg: 'ไม่สามารถลบได้เนื่องจากวันที่ทำงานกับวันที่สร้างไม่ตรงกัน',
+          title: 'ตรวจสอบข้อมูล',
+          context: context,
+          actions: [
+            IconsButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EmployeeDetail(
+                      index: 1,
+                      EmpCode: widget.EmpCode,
+                      EmpDetail: widget.EmpDetail,
+                      url: widget.url,
+                    ),
+                  ),
+                );
+              },
+              text: 'ตกลง',
+              iconData: Icons.check_circle_outline,
+              color: Colors.green,
+              textStyle: TextStyle(color: Colors.white),
+              iconColor: Colors.white,
+            ),
+          ]);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    GetEmpProfile();
 
     GetAPI();
-
-    // _data = widget.listtimesheet;
 
     _tabController = TabController(vsync: this, length: 2);
   }
