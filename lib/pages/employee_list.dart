@@ -52,6 +52,8 @@ class _MyHomePageState extends State<EmployeeList> {
   TextEditingController textempdaily = TextEditingController();
   TextEditingController editingController = TextEditingController();
   TextEditingController editingRemark = TextEditingController();
+  TextEditingController LeaveStartDate = TextEditingController();
+  TextEditingController LeaveEndDate = TextEditingController();
   bool searchempdaily = false;
   bool valall = false;
 
@@ -150,12 +152,15 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextLeaveunpaidEnd = "";
 
 //ลาป่วยทั้งวัน
-  DateTime LeavesickAllStart =
-      DateTime.now().subtract(Duration(hours: 08, minutes: 00));
-  DateTime LeavesickAllEnd =
-      DateTime.now().subtract(Duration(hours: 17, minutes: 30));
+  DateTime LeavesickAllStart = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day)
+      .add(Duration(hours: 08, minutes: 30));
 
-  String TextLeavesickAllStart = "08:00";
+  DateTime LeavesickAllEnd = new DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day)
+      .add(Duration(hours: 17, minutes: 30));
+
+  String TextLeavesickAllStart = "08:30";
   String TextLeavesickAllEnd = "17:30";
 
 //ลาไม่รับค่าจ้างบางช่วงเวลา
@@ -1712,7 +1717,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                               //////function check time
 
                                               String arrayText =
-                                                  '{"203": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
+                                                  '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
 
                                               var tagsJson =
                                                   jsonDecode(arrayText);
@@ -1774,6 +1779,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                   actions: <Widget>[
                                     Column(
                                       children: [
+                                        Text('วันที่เริ่มลา :'),
                                         Container(
                                           padding: const EdgeInsets.all(5.0),
                                           decoration: BoxDecoration(
@@ -1784,17 +1790,40 @@ class _MyHomePageState extends State<EmployeeList> {
                                               Radius.circular(5),
                                             ),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text('ลาทั้งวัน : เวลา '),
-                                              OutlinedButton(
-                                                onPressed: () {},
-                                                child: Text(
-                                                    '$TextLeaveunpaidAllStart - $TextLeaveunpaidAllEnd'),
-                                              ),
-                                            ],
+                                          child: SizedBox(
+                                            child: TextField(
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                              controller: LeaveStartDate,
+                                              maxLines: 1,
+                                              onChanged: (value) {
+                                                // filterSearchResults(value);
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text('วันที่สิ้นสุดลา :'),
+                                        Container(
+                                          padding: const EdgeInsets.all(5.0),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey.shade400),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                              Radius.circular(5),
+                                            ),
+                                          ),
+                                          child: SizedBox(
+                                            child: TextField(
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                              controller: LeaveEndDate,
+                                              maxLines: 1,
+                                              onChanged: (value) {
+                                                // filterSearchResults(value);
+                                              },
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(height: 10),
@@ -1803,9 +1832,18 @@ class _MyHomePageState extends State<EmployeeList> {
                                           child: IconsButton(
                                             onPressed: () {
                                               //////function check time
+                                              DateTime dtStart = DateTime.parse(
+                                                      LeaveStartDate.text)
+                                                  .add(new Duration(
+                                                      hours: 8, minutes: 30));
+
+                                              DateTime dtEnd = DateTime.parse(
+                                                      LeaveEndDate.text)
+                                                  .add(new Duration(
+                                                      hours: 17, minutes: 30));
 
                                               String arrayText =
-                                                  '{"204": ["$LeaveunpaidAllStart", "$LeaveunpaidAllEnd"]}';
+                                                  '{"302": ["$dtStart", "$dtEnd"]}';
 
                                               var tagsJson =
                                                   jsonDecode(arrayText);
