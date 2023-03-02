@@ -1795,9 +1795,51 @@ class _MyHomePageState extends State<EmployeeList> {
                                               style:
                                                   const TextStyle(fontSize: 12),
                                               controller: LeaveStartDate,
-                                              maxLines: 1,
-                                              onChanged: (value) {
-                                                // filterSearchResults(value);
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                hintText: "เลือกวันที่",
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                suffixIcon: Align(
+                                                  widthFactor: 1.0,
+                                                  heightFactor: 1.0,
+                                                  child: Icon(
+                                                    Icons.calendar_today,
+                                                  ),
+                                                ),
+                                              ),
+                                              onTap: () async {
+                                                DateTime? pickedDate =
+                                                    await showDatePicker(
+                                                        context: context,
+                                                        locale: const Locale(
+                                                            "th", "TH"),
+                                                        initialDate:
+                                                            new DateTime(
+                                                                DateTime
+                                                                            .now()
+                                                                        .year +
+                                                                    543,
+                                                                DateTime.now()
+                                                                    .month,
+                                                                DateTime.now()
+                                                                    .day),
+                                                        firstDate:
+                                                            DateTime(2500),
+                                                        //DateTime.now() - not to allow to choose before today.
+                                                        lastDate:
+                                                            DateTime(3000));
+
+                                                var formattedDate =
+                                                    DateFormat("dd/MM/yyyy'")
+                                                        .format(new DateTime(
+                                                            pickedDate!.year,
+                                                            pickedDate!.month,
+                                                            pickedDate!.day));
+                                                setState(() {
+                                                  LeaveStartDate.text =
+                                                      formattedDate;
+                                                });
                                               },
                                             ),
                                           ),
@@ -1819,9 +1861,51 @@ class _MyHomePageState extends State<EmployeeList> {
                                               style:
                                                   const TextStyle(fontSize: 12),
                                               controller: LeaveEndDate,
-                                              maxLines: 1,
-                                              onChanged: (value) {
-                                                // filterSearchResults(value);
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                hintText: "เลือกวันที่",
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                suffixIcon: Align(
+                                                  widthFactor: 1.0,
+                                                  heightFactor: 1.0,
+                                                  child: Icon(
+                                                    Icons.calendar_today,
+                                                  ),
+                                                ),
+                                              ),
+                                              onTap: () async {
+                                                DateTime? pickedDate =
+                                                    await showDatePicker(
+                                                        context: context,
+                                                        locale: const Locale(
+                                                            "th", "TH"),
+                                                        initialDate:
+                                                            new DateTime(
+                                                                DateTime
+                                                                            .now()
+                                                                        .year +
+                                                                    543,
+                                                                DateTime.now()
+                                                                    .month,
+                                                                DateTime.now()
+                                                                    .day),
+                                                        firstDate:
+                                                            DateTime(2500),
+                                                        //DateTime.now() - not to allow to choose before today.
+                                                        lastDate:
+                                                            DateTime(3000));
+
+                                                var formattedDate =
+                                                    DateFormat("dd/MM/yyyy'")
+                                                        .format(new DateTime(
+                                                            pickedDate!.year,
+                                                            pickedDate!.month,
+                                                            pickedDate!.day));
+                                                setState(() {
+                                                  LeaveEndDate.text =
+                                                      formattedDate;
+                                                });
                                               },
                                             ),
                                           ),
@@ -1832,13 +1916,25 @@ class _MyHomePageState extends State<EmployeeList> {
                                           child: IconsButton(
                                             onPressed: () {
                                               //////function check time
-                                              DateTime dtStart = DateTime.parse(
-                                                      LeaveStartDate.text)
+                                              DateTime valdateStart =
+                                                  DateFormat('dd/MM/yyyy')
+                                                      .parse(
+                                                          LeaveStartDate.text);
+                                              DateTime valdateEnd =
+                                                  DateFormat('dd/MM/yyyy')
+                                                      .parse(LeaveEndDate.text);
+
+                                              DateTime dtStart = new DateTime(
+                                                      valdateStart.year + 543,
+                                                      valdateStart.month,
+                                                      valdateStart.day)
                                                   .add(new Duration(
                                                       hours: 8, minutes: 30));
 
-                                              DateTime dtEnd = DateTime.parse(
-                                                      LeaveEndDate.text)
+                                              DateTime dtEnd = new DateTime(
+                                                      valdateEnd.year + 543,
+                                                      valdateEnd.month,
+                                                      valdateEnd.day)
                                                   .add(new Duration(
                                                       hours: 17, minutes: 30));
 
