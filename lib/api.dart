@@ -13,22 +13,62 @@ import 'package:http/http.dart' as http;
 
 import 'models/DailyTimeSheet.dart';
 import 'models/EmpDailyEmployee.dart';
+import 'models/EmployeeData.dart';
 import 'models/EmployeeList.dart';
 import 'models/JobList.dart';
 import 'models/LocationList.dart';
+import 'package:flutter/services.dart';
+import 'dart:io';
 
-///// เรียกรายชื่อลูกน้อง
-
+/////
 List<Employeelist> itemsList = [];
 List<EmpDailyEmployee> empdaily = [];
 List<JobMaster> jobms = [];
 List<LocationMaster> locationms = [];
 List<DailyTimeSheet> timesheet = [];
+List<EmployeeData> empprofile = [];
 
+var webconfig = "";
+var filejson = "assets/config.json";
+
+///// Get File Json
+Future<String> readJsonFile(String filePath) async {
+  var input = await File(filePath).readAsString();
+  var map = jsonDecode(input);
+  return map['WebAPIConfig'];
+}
+
+///// Get Profile
+GetEmpProfile(var empcode) async {
+  try {
+    webconfig = await readJsonFile(filejson);
+
+    var client = http.Client();
+    var uri = Uri.parse(
+        "${webconfig}/api/Interface/GetEmployeeData?EmpCode=${empcode}");
+    var response = await client.get(uri);
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+
+      final parsedJson = jsonDecode(response.body);
+
+      print(parsedJson);
+
+      return parsedJson;
+    }
+  } catch (err) {
+    print('Something went wrong');
+
+    return [];
+  }
+}
+
+///// Employee List
 Future<List<Employeelist>> GetEmployeeList() async {
   try {
+    webconfig = await readJsonFile(filejson);
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetListEmpDailyBySuppervisor?suppervisor=3900001";
+        "${webconfig}/api/Daily/GetListEmpDailyBySuppervisor?suppervisor=3900001";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -56,8 +96,10 @@ Future<List<Employeelist>> GetEmployeeList() async {
 /////search employee
 Future<List<EmpDailyEmployee>> GetEmpDailyEmployee(var empcode) async {
   try {
+    webconfig = await readJsonFile(filejson);
+
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetEmpDailyEmployee?empcode=${empcode}";
+        "${webconfig}/api/Daily/GetEmpDailyEmployee?empcode=${empcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -80,8 +122,9 @@ Future<List<EmpDailyEmployee>> GetEmpDailyEmployee(var empcode) async {
 
 PostTempEmployeeDaily(var tojsontext) async {
   try {
-    final _baseUrl =
-        'https://dev-unique.com:9012/api/Daily/PostTempEmployeeDaily';
+    webconfig = await readJsonFile(filejson);
+
+    final _baseUrl = '${webconfig}/api/Daily/PostTempEmployeeDaily';
     final res = await http.post(Uri.parse("${_baseUrl}"),
         headers: {"Content-Type": "application/json"},
         body: json.encode(tojsontext));
@@ -97,8 +140,10 @@ PostTempEmployeeDaily(var tojsontext) async {
 /////Job MS
 Future<List<JobMaster>> GetJobMaster(var projectcode) async {
   try {
+    webconfig = await readJsonFile(filejson);
+
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
+        "${webconfig}/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -122,8 +167,10 @@ Future<List<JobMaster>> GetJobMaster(var projectcode) async {
 /////Location MS
 Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
   try {
+    webconfig = await readJsonFile(filejson);
+
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetDropDownLocation?projectcode=${projectcode}";
+        "${webconfig}/api/Daily/GetDropDownLocation?projectcode=${projectcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -147,8 +194,10 @@ Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
 ///// Timesheet
 Future<List<DailyTimeSheet>> GetDailyTimesheet(var empcode, var type) async {
   try {
+    webconfig = await readJsonFile(filejson);
+
     var _baseUrl =
-        "https://dev-unique.com:9012/api/Daily/GetDailyTimeSheet?empcode=${empcode}&type=${type}";
+        "${webconfig}/api/Daily/GetDailyTimeSheet?empcode=${empcode}&type=${type}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -166,5 +215,52 @@ Future<List<DailyTimeSheet>> GetDailyTimesheet(var empcode, var type) async {
     print('Something went wrong');
 
     return <DailyTimeSheet>[];
+  }
+}
+
+///// Save Timesheet
+Future<String> SaveTimesheet() async {
+  var config = await readJsonFile(filejson);
+  return config + '/api/Daily/SaveDailyTimeSheet';
+}
+
+///// Get ValidateLogIn
+GetValidateLogIn(var User, var pass) async {
+  try {
+    webconfig = await readJsonFile(filejson);
+
+    var _baseUrl =
+        "${webconfig}/api/Interface/GetLogOn?Username=${User}&Password=${pass}";
+    final res = await http.get(
+      Uri.parse("$_baseUrl"),
+    );
+
+    return res;
+  } catch (err) {
+    print('Something went wrong');
+
+    return [];
+  }
+}
+
+///// Get ValidateLogIn
+GetValidateToken(var para1) async {
+  try {
+    webconfig = await readJsonFile(filejson);
+
+    var _baseUrl = "https://dev-unique.com:9018/api/Interface/GetUserByToken";
+
+    Map<String, String> body = {
+      'method': '${para1!}',
+    };
+
+    final res = await http.post(Uri.parse("${_baseUrl}"),
+        headers: {"Content-Type": "application/json"}, body: json.encode(body));
+
+    return res;
+  } catch (err) {
+    print('Something went wrong');
+
+    return [];
   }
 }

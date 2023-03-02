@@ -36,8 +36,6 @@ class EmployeeDetail extends StatefulWidget {
 
 class _MyHomePageState extends State<EmployeeDetail>
     with SingleTickerProviderStateMixin {
-  Duration work_yesterday = Duration(hours: 9, minutes: 00);
-
   List<DailyTimeSheet> timesheetCurrent = [];
   List<DailyTimeSheet> timesheetHistory = [];
   List<DailyTimeSheet> workdayHistory = [];
@@ -49,6 +47,7 @@ class _MyHomePageState extends State<EmployeeDetail>
   ];
 
   GetDateTimeCurrent() {
+    Duration work_yesterday = Duration(hours: 9, minutes: 00);
     DateTime Date = DateTime.now();
     if ((Date.hour < work_yesterday.inHours) ||
         ((Date.hour == work_yesterday.inHours) &&
@@ -91,39 +90,24 @@ class _MyHomePageState extends State<EmployeeDetail>
       empNationality: '',
       empPositionName: '');
 
-  void GetEmpProfile() async {
-    var client = http.Client();
-    var uri = Uri.parse(
-        "${widget.url}/api/Interface/GetEmployeeData?EmpCode=${widget.EmpCode}");
-    var response = await client.get(uri);
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      print(response.body);
-
-      final parsedJson = jsonDecode(response.body);
-
-      setState(() {
-        empdata.empCode = parsedJson['emp_Code'];
-        empdata.empCompName = parsedJson['emp_Comp_Name'];
-        empdata.empDepartmentName = parsedJson['emp_Department_Name'];
-        empdata.empName = parsedJson['emp_Name'];
-        empdata.empNationality = parsedJson['emp_Nationality'];
-        empdata.empPositionName = parsedJson['emp_Position_Name'];
-      });
-    }
-  }
-
   GetAPI() async {
     var seen = Set<String>();
 
     var Current = await GetDailyTimesheet(widget.EmpDetail.empCode, 'CURRENT');
     var History = await GetDailyTimesheet('5100024', 'HISTORY');
+    var Profile = await GetEmpProfile(widget.EmpCode);
 
     setState(() {
       timesheetCurrent = Current;
       workdayHistory = History.where((res) => seen.add(res.workDay!)).toList();
       timesheetHistory = History;
-      // print(timesheetHistory[0].timeIn);
+
+      empdata.empCode = Profile['emp_Code'];
+      empdata.empCompName = Profile['emp_Comp_Name'];
+      empdata.empDepartmentName = Profile['emp_Department_Name'];
+      empdata.empName = Profile['emp_Name'];
+      empdata.empNationality = Profile['emp_Nationality'];
+      empdata.empPositionName = Profile['emp_Position_Name'];
     });
   }
 
@@ -252,11 +236,8 @@ class _MyHomePageState extends State<EmployeeDetail>
   @override
   void initState() {
     super.initState();
-    GetEmpProfile();
 
     GetAPI();
-
-    // _data = widget.listtimesheet;
 
     _tabController = TabController(vsync: this, length: 2);
   }

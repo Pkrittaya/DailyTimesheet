@@ -9,6 +9,8 @@ import 'package:k2mobileapp/home.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 
+import 'api.dart';
+
 class Login extends StatefulWidget {
   static const String id = 'mentor sample 1';
   String? myurl, para1;
@@ -31,22 +33,14 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
   var _Emp_code = '';
   var _Showpopup = '';
 
-  loadJson() async {
-    String data = await rootBundle.loadString('assets/config.json');
-    final parsedJson = jsonDecode(data);
-    webconfig = parsedJson['WebAPIConfig'];
-  }
-
   void ValidateLogIn() async {
     try {
       String ShowPopUp = "";
       String UserName = "";
       String _authEncode = _authAPI(UserName, controllerPwd.text);
-      var _baseUrl =
-          "${webconfig}/api/Interface/GetLogOn?Username=${controllerUser.text}&Password=${controllerPwd.text}";
-      final res = await http.get(
-        Uri.parse("$_baseUrl"),
-      );
+
+      final res =
+          await GetValidateLogIn(controllerUser.text, controllerPwd.text);
 
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
@@ -109,17 +103,9 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
 
   void ValidateToken() async {
     try {
-      var _baseUrl = "https://dev-unique.com:9018/api/Interface/GetUserByToken";
-
-      Map<String, String> body = {
-        'method': '${widget.para1!}',
-      };
-      print(json.encode(body));
       var UserName = '';
-      final res = await http.post(Uri.parse("${_baseUrl}"),
-          headers: {"Content-Type": "application/json"},
-          body: json.encode(body));
 
+      final res = await GetValidateToken(widget.para1!);
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
 
@@ -199,7 +185,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    loadJson();
 
     if (widget.para1 != null || widget.para1 != '') ValidateToken();
 
