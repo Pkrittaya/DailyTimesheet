@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:k2mobileapp/pages/employee_list.dart';
+import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/theme.dart';
 
 void main() {
   String? myurl = Uri.base.toString(); //get complete url
-  String? para1 =
-      Uri.base.queryParameters["para1"]; //get parameter with attribute "para1"
+  String? para1 = Uri.base.queryParameters["para1"]; //get parameter with attribute "para1"
 
   runApp(MyApp(myurl: myurl, para1: para1)); //pass to MyApp class
 }
@@ -25,12 +24,12 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [Locale('en'), Locale('th', 'TH')],
       title: 'Daily Timesheet',
       theme: basicTheme(),
-      //home: Login(myurl: myurl, para1: para1),
-      home: const EmployeeList(
+      home: Login(myurl: myurl, para1: para1),
+      /*home: const EmployeeList(
         index: 1,
         EmpCode: '9900001',
         url: 'https://dev-unique.com:9012',
-      ),
+      ),*/
     );
   }
 }
