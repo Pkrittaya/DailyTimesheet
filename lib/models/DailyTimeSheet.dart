@@ -22,6 +22,7 @@ class DailyTimeSheet {
   String? dateDiffs;
   int? sumMinute;
   String? sumtimes;
+  bool isExpanded = false;
 
   DailyTimeSheet(
       {this.jobNo,

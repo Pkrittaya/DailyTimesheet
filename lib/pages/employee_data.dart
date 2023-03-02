@@ -61,15 +61,22 @@ class _MyHomePageState extends State<EmployeeDetail>
     return Date;
   }
 
-  FormatDate(valdate) {
-    String date = DateFormat("dd-MM-yyyy")
+  FormatDateTextTH(texttime) {
+    DateTime valDate = DateTime.parse(texttime);
+    String date = DateFormat("dd MMMM yyyy", "th")
+        .format(new DateTime(valDate.year + 543, valDate.month, valDate.day));
+    return date;
+  }
+
+  FormatDateTH(valdate) {
+    String date = DateFormat("dd MMMM yyyy", "th")
         .format(new DateTime(valdate.year + 543, valdate.month, valdate.day));
     return date;
   }
 
-  CustomCountTimeSum(text) {
+  CustomCountTime(text) {
     final splitted = text.split(':');
-    final texttime = 'รวมจำนวน ${splitted[0]} ชั่วโมง ${splitted[1]} นาที';
+    final texttime = '${splitted[0]} ชั่วโมง ${splitted[1]} นาที';
     // DateTime valDate = DateTime.parse(textdate);
 
     return texttime.toString();
@@ -106,14 +113,14 @@ class _MyHomePageState extends State<EmployeeDetail>
   }
 
   GetAPI() async {
-    // var seen = Set<String>();
+    var seen = Set<String>();
 
-    var Current = await GetDailyTimesheet('5100024', 'CURRENT');
+    var Current = await GetDailyTimesheet(widget.EmpDetail.empCode, 'CURRENT');
     var History = await GetDailyTimesheet('5100024', 'HISTORY');
 
     setState(() {
       timesheetCurrent = Current;
-      // workdayHistory = Current.where((res) => seen.add(res.workDay!)).toList();
+      workdayHistory = History.where((res) => seen.add(res.workDay!)).toList();
       timesheetHistory = History;
       // print(timesheetHistory[0].timeIn);
     });
@@ -166,6 +173,7 @@ class _MyHomePageState extends State<EmployeeDetail>
 
     var tojsontext = decoder.convert(totext);
     // print(totext);
+    print(json.encode(tojsontext));
 
     final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
     final res = await http.post(Uri.parse("${_baseUrl}"),
@@ -174,9 +182,8 @@ class _MyHomePageState extends State<EmployeeDetail>
 
     setState(() {
       final jsonData = json.decode(res.body);
-
       final parsedJson = jsonDecode(res.body);
-      if (res.body == "1") {
+      if (parsedJson['type'] == "S") {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -379,21 +386,19 @@ class _MyHomePageState extends State<EmployeeDetail>
                                       crossAxisAlignment:
                                           CrossAxisAlignment.end,
                                       children: [
-                                        Text(
-                                            "รหัสพนักงาน : ${widget.EmpDetail.empCode}"),
-                                        Text(
-                                            "ชื่อ : ${widget.EmpDetail.empName}"),
-                                        Text(
-                                            "แผนก : ${widget.EmpDetail.empDepartmentName}"),
+                                        Text("รหัสพนักงาน : "),
+                                        Text("ชื่อ : "),
+                                        Text("แผนก : "),
                                       ],
                                     ),
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(""),
-                                        Text(""),
-                                        Text(""),
+                                        Text("${widget.EmpDetail.empCode}"),
+                                        Text("${widget.EmpDetail.empName}"),
+                                        Text(
+                                            "${(widget.EmpDetail.empDepartmentName) != '' ? widget.EmpDetail.empDepartmentName : '-'}"),
                                       ],
                                     )
                                   ],
@@ -432,11 +437,15 @@ class _MyHomePageState extends State<EmployeeDetail>
                                         : Center(
                                             child: Text('ไม่มีข้อมูล'),
                                           ),
-                                    (timesheetHistory.length != 0)
-                                        ? _buildTimesheetHistoly()
-                                        : Center(
-                                            child: Text('ไม่มีข้อมูล'),
-                                          ),
+                                    Column(
+                                      children: [
+                                        (timesheetHistory.length != 0)
+                                            ? _buildTimesheetHistoly()
+                                            : Center(
+                                                child: Text('ไม่มีข้อมูล'),
+                                              ),
+                                      ],
+                                    ),
                                   ],
                                 )),
                           ),
@@ -451,31 +460,27 @@ class _MyHomePageState extends State<EmployeeDetail>
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Text('วันที่ ${FormatDate(GetDateTimeCurrent())}'),
-        Text('${CustomCountTimeSum(timesheetCurrent[0].sumtimes)}'),
+        Text('วันที่ ${FormatDateTH(GetDateTimeCurrent())}'),
+        Text('รวมจำนวน ${CustomCountTime(timesheetCurrent[0].sumtimes)}'),
         Expanded(
           child: ListView.builder(
             itemCount: timesheetCurrent.length,
             itemBuilder: (BuildContext context, int index) {
-              return timesheetCurrent[index].status != '400'
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                            '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}'),
-                        Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 6,
-                            ),
-                            _builddeletetimesheet(timesheetCurrent[index]),
-                          ],
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      width: 0,
-                    );
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                      '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}'),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 6,
+                      ),
+                      _builddeletetimesheet(timesheetCurrent[index]),
+                    ],
+                  ),
+                ],
+              );
             },
           ),
         )
@@ -484,38 +489,58 @@ class _MyHomePageState extends State<EmployeeDetail>
   }
 
   Widget _buildTimesheetHistoly() {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Text('วันที่ ${timesheetHistory[0].workDay}'),
-        Text('${CustomCountTimeSum(timesheetHistory[0].sumtimes)}'),
-        Expanded(
-          child: ListView.builder(
-            itemCount: timesheetHistory.length,
-            itemBuilder: (BuildContext context, int index) {
-              return timesheetHistory[index].status != '400'
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                            '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}'),
-                        Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: 6,
-                            ),
-                            _builddeletetimesheet(timesheetHistory[index]),
-                          ],
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setState(() {
+          workdayHistory[index].isExpanded = !isExpanded;
+        });
+      },
+      children: workdayHistory.map<ExpansionPanel>((DailyTimeSheet day) {
+        return ExpansionPanel(
+            canTapOnHeader: true,
+            headerBuilder: (BuildContext context, bool isExpanded) {
+              return ListTile(
+                title: Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ListTileTheme(
+                        horizontalTitleGap: 2.0,
+                        child: Text(
+                          'วันที่ ${FormatDateTextTH(day.workDay!)}',
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                      ],
-                    )
-                  : SizedBox(
-                      width: 0,
-                    );
+                      ),
+                    ),
+                  ],
+                ),
+              );
             },
-          ),
-        )
-      ],
+            body: ListTile(
+              tileColor: Colors.grey[100],
+              subtitle: Column(
+                children: [
+                  Text('รวมจำนวน ${CustomCountTime(day.sumtimes)}'),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: timesheetHistory.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                              '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}'),
+                          Text(
+                              '${CustomCountTime(timesheetHistory[index].dateDiffs)}'),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            isExpanded: day.isExpanded);
+      }).toList(),
     );
   }
 
@@ -563,47 +588,4 @@ class _MyHomePageState extends State<EmployeeDetail>
       ),
     );
   }
-
-  // Widget _buildTimesheetHistoly() {
-  //   return ExpansionPanelList(
-  //     expansionCallback: (int index, bool isExpanded) {
-  //       setState(() {
-  //         // workdayHistory[index].isExpanded = !isExpanded;
-  //       });
-  //     },
-  //     children: workdayHistory.map<ExpansionPanel>((workdayHistory) {
-  //       return ExpansionPanel(
-  //           canTapOnHeader: true,
-  //           headerBuilder: (BuildContext context, bool isExpanded) {
-  //             return ListTile(
-  //               title: Row(
-  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                 children: [
-  //                   Expanded(
-  //                     child: ListTileTheme(
-  //                       horizontalTitleGap: 2.0,
-  //                       child: Text(
-  //                         '${workdayHistory.timeIn!}',
-  //                         style: Theme.of(context).textTheme.titleMedium,
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             );
-  //           },
-  //           body: ListTile(
-  //             tileColor: Colors.grey[100],
-  //             subtitle: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.start,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: const [
-  //                   SizedBox(height: 10),
-  //                 ]),
-  //             // isThreeLine: true,
-  //           ),
-  //           isExpanded: true);
-  //     }).toList(),
-  //   );
-  // }
 }
