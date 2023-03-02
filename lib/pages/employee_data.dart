@@ -94,7 +94,7 @@ class _MyHomePageState extends State<EmployeeDetail>
     var seen = Set<String>();
 
     var Current = await GetDailyTimesheet(widget.EmpDetail.empCode, 'CURRENT');
-    var History = await GetDailyTimesheet('5100024', 'HISTORY');
+    var History = await GetDailyTimesheet(widget.EmpDetail.empCode, 'HISTORY');
     var Profile = await GetEmpProfile(widget.EmpCode);
 
     setState(() {
@@ -121,12 +121,14 @@ class _MyHomePageState extends State<EmployeeDetail>
     var statustext = "";
     if (text == '100') {
       statustext = 'ทำงาน';
-    } else if (text == '201') {
+    } else if (text == '201' || text == '202') {
       statustext = 'โอที';
-    } else if (text == '202') {
-      statustext = 'โอที';
+    } else if (text == '301') {
+      statustext = 'ลาป่วย';
+    } else if (text == '302') {
+      statustext = 'ลาคลอด';
     } else {
-      statustext = 'ไม่มี';
+      statustext = 'ขาด';
     }
 
     return statustext.toString();
@@ -163,7 +165,7 @@ class _MyHomePageState extends State<EmployeeDetail>
       // print(totext);
       print(json.encode(tojsontext));
 
-      final _baseUrl = '${widget.url}/api/Daily/SaveDailyTimeSheet';
+      final _baseUrl = '${await SaveTimesheet()}';
       final res = await http.post(Uri.parse("${_baseUrl}"),
           headers: {"Content-Type": "application/json"},
           body: json.encode(tojsontext));
@@ -482,8 +484,12 @@ class _MyHomePageState extends State<EmployeeDetail>
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                      '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}'),
+                  (timesheetCurrent[index].status != '301' ||
+                          timesheetCurrent[index].status != '301')
+                      ? Text(
+                          '${ReplaceStatusTime(timesheetCurrent[index].status)} : ${CustomTime(timesheetCurrent[index].timeIn)} - ${CustomTime(timesheetCurrent[index].timeOut)}')
+                      : Text(
+                          '${ReplaceStatusTime(timesheetCurrent[index].status)}'),
                   Row(
                     children: <Widget>[
                       SizedBox(
@@ -541,8 +547,12 @@ class _MyHomePageState extends State<EmployeeDetail>
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                              '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}'),
+                          (timesheetCurrent[index].status != '301' ||
+                                  timesheetCurrent[index].status != '301')
+                              ? Text(
+                                  '${ReplaceStatusTime(timesheetHistory[index].status)} : ${CustomTime(timesheetHistory[index].timeIn)} - ${CustomTime(timesheetHistory[index].timeOut)}')
+                              : Text(
+                                  '${ReplaceStatusTime(timesheetHistory[index].status)}'),
                           Text(
                               '${CustomCountTime(timesheetHistory[index].dateDiffs)}'),
                         ],
