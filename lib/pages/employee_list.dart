@@ -749,6 +749,7 @@ class _MyHomePageState extends State<EmployeeList> {
   Widget _buildEmployeeList(List<Employeelist> data) {
     return ListView(
       shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       children: data.map((Employeelist item) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 2.0),
