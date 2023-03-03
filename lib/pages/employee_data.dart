@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
@@ -39,6 +40,7 @@ class _MyHomePageState extends State<EmployeeDetail>
   List<TimeSheetHistoryModel> timesheetCurrent = [];
   List<TimeSheetHistoryModel> timesheetHistory = [];
   List<TimeSheetHistoryModel> workdayHistory = [];
+  List<Employeelist> empList = [];
   late TabController _tabController;
 
   final _tabs = ['บันทึกเวลางาน', 'ประวัติย้อนหลัง']
@@ -99,11 +101,13 @@ class _MyHomePageState extends State<EmployeeDetail>
     var current = await GetDailyTimesheet(widget.empDetail.empCode, 'CURRENT');
     var history = await GetDailyTimesheet(widget.empDetail.empCode, 'HISTORY');
     var profile = await GetEmpProfile(widget.empCode);
+    var emp = await GetEmployeeList(widget.empCode);
 
     setState(() {
       timesheetCurrent = current;
       workdayHistory = history;
       timesheetHistory = history;
+      empList = emp;
 
       empData.empCode = profile['emp_Code'];
       empData.empCompName = profile['emp_Comp_Name'];
@@ -150,13 +154,13 @@ class _MyHomePageState extends State<EmployeeDetail>
       toText += '"time_In": "${timesheet.timeIn}",';
       toText += '"time_Out": "${timesheet.timeOut}",';
       toText += '"type": "Labour",';
-      toText += '"supervisor_Code": "${widget.empCode}",';
+      toText += '"supervisor_Code": "${timesheet.empCode}",';
       toText += '"status": "400",';
       toText += '"remark": "${timesheet.remark}",';
       toText += '"costCenter": "${timesheet.costCenter}",';
       toText += '"jobId": "${timesheet.jobId}",';
-      toText += '"start_Date": "$dateNow",';
-      toText += '"create_By": "${widget.empCode}",';
+      toText += '"start_Date": "${timesheet.createDate}",';
+      toText += '"create_By": "${timesheet.createBy}",';
       toText += '"project_Code": "${timesheet.projectCode}",';
       toText += '"job_Group": "${timesheet.jobGroup}",';
       toText += '"job_Code": "${timesheet.jobCode}",';
@@ -309,47 +313,24 @@ class _MyHomePageState extends State<EmployeeDetail>
               );
             },
           ),
-          const SizedBox(height: 8),
-          /*Card(
-              shape: RoundedRectangleBorder(
-                // side: BorderSide(
-                //   color: Palette.Colortheme,
-                // ),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: SizedBox(
-                // width: 300,
-                // height: 100,
-                child: Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.end,
-                        children: [
-                          Text("รหัสพนักงาน : "),
-                          Text("ชื่อ : "),
-                          Text("แผนก : "),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text("${widget.EmpDetail.empCode}"),
-                          Text("${widget.EmpDetail.empName}"),
-                          Text(
-                              "${(widget.EmpDetail.empDepartmentName) != '' ? widget.EmpDetail.empDepartmentName : '-'}"),
-                        ],
-                      )
-                    ],
-                  ),
-                )),
-              ),
-            ),*/
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
+          Container(
+              // margin: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+              child: Column(
+                children: [
+                  _buildDropdownEmp(),
+                  (widget.empDetail.empDepartmentName) != ''
+                      ? Text("แผนก ${widget.empDetail.empDepartmentName}",
+                          style: Theme.of(context).textTheme.titleMedium!)
+                      : SizedBox(
+                          height: 0,
+                        )
+                ],
+              )),
+          // const SizedBox(height: 15),
+          const SizedBox(height: 24),
           Container(
             height: kToolbarHeight - 16.0,
             decoration: BoxDecoration(
@@ -487,8 +468,15 @@ class _MyHomePageState extends State<EmployeeDetail>
                                 ),
                               ),
                               const SizedBox(width: 16.0),
-                              _buildDeleteTimesheet(
-                                  timesheetCurrent[0].lstTimesheet[index])
+                              (timesheetCurrent[0]
+                                          .lstTimesheet[index]
+                                          .createBy ==
+                                      widget.empCode)
+                                  ? _buildDeleteTimesheet(
+                                      timesheetCurrent[0].lstTimesheet[index])
+                                  : SizedBox(
+                                      height: 0,
+                                    )
                             ],
                           ),
                         );
@@ -580,10 +568,15 @@ class _MyHomePageState extends State<EmployeeDetail>
                           'วันที่ ${formatDateTextTH(day.workDay!)}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        Text(
-                          'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
+                        (day.lstTimesheet[0].status != '301' &&
+                                day.lstTimesheet[0].status != '302')
+                            ? Text(
+                                'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              )
+                            : SizedBox(
+                                height: 0,
+                              ),
                       ],
                     ),
                   ),
@@ -614,7 +607,7 @@ class _MyHomePageState extends State<EmployeeDetail>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              (dayList[index].status != '301' ||
+                              (dayList[index].status != '301' &&
                                       dayList[index].status != '301')
                                   ? Text(
                                       '${replaceStatusTime(dayList[index].status)} : ${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
@@ -627,10 +620,17 @@ class _MyHomePageState extends State<EmployeeDetail>
                                           .textTheme
                                           .titleSmall,
                                     ),
-                              Text(
-                                '${customCountTime(dayList[index].dateDiffs)}',
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
+                              (dayList[index].status != '301' &&
+                                      dayList[index].status != '302')
+                                  ? Text(
+                                      '${customCountTime(dayList[index].dateDiffs)}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    )
+                                  : SizedBox(
+                                      height: 0,
+                                    ),
                             ],
                           ),
                         );
@@ -686,6 +686,68 @@ class _MyHomePageState extends State<EmployeeDetail>
           );
         },
       ),
+    );
+  }
+
+  Widget _buildDropdownEmp() {
+    return DropdownButtonFormField(
+      isExpanded: true,
+      decoration: const InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          vertical: 2.0,
+          horizontal: 12.0,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(4.0),
+          ),
+        ),
+      ),
+      hint: const Text('เลือกพนักงาน'),
+      value: widget.empDetail.empCode,
+      icon: const Icon(Icons.keyboard_arrow_down),
+      items: empList
+          .map((Employeelist empdetail) => DropdownMenuItem(
+                value: empdetail.empCode,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      empdetail.empCode!,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            color: Colors.black45,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
+                          ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Text(
+                      empdetail.empName!,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
+      onChanged: (val) {
+        print(val.toString());
+        List<Employeelist> dropdownempList =
+            empList.where((res) => res.empCode == val.toString()).toList();
+
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmployeeDetail(
+                index: 1,
+                empCode: widget.empCode,
+                empDetail: dropdownempList[0],
+                url: widget.url,
+              ),
+            ),
+          );
+        });
+      },
     );
   }
 }
