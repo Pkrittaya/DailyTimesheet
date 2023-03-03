@@ -5,8 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
-import 'package:k2mobileapp/theme.dart';
-import 'package:k2mobileapp/widgets/my_button.dart';
 import 'package:k2mobileapp/widgets/my_scaffold.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -40,11 +38,13 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
   List<DailyTimeSheet> timesheetHistory = [];
   List<DailyTimeSheet> workdayHistory = [];
   late TabController _tabController;
-  final _selectedColor = const Color(0xff1a73e8);
-  final _tabs = [
-    const Tab(text: 'บันทึกเวลางาน'),
-    const Tab(text: 'ประวัติย้อนหลัง'),
-  ];
+
+  final _tabs = ['บันทึกเวลางาน', 'ประวัติย้อนหลัง']
+      .map((item) => Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Tab(text: item),
+          ))
+      .toList();
 
   getDateTimeCurrent() {
     Duration workYesterday = const Duration(hours: 9, minutes: 00);
@@ -61,19 +61,18 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
 
   formatDateTextTH(textTime) {
     DateTime valDate = DateTime.parse(textTime);
-    String date = DateFormat("dd MMMM yyyy", "th").format(DateTime(valDate.year + 543, valDate.month, valDate.day));
+    String date = DateFormat("d MMMM yyyy", "th").format(DateTime(valDate.year + 543, valDate.month, valDate.day));
     return date;
   }
 
   formatDateTH(validate) {
-    String date = DateFormat("dd MMMM yyyy", "th").format(DateTime(validate.year + 543, validate.month, validate.day));
+    String date = DateFormat("d MMMM yyyy", "th").format(DateTime(validate.year + 543, validate.month, validate.day));
     return date;
   }
 
   customCountTime(text) {
     final parts = text.split(':');
-    final textTime = '${parts[0]} ชั่วโมง ${parts[1]} นาที';
-    // DateTime valDate = DateTime.parse(textdate);
+    final textTime = '${int.parse(parts[0])} ชั่วโมง ${int.parse(parts[1])} นาที';
 
     return textTime.toString();
   }
@@ -253,34 +252,37 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    const borderWidth = 2.0;
+    var activeTabColor = Theme.of(context).primaryColor; //Colors.grey.shade600;
+    var inActiveTabColor = Colors.grey.shade200;
+
     return MyScaffold(
       empCode: widget.empCode,
       empName: empData.empName,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          MyButton(
+        children: [
+          /*MyButton(
             onPressed: () {},
             text: 'กลับ',
-            leftIcon: const Icon(Icons.chevron_left),
-          ),
+            textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
+            leftIcon: const Icon(Icons.chevron_left, size: 16.0),
+          ),*/
           ElevatedButton.icon(
             icon: const Icon(
               FontAwesomeIcons.arrowLeft,
-              size: 10,
+              size: 12,
               color: Colors.black,
             ),
             label: Text(
               'กลับ',
-              style: TextStyle(
-                fontFamily: Fonts.fonts,
-                color: Colors.black,
-              ),
+              style: Theme.of(context).textTheme.titleSmall,
             ), //label text
             style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
               ),
               backgroundColor: Colors.white,
               textStyle: const TextStyle(fontSize: 10),
@@ -298,7 +300,7 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
               );
             },
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 8),
           /*Card(
               shape: RoundedRectangleBorder(
                 // side: BorderSide(
@@ -338,38 +340,50 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
                 )),
               ),
             ),*/
-          const SizedBox(height: 15),
+          const SizedBox(height: 8),
           Container(
-            height: kToolbarHeight - 8.0,
+            height: kToolbarHeight - 16.0,
             decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(8.0),
+              color: inActiveTabColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              ),
             ),
             child: TabBar(
               controller: _tabController,
-              indicator: BoxDecoration(borderRadius: BorderRadius.circular(8.0), color: _selectedColor),
+              //padding: const EdgeInsets.only(top: 4.0),
+              indicator: BoxDecoration(
+                border: Border.all(color: activeTabColor, width: borderWidth),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  topRight: Radius.circular(8),
+                ),
+                color: activeTabColor, //Color(0xff1a73e8),
+              ),
               labelColor: Colors.white,
               unselectedLabelColor: Colors.black,
+              // Colors.black,
               tabs: _tabs,
             ),
           ),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                // borderRadius: BorderRadius.circular(8.0),
+                color: Colors.white, // Colors.grey.shade100,
+                border: Border(
+                  top: BorderSide(color: activeTabColor, width: borderWidth),
+                  left: BorderSide(color: activeTabColor, width: borderWidth),
+                  right: BorderSide(color: activeTabColor, width: borderWidth),
+                ),
+                //border: Border.all(color: Colors.grey.shade800, width: borderWidth),
               ),
+              padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
               child: TabBarView(
                 controller: _tabController,
-                children: <Widget>[
+                children: [
                   (timesheetCurrent.isNotEmpty) ? _buildTimesheetCurrent() : const Center(child: Text('ไม่มีข้อมูล')),
-                  Column(
-                    children: [
-                      (timesheetHistory.isNotEmpty)
-                          ? _buildTimesheetHistory()
-                          : const Center(child: Text('ไม่มีข้อมูล')),
-                    ],
-                  ),
+                  (timesheetHistory.isNotEmpty) ? _buildTimesheetHistory() : const Center(child: Text('ไม่มีข้อมูล')),
                 ],
               ),
             ),
@@ -381,10 +395,112 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
 
   Widget _buildTimesheetCurrent() {
     return Column(
+      children: [
+        ExpansionPanelList(
+          expandedHeaderPadding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
+          elevation: 0.0,
+          children: [timesheetCurrent[0]].map<ExpansionPanel>((DailyTimeSheet day) {
+            return ExpansionPanel(
+              backgroundColor: Colors.grey.shade200,
+              isExpanded: true,
+              canTapOnHeader: false,
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return ListTile(
+                  title: ListTileTheme(
+                    //horizontalTitleGap: 2.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'วันที่ ${formatDateTextTH(day.workDay!)}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          'รวมเวลา ${customCountTime(day.sumtimes)}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              body: ListTile(
+                //tileColor: Colors.grey[100],
+                subtitle: Column(
+                  children: [
+                    //Text('รวมจำนวน ${customCountTime(day.sumtimes)}'),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: timesheetCurrent.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var dayList = timesheetCurrent;
+
+                        return Container(
+                          padding: const EdgeInsets.all(12.0),
+                          margin: EdgeInsets.only(bottom: index == dayList.length - 1 ? 12.0 : 0.0),
+                          decoration: BoxDecoration(
+                            //color: index % 2 == 0 ? Colors.grey.shade100 : Colors.white,
+                            color: Colors.white,
+                            border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey.shade400)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: (dayList[index].status != '301' || dayList[index].status != '301')
+                                    ? Text(
+                                        '${replaceStatusTime(dayList[index].status)} : ${customTime(dayList[index].timeIn)} - ${customTime(timesheetHistory[index].timeOut)}',
+                                        style: Theme.of(context).textTheme.titleSmall)
+                                    : Text(
+                                        '${replaceStatusTime(dayList[index].status)}',
+                                        style: Theme.of(context).textTheme.titleSmall,
+                                      ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${customCountTime(dayList[index].dateDiffs)}',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                  textAlign: TextAlign.end,
+                                ),
+                              ),
+                              const SizedBox(width: 16.0),
+                              _buildDeleteTimesheet(timesheetCurrent[index])
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  /*Widget _buildTimesheetCurrent_old() {
+    return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Text('วันที่ ${formatDateTH(getDateTimeCurrent())}'),
-        Text('รวมจำนวน ${customCountTime(timesheetCurrent[0].sumtimes)}'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'วันที่ ${formatDateTH(getDateTimeCurrent())}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'รวมจำนวน ${customCountTime(timesheetCurrent[0].sumtimes)}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Divider(height: 1.0, color: Colors.grey.shade400),
+        ),
         Expanded(
           child: ListView.builder(
             itemCount: timesheetCurrent.length,
@@ -409,75 +525,101 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
         )
       ],
     );
-  }
+  }*/
 
   Widget _buildTimesheetHistory() {
-    return ExpansionPanelList(
-      expansionCallback: (int index, bool isExpanded) {
-        setState(() {
-          workdayHistory[index].isExpanded = !isExpanded;
-        });
-      },
-      children: workdayHistory.map<ExpansionPanel>((DailyTimeSheet day) {
-        return ExpansionPanel(
-            canTapOnHeader: true,
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return ListTile(
-                title: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ListTileTheme(
-                        horizontalTitleGap: 2.0,
-                        child: Text(
+    return Column(
+      children: [
+        ExpansionPanelList(
+          expandedHeaderPadding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
+          elevation: 0.0,
+          expansionCallback: (int index, bool isExpanded) {
+            setState(() {
+              workdayHistory[index].isExpanded = !isExpanded;
+            });
+          },
+          children: workdayHistory.map<ExpansionPanel>((DailyTimeSheet day) {
+            return ExpansionPanel(
+              backgroundColor: Colors.grey.shade200,
+              isExpanded: day.isExpanded,
+              canTapOnHeader: true,
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return ListTile(
+                  title: ListTileTheme(
+                    //horizontalTitleGap: 2.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
                           'วันที่ ${formatDateTextTH(day.workDay!)}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                      ),
+                        Text(
+                          'รวมเวลา ${customCountTime(day.sumtimes)}',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              body: ListTile(
+                //tileColor: Colors.grey[100],
+                subtitle: Column(
+                  children: [
+                    //Text('รวมจำนวน ${customCountTime(day.sumtimes)}'),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: timesheetHistory.where((item) => item.workDay == day.workDay).length,
+                      itemBuilder: (BuildContext context, int index) {
+                        var dayList = timesheetHistory.where((item) => item.workDay == day.workDay).toList();
+
+                        return Container(
+                          padding: const EdgeInsets.all(12.0),
+                          margin: EdgeInsets.only(bottom: index == dayList.length - 1 ? 12.0 : 0.0),
+                          decoration: BoxDecoration(
+                            //color: index % 2 == 0 ? Colors.grey.shade100 : Colors.white,
+                            color: Colors.white,
+                            border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey.shade400)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              (dayList[index].status != '301' || dayList[index].status != '301')
+                                  ? Text(
+                                      '${replaceStatusTime(dayList[index].status)} : ${customTime(dayList[index].timeIn)} - ${customTime(timesheetHistory[index].timeOut)}',
+                                      style: Theme.of(context).textTheme.titleSmall)
+                                  : Text(
+                                      '${replaceStatusTime(dayList[index].status)}',
+                                      style: Theme.of(context).textTheme.titleSmall,
+                                    ),
+                              Text(
+                                '${customCountTime(dayList[index].dateDiffs)}',
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
-              );
-            },
-            body: ListTile(
-              tileColor: Colors.grey[100],
-              subtitle: Column(
-                children: [
-                  Text('รวมจำนวน ${customCountTime(day.sumtimes)}'),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: timesheetHistory.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          (timesheetCurrent[index].status != '301' || timesheetCurrent[index].status != '301')
-                              ? Text(
-                                  '${replaceStatusTime(timesheetHistory[index].status)} : ${customTime(timesheetHistory[index].timeIn)} - ${customTime(timesheetHistory[index].timeOut)}')
-                              : Text('${replaceStatusTime(timesheetHistory[index].status)}'),
-                          Text('${customCountTime(timesheetHistory[index].dateDiffs)}'),
-                        ],
-                      );
-                    },
-                  ),
-                ],
               ),
-            ),
-            isExpanded: day.isExpanded);
-      }).toList(),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
   Widget _buildDeleteTimesheet(DailyTimeSheet item) {
-    return Ink(
-      decoration: const ShapeDecoration(
-        color: Colors.red,
-        shape: CircleBorder(),
-      ),
-      width: 30,
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.hardEdge,
       child: IconButton(
         icon: const Icon(Icons.delete),
-        color: Colors.black,
+        color: Colors.black87,
         iconSize: 16.0,
         onPressed: () {
           Dialogs.materialDialog(
@@ -503,7 +645,6 @@ class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderSt
                 iconColor: Colors.white,
                 onPressed: () {
                   dataSaveTimesheet(item);
-
                   // Navigator.of(context, rootNavigator: true).pop();
                 },
               ),

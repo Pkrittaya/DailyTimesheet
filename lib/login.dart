@@ -309,7 +309,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                       ),
                       const SizedBox(height: 30),
                       const Text(
-                        'Version 0.2.0',
+                        'Version 0.3.0',
                         style: TextStyle(
                           // fontSize: 40,
                           color: Colors.grey,
