@@ -21,7 +21,7 @@ class MyScaffold extends StatelessWidget {
 
     return Scaffold(
       body: Container(
-        width: double.infinity,
+        //width: MediaQuery.of(context).size.width >= 500 ? 500 : double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -33,7 +33,7 @@ class MyScaffold extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),

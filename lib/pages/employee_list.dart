@@ -66,10 +66,8 @@ class _MyHomePageState extends State<EmployeeList> {
     Duration work_yesterday = Duration(hours: 9, minutes: 00);
     DateTime Date = DateTime.now();
     if ((Date.hour < work_yesterday.inHours) ||
-        ((Date.hour == work_yesterday.inHours) &&
-            (Date.minute <= work_yesterday.inMinutes.remainder(60)))) {
-      Date = new DateTime(Date.year, Date.month, Date.day)
-          .add(new Duration(days: -1));
+        ((Date.hour == work_yesterday.inHours) && (Date.minute <= work_yesterday.inMinutes.remainder(60)))) {
+      Date = new DateTime(Date.year, Date.month, Date.day).add(new Duration(days: -1));
     } else {
       Date = new DateTime(Date.year, Date.month, Date.day);
     }
@@ -105,14 +103,12 @@ class _MyHomePageState extends State<EmployeeList> {
 
   formatDateTextTH(textTime) {
     DateTime valDate = DateTime.parse(textTime);
-    String date = DateFormat("dd MMMM yyyy", "th")
-        .format(DateTime(valDate.year + 543, valDate.month, valDate.day));
+    String date = DateFormat("dd MMMM yyyy", "th").format(DateTime(valDate.year + 543, valDate.month, valDate.day));
     return date;
   }
 
   formatDateTH(validate) {
-    String date = DateFormat("dd MMMM yyyy", "th")
-        .format(DateTime(validate.year + 543, validate.month, validate.day));
+    String date = DateFormat("dd MMMM yyyy", "th").format(DateTime(validate.year + 543, validate.month, validate.day));
     return date;
   }
 
@@ -159,22 +155,18 @@ class _MyHomePageState extends State<EmployeeList> {
   String TextLeaveunpaidEnd = "";
 
 //ลาป่วยทั้งวัน
-  DateTime LeavesickAllStart = new DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day)
-      .add(Duration(hours: 08, minutes: 30));
+  DateTime LeavesickAllStart =
+      new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).add(Duration(hours: 08, minutes: 30));
 
-  DateTime LeavesickAllEnd = new DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day)
-      .add(Duration(hours: 17, minutes: 30));
+  DateTime LeavesickAllEnd =
+      new DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).add(Duration(hours: 17, minutes: 30));
 
   String TextLeavesickAllStart = "08:30";
   String TextLeavesickAllEnd = "17:30";
 
 //ลาไม่รับค่าจ้างบางช่วงเวลา
-  DateTime LeaveunpaidAllStart =
-      DateTime.now().subtract(Duration(hours: 08, minutes: 00));
-  DateTime LeaveunpaidAllEnd =
-      DateTime.now().subtract(Duration(hours: 17, minutes: 30));
+  DateTime LeaveunpaidAllStart = DateTime.now().subtract(Duration(hours: 08, minutes: 00));
+  DateTime LeaveunpaidAllEnd = DateTime.now().subtract(Duration(hours: 17, minutes: 30));
 
   String TextLeaveunpaidAllStart = "08:00";
   String TextLeaveunpaidAllEnd = "17:30";
@@ -238,8 +230,7 @@ class _MyHomePageState extends State<EmployeeList> {
   ];
 
 ///// เพิ่มพนักงาน
-  void dataaddemployee(
-      var cycle, var supcode, var empcode, var projcode) async {
+  void dataaddemployee(var cycle, var supcode, var empcode, var projcode) async {
     var tojsontext = {
       "cyCleTime": "${cycle}",
       "suppervisor_Code": "${supcode}",
@@ -256,57 +247,37 @@ class _MyHomePageState extends State<EmployeeList> {
 
       //final parsedJson = jsonDecode(res.body);
       if (jsonData == 1) {
-        Dialogs.materialDialog(
-            msg: 'บันทึกข้อมูลสำเร็จ',
-            title: 'ตรวจสอบข้อมูล',
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EmployeeList(
-                        index: widget.index,
-                        EmpCode: widget.EmpCode,
-                        url: widget.url,
-                      ),
-                    ),
-                  );
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EmployeeList(
+              index: widget.index,
+              EmpCode: widget.EmpCode,
+              url: widget.url,
+            ),
+          ),
+        );
       } else {
-        Dialogs.materialDialog(
-            msg: 'บันทึกไม่สำเร็จ',
-            title: 'ตรวจสอบข้อมูล',
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  //getlsttimesheet();
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
+        Dialogs.materialDialog(msg: 'บันทึกไม่สำเร็จ', title: 'ตรวจสอบข้อมูล', context: context, actions: [
+          IconsButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              //getlsttimesheet();
+            },
+            text: 'ตกลง',
+            iconData: Icons.check_circle_outline,
+            color: Colors.green,
+            textStyle: TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
       }
     });
 /*
    */
   }
 
-  void datasavetimesheet(
-      var arrayText, var empcode, var costCenter, var jobcode) async {
+  void datasavetimesheet(var arrayText, var empcode, var costCenter, var jobcode) async {
     const JsonDecoder decoder = JsonDecoder();
     var Datenow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
     Map decoded = jsonDecode(arrayText);
@@ -327,8 +298,7 @@ class _MyHomePageState extends State<EmployeeList> {
       DateTime valDatestart = DateTime.parse(value[0]);
       DateTime valDateEnd = DateTime.parse(value[1]);
 
-      String Datestart =
-          DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(valDatestart);
+      String Datestart = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(valDatestart);
       String DateEnd = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(valDateEnd);
 
       if (i > 1) {
@@ -365,8 +335,7 @@ class _MyHomePageState extends State<EmployeeList> {
 
     final _baseUrl = '${await SaveTimesheet()}';
     final res = await http.post(Uri.parse("${_baseUrl}"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(tojsontext));
+        headers: {"Content-Type": "application/json"}, body: json.encode(tojsontext));
 
     setState(() {
       final jsonData = json.decode(res.body);
@@ -376,34 +345,25 @@ class _MyHomePageState extends State<EmployeeList> {
       if (parsedJson['type'] == "S") {
         Navigator.of(context, rootNavigator: true).pop();
       } else {
-        Dialogs.materialDialog(
-            msg: '${parsedJson['description']}',
-            title: 'ตรวจสอบข้อมูล',
-            context: context,
-            actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  //getlsttimesheet();
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
+        Dialogs.materialDialog(msg: '${parsedJson['description']}', title: 'ตรวจสอบข้อมูล', context: context, actions: [
+          IconsButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              //getlsttimesheet();
+            },
+            text: 'ตกลง',
+            iconData: Icons.check_circle_outline,
+            color: Colors.green,
+            textStyle: TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
       }
     });
   }
 
   EmployeeData empdata = new EmployeeData(
-      empCode: '',
-      empCompName: '',
-      empDepartmentName: '',
-      empName: '',
-      empNationality: '',
-      empPositionName: '');
+      empCode: '', empCompName: '', empDepartmentName: '', empName: '', empNationality: '', empPositionName: '');
 
   void addEmployee() async {
     await Future.delayed(const Duration(milliseconds: 10));
@@ -451,8 +411,7 @@ class _MyHomePageState extends State<EmployeeList> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: MyButton(
-                                onPressed: () =>
-                                    _handleSearchEmployee(setState),
+                                onPressed: () => _handleSearchEmployee(setState),
                                 text: 'ค้นหา',
                                 buttonColor: Colors.blue[900]!,
                                 textColor: Colors.white,
@@ -474,18 +433,15 @@ class _MyHomePageState extends State<EmployeeList> {
                                           color: Colors.grey.withOpacity(0.3),
                                           spreadRadius: 5,
                                           blurRadius: 7,
-                                          offset: const Offset(0,
-                                              0), // changes position of shadow
+                                          offset: const Offset(0, 0), // changes position of shadow
                                         ),
                                       ],
                                     ),
                                     child: empdaily.isEmpty
                                         ? Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
-                                              Text(
-                                                  'ไม่พบรหัสพนักงาน ${textempdaily.text} ในฐานข้อมูล'),
+                                              Text('ไม่พบรหัสพนักงาน ${textempdaily.text} ในฐานข้อมูล'),
                                             ],
                                           )
                                         : Column(
@@ -503,21 +459,45 @@ class _MyHomePageState extends State<EmployeeList> {
                                                 '${empdaily[0].supervisorCode} ${empdaily[0].supervisorName}',
                                               ),
                                               Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
+                                                    padding: const EdgeInsets.only(
                                                       top: 16.0,
                                                       bottom: 8.0,
                                                     ),
                                                     child: MyButton(
-                                                      onPressed:
-                                                          _handleSaveTempDailyEmployee,
+                                                      onPressed: () {
+                                                        Dialogs.materialDialog(
+                                                          msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
+                                                          title: 'ยืนยันข้อมูล',
+                                                          context: context,
+                                                          actions: [
+                                                            IconsOutlineButton(
+                                                              onPressed: () {
+                                                                Navigator.of(context, rootNavigator: true).pop();
+                                                              },
+                                                              text: 'ไม่',
+                                                              iconData: Icons.cancel_outlined,
+                                                              color: Colors.white,
+                                                              textStyle: const TextStyle(color: Colors.black),
+                                                              iconColor: Colors.black,
+                                                            ),
+                                                            IconsButton(
+                                                              text: 'ใช่',
+                                                              iconData: Icons.check_circle_outline,
+                                                              color: Colors.green,
+                                                              textStyle: const TextStyle(color: Colors.white),
+                                                              iconColor: Colors.white,
+                                                              onPressed: () {
+                                                                _handleSaveTempDailyEmployee();
+                                                              },
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
                                                       text: 'บันทึก',
-                                                      buttonColor:
-                                                          Colors.blue[900]!,
+                                                      buttonColor: Colors.blue[900]!,
                                                       textColor: Colors.white,
                                                     ),
                                                   ),
@@ -642,10 +622,7 @@ class _MyHomePageState extends State<EmployeeList> {
                   text: 'เพิ่มพนักงาน',
                   buttonColor: Colors.blue[900]!,
                   textColor: Colors.white,
-                  textStyle: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Colors.white),
+                  textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -658,7 +635,14 @@ class _MyHomePageState extends State<EmployeeList> {
                 size: 22,
               ),
               onChanged: (value) {
-                // filterSearchResults(value);
+                setState(() {
+                  _data = itemsList.where((res) => res.types == '0').where((item) {
+                    return item.empName!.contains(value) || item.empCode!.contains(value);
+                  }).toList();
+                  _dataAdd = itemsList.where((res) => res.types == '1').where((item) {
+                    return item.empName!.contains(value) || item.empCode!.contains(value);
+                  }).toList();
+                });
               },
             ),
             const SizedBox(height: 20.0),
@@ -715,10 +699,7 @@ class _MyHomePageState extends State<EmployeeList> {
                   alignment: Alignment.topRight,
                   child: Text(
                     'จำนวนพนักงาน ${_data.length + _dataAdd.length} คน',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Colors.amber.shade800),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.amber.shade800),
                   ),
                 ),
               ],
@@ -729,10 +710,7 @@ class _MyHomePageState extends State<EmployeeList> {
             if (_dataAdd.isNotEmpty)
               Text(
                 'พนักงานที่เพิ่ม',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(color: Theme.of(context).primaryColor),
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).primaryColor),
               ),
             const SizedBox(height: 12.0),
             _buildEmployeeList(_dataAdd),
@@ -868,13 +846,11 @@ class _MyHomePageState extends State<EmployeeList> {
                       children: [
                         Text(
                           item.empCode!,
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    color: Colors.black45,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily:
-                                        GoogleFonts.jetBrainsMono().fontFamily,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                color: Colors.black45,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: GoogleFonts.jetBrainsMono().fontFamily,
+                              ),
                         ),
                         const SizedBox(width: 8.0),
                         Text(
@@ -883,9 +859,7 @@ class _MyHomePageState extends State<EmployeeList> {
                         ),
                       ],
                     ),
-                    value: (ckboxEmp.isEmpty)
-                        ? false
-                        : !checkboxEmp(item.empCode!),
+                    value: (ckboxEmp.isEmpty) ? false : !checkboxEmp(item.empCode!),
                     onChanged: (value) {
                       setState(() {
                         valall = false;
@@ -940,9 +914,7 @@ class _MyHomePageState extends State<EmployeeList> {
           {
             Dialogs.materialDialog(
               context: context,
-              dialogWidth: MediaQuery.of(context).size.width < 500
-                  ? MediaQuery.of(context).size.width
-                  : 500,
+              dialogWidth: MediaQuery.of(context).size.width < 500 ? MediaQuery.of(context).size.width : 500,
               actions: [
                 Column(
                   children: [
@@ -1056,9 +1028,7 @@ class _MyHomePageState extends State<EmployeeList> {
                       ),
                       content: SingleChildScrollView(
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width < 500
-                              ? MediaQuery.of(context).size.width
-                              : 500,
+                          width: MediaQuery.of(context).size.width < 500 ? MediaQuery.of(context).size.width : 500,
                           // height: 500,
                           child: Column(
                             children: [
@@ -1082,33 +1052,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                       textEnd: TextDefultOneEnd,
                                       onPressedStart: () => _showTimePicker(
                                           value: DefultOneStart,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 DefultOneStart = result;
-                                                TextDefultOneStart =
-                                                    _getDisplayTime(
-                                                        DefultOneStart);
+                                                TextDefultOneStart = _getDisplayTime(DefultOneStart);
                                               });
                                             }
                                           }),
                                       onPressedEnd: () => _showTimePicker(
                                           value: DefultOneEnd,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 DefultOneEnd = result;
-                                                TextDefultOneEnd =
-                                                    _getDisplayTime(
-                                                        DefultOneEnd);
+                                                TextDefultOneEnd = _getDisplayTime(DefultOneEnd);
                                               });
                                             }
                                           }),
@@ -1131,33 +1091,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                       textEnd: TextOTBeforeEnd,
                                       onPressedStart: () => _showTimePicker(
                                           value: OTBeforeStart,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 OTBeforeStart = result;
-                                                TextOTBeforeStart =
-                                                    _getDisplayTime(
-                                                        OTBeforeStart);
+                                                TextOTBeforeStart = _getDisplayTime(OTBeforeStart);
                                               });
                                             }
                                           }),
                                       onPressedEnd: () => _showTimePicker(
                                           value: OTBeforeEnd,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 OTBeforeEnd = result;
-                                                TextOTBeforeEnd =
-                                                    _getDisplayTime(
-                                                        OTBeforeEnd);
+                                                TextOTBeforeEnd = _getDisplayTime(OTBeforeEnd);
                                               });
                                             }
                                           }),
@@ -1170,32 +1120,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                       textEnd: TextOTAfterEnd,
                                       onPressedStart: () => _showTimePicker(
                                           value: OTAfterStart,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 OTAfterStart = result;
-                                                TextOTAfterStart =
-                                                    _getDisplayTime(
-                                                        OTAfterStart);
+                                                TextOTAfterStart = _getDisplayTime(OTAfterStart);
                                               });
                                             }
                                           }),
                                       onPressedEnd: () => _showTimePicker(
                                           value: OTAfterEnd,
-                                          onConfirm:
-                                              (Picker picker, List value) {
-                                            var result = (picker.adapter
-                                                    as DateTimePickerAdapter)
-                                                .value;
+                                          onConfirm: (Picker picker, List value) {
+                                            var result = (picker.adapter as DateTimePickerAdapter).value;
                                             if (result != null) {
                                               setState(() {
                                                 OTAfterEnd = result;
-                                                TextOTAfterEnd =
-                                                    _getDisplayTime(OTAfterEnd);
+                                                TextOTAfterEnd = _getDisplayTime(OTAfterEnd);
                                               });
                                             }
                                           }),
@@ -1229,8 +1170,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                 // value: 'J001',
                                 icon: const Icon(Icons.keyboard_arrow_down),
                                 items: jobms
-                                    .map((JobMaster jobDetailTop) =>
-                                        DropdownMenuItem(
+                                    .map((JobMaster jobDetailTop) => DropdownMenuItem(
                                           // alignment: AlignmentDirectional.center,
                                           value: jobDetailTop.jobCode,
                                           child: Text(jobDetailTop.jobName!),
@@ -1268,12 +1208,10 @@ class _MyHomePageState extends State<EmployeeList> {
                                 //  value: locationName, //locationName,
                                 icon: const Icon(Icons.keyboard_arrow_down),
                                 items: locationms
-                                    .map((LocationMaster jobDetailTop) =>
-                                        DropdownMenuItem(
+                                    .map((LocationMaster jobDetailTop) => DropdownMenuItem(
                                           // alignment: AlignmentDirectional.center,
                                           value: jobDetailTop.locationCode,
-                                          child:
-                                              Text(jobDetailTop.locationName!),
+                                          child: Text(jobDetailTop.locationName!),
                                         ))
                                     .toList(),
                                 onChanged: (val) {
@@ -1314,12 +1252,10 @@ class _MyHomePageState extends State<EmployeeList> {
                                   var ckOTOTAfterstart = "";
 
                                   ///check ค่าว่าง
-                                  if ((TextOTBeforeStart != "") ||
-                                      (TextOTBeforeEnd != "")) {
+                                  if ((TextOTBeforeStart != "") || (TextOTBeforeEnd != "")) {
                                     ckOTBefore = 'YES1';
 
-                                    if ((TextOTBeforeStart != "") &&
-                                        (TextOTBeforeEnd != "")) {
+                                    if ((TextOTBeforeStart != "") && (TextOTBeforeEnd != "")) {
                                       ckOTBefore = '';
 
                                       ///check ห้ามน้อยกว่าเวลาเริ่ม
@@ -1329,28 +1265,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                     }
                                   }
 
-                                  if ((TextDefultOneStart != "") ||
-                                      (TextDefultOneEnd != "")) {
+                                  if ((TextDefultOneStart != "") || (TextDefultOneEnd != "")) {
                                     ckDefultOne = 'YES2';
 
-                                    if ((TextDefultOneStart != "") &&
-                                        (TextDefultOneEnd != "")) {
+                                    if ((TextDefultOneStart != "") && (TextDefultOneEnd != "")) {
                                       ckDefultOne = '';
 
                                       ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                      if (DefultOneStart.isAfter(
-                                          DefultOneEnd)) {
+                                      if (DefultOneStart.isAfter(DefultOneEnd)) {
                                         ckDefultOnestart = 'OVER2';
                                       }
                                     }
                                   }
 
-                                  if ((TextOTAfterStart != "") ||
-                                      (TextOTAfterEnd != "")) {
+                                  if ((TextOTAfterStart != "") || (TextOTAfterEnd != "")) {
                                     ckOTAfter = 'YES4';
 
-                                    if ((TextOTAfterStart != "") &&
-                                        (TextOTAfterEnd != "")) {
+                                    if ((TextOTAfterStart != "") && (TextOTAfterEnd != "")) {
                                       ckOTAfter = '';
 
                                       ///check ห้ามน้อยกว่าเวลาเริ่ม
@@ -1360,9 +1291,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                     }
                                   }
 
-                                  if ((((ckOTBefore != "") ||
-                                              (ckDefultOne != "") ||
-                                              (ckOTAfter != "")) ||
+                                  if ((((ckOTBefore != "") || (ckDefultOne != "") || (ckOTAfter != "")) ||
                                           ((ckOTBeforestart != "") ||
                                               (ckDefultOnestart != "") ||
                                               (ckOTOTAfterstart != ""))) ||
@@ -1373,20 +1302,16 @@ class _MyHomePageState extends State<EmployeeList> {
                                           (TextOTAfterStart == "") &&
                                           (TextOTAfterEnd == ""))) {
                                     Dialogs.materialDialog(
-                                        msg:
-                                            'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
+                                        msg: 'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
                                         title: 'ตรวจสอบข้อมูล',
                                         context: context,
                                         actions: [
                                           IconsButton(
                                             onPressed: () {
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop();
+                                              Navigator.of(context, rootNavigator: true).pop();
                                             },
                                             text: 'ตกลง',
-                                            iconData:
-                                                Icons.check_circle_outline,
+                                            iconData: Icons.check_circle_outline,
                                             color: Colors.green,
                                             textStyle: const TextStyle(
                                               color: Colors.white,
@@ -1394,23 +1319,18 @@ class _MyHomePageState extends State<EmployeeList> {
                                             iconColor: Colors.white,
                                           ),
                                         ]);
-                                  } else if (locationName == '' ||
-                                      jobdetail == '') {
+                                  } else if (locationName == '' || jobdetail == '') {
                                     Dialogs.materialDialog(
-                                        msg:
-                                            'กรุณาตรวจสอบ งาน และ สถานที่ทำงาน',
+                                        msg: 'กรุณาตรวจสอบ งาน และ สถานที่ทำงาน',
                                         title: 'ตรวจสอบข้อมูล',
                                         context: context,
                                         actions: [
                                           IconsButton(
                                             onPressed: () {
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop();
+                                              Navigator.of(context, rootNavigator: true).pop();
                                             },
                                             text: 'ตกลง',
-                                            iconData:
-                                                Icons.check_circle_outline,
+                                            iconData: Icons.check_circle_outline,
                                             color: Colors.green,
                                             textStyle: const TextStyle(
                                               color: Colors.white,
@@ -1427,8 +1347,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                       typeTimeStart.add(OTBeforeStart);
                                       typeTimeEnd.add(OTBeforeEnd);
 
-                                      arrayText =
-                                          '{"201": ["$OTBeforeStart", "$OTBeforeEnd"]';
+                                      arrayText = '{"201": ["$OTBeforeStart", "$OTBeforeEnd"]';
                                     }
                                     if (TextDefultOneEnd != "") {
                                       typeTimeStart.add(DefultOneStart);
@@ -1439,8 +1358,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                       } else {
                                         arrayText += ',';
                                       }
-                                      arrayText +=
-                                          '"100": ["$DefultOneStart", "$DefultOneEnd"]';
+                                      arrayText += '"100": ["$DefultOneStart", "$DefultOneEnd"]';
                                     }
                                     if (TextOTAfterEnd != "") {
                                       typeTimeStart.add(OTAfterStart);
@@ -1451,8 +1369,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                       } else {
                                         arrayText += ',';
                                       }
-                                      arrayText +=
-                                          '"202": ["$OTAfterStart", "$OTAfterEnd"]';
+                                      arrayText += '"202": ["$OTAfterStart", "$OTAfterEnd"]';
                                     }
 
                                     arrayText += "}";
@@ -1466,30 +1383,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                       actions: [
                                         IconsOutlineButton(
                                           onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
+                                            Navigator.of(context, rootNavigator: true).pop();
                                           },
                                           text: 'ไม่',
                                           iconData: Icons.cancel_outlined,
                                           color: Colors.white,
-                                          textStyle: const TextStyle(
-                                              color: Colors.black),
+                                          textStyle: const TextStyle(color: Colors.black),
                                           iconColor: Colors.black,
                                         ),
                                         IconsButton(
                                           text: 'ใช่',
                                           iconData: Icons.check_circle_outline,
                                           color: Colors.green,
-                                          textStyle: const TextStyle(
-                                              color: Colors.white),
+                                          textStyle: const TextStyle(color: Colors.white),
                                           iconColor: Colors.white,
                                           onPressed: () {
-                                            datasavetimesheet(
-                                                arrayText, '', '', '');
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
+                                            datasavetimesheet(arrayText, '', '', '');
+                                            Navigator.of(context, rootNavigator: true).pop();
                                           },
                                         ),
                                       ],
@@ -1543,9 +1453,7 @@ class _MyHomePageState extends State<EmployeeList> {
                         ),
                       ),
                       content: SizedBox(
-                        width: MediaQuery.of(context).size.width < 500
-                            ? MediaQuery.of(context).size.width
-                            : 500,
+                        width: MediaQuery.of(context).size.width < 500 ? MediaQuery.of(context).size.width : 500,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1579,8 +1487,7 @@ class _MyHomePageState extends State<EmployeeList> {
                               onPressed: () {
                                 //////function check time
 
-                                String arrayText =
-                                    '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
+                                String arrayText = '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
 
                                 var tagsJson = jsonDecode(arrayText);
 
@@ -1591,30 +1498,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                   actions: [
                                     IconsOutlineButton(
                                       onPressed: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
+                                        Navigator.of(context, rootNavigator: true).pop();
                                       },
                                       text: 'ไม่',
                                       iconData: Icons.cancel_outlined,
                                       color: Colors.white,
-                                      textStyle:
-                                          const TextStyle(color: Colors.black),
+                                      textStyle: const TextStyle(color: Colors.black),
                                       iconColor: Colors.black,
                                     ),
                                     IconsButton(
                                       text: 'ใช่',
                                       iconData: Icons.check_circle_outline,
                                       color: Colors.green,
-                                      textStyle:
-                                          const TextStyle(color: Colors.white),
+                                      textStyle: const TextStyle(color: Colors.white),
                                       iconColor: Colors.white,
                                       onPressed: () {
-                                        datasavetimesheet(
-                                            arrayText, '', '', '');
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
+                                        datasavetimesheet(arrayText, '', '', '');
+                                        Navigator.of(context, rootNavigator: true).pop();
                                       },
                                     ),
                                   ],
@@ -1665,9 +1565,7 @@ class _MyHomePageState extends State<EmployeeList> {
                         ),
                       ),
                       content: SizedBox(
-                        width: MediaQuery.of(context).size.width < 500
-                            ? MediaQuery.of(context).size.width
-                            : 500,
+                        width: MediaQuery.of(context).size.width < 500 ? MediaQuery.of(context).size.width : 500,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1704,8 +1602,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                   lastDate: DateTime(3000),
                                 );
 
-                                var formattedDate =
-                                    DateFormat("dd/MM/yyyy'").format(
+                                var formattedDate = DateFormat("dd/MM/yyyy'").format(
                                   DateTime(
                                     pickedDate!.year,
                                     pickedDate.month,
@@ -1744,8 +1641,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                   lastDate: DateTime(3000),
                                 );
 
-                                var formattedDate =
-                                    DateFormat("dd/MM/yyyy'").format(
+                                var formattedDate = DateFormat("dd/MM/yyyy'").format(
                                   DateTime(
                                     pickedDate!.year,
                                     pickedDate.month,
@@ -1763,21 +1659,14 @@ class _MyHomePageState extends State<EmployeeList> {
                             MyButton(
                               onPressed: () {
                                 //////function check time
-                                DateTime valdateStart = DateFormat('dd/MM/yyyy')
-                                    .parse(LeaveStartDate.text);
-                                DateTime valdateEnd = DateFormat('dd/MM/yyyy')
-                                    .parse(LeaveEndDate.text);
+                                DateTime valdateStart = DateFormat('dd/MM/yyyy').parse(LeaveStartDate.text);
+                                DateTime valdateEnd = DateFormat('dd/MM/yyyy').parse(LeaveEndDate.text);
 
-                                DateTime dtStart = new DateTime(
-                                        valdateStart.year - 543,
-                                        valdateStart.month,
-                                        valdateStart.day)
-                                    .add(new Duration(hours: 8, minutes: 30));
+                                DateTime dtStart =
+                                    new DateTime(valdateStart.year - 543, valdateStart.month, valdateStart.day)
+                                        .add(new Duration(hours: 8, minutes: 30));
 
-                                DateTime dtEnd = new DateTime(
-                                        valdateEnd.year - 543,
-                                        valdateEnd.month,
-                                        valdateEnd.day)
+                                DateTime dtEnd = new DateTime(valdateEnd.year - 543, valdateEnd.month, valdateEnd.day)
                                     .add(new Duration(hours: 17, minutes: 30));
 
                                 DateTime CurrentDate = GetDateTimeCurrent();
@@ -1785,16 +1674,13 @@ class _MyHomePageState extends State<EmployeeList> {
                                 print(dtStart);
                                 if (dtEnd.isBefore(dtStart)) {
                                   Dialogs.materialDialog(
-                                      msg:
-                                          'กรุณาตรวจสอบวันที่การลา เวลาสิ้นสุด ต้องมากกว่าเวลาเริ่ม',
+                                      msg: 'กรุณาตรวจสอบวันที่การลา เวลาสิ้นสุด ต้องมากกว่าเวลาเริ่ม',
                                       title: 'ตรวจสอบข้อมูล',
                                       context: context,
                                       actions: [
                                         IconsButton(
                                           onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
+                                            Navigator.of(context, rootNavigator: true).pop();
                                           },
                                           text: 'ตกลง',
                                           iconData: Icons.check_circle_outline,
@@ -1805,21 +1691,16 @@ class _MyHomePageState extends State<EmployeeList> {
                                           iconColor: Colors.white,
                                         ),
                                       ]);
-                                } else if (CurrentDate.isAfter(new DateTime(
-                                    valdateStart.year - 543,
-                                    valdateStart.month,
-                                    valdateStart.day))) {
+                                } else if (CurrentDate.isAfter(
+                                    new DateTime(valdateStart.year - 543, valdateStart.month, valdateStart.day))) {
                                   Dialogs.materialDialog(
-                                      msg:
-                                          'กรุณาตรวจสอบวันที่การลาไม่ให้ลงย้อนหลัง',
+                                      msg: 'กรุณาตรวจสอบวันที่การลาไม่ให้ลงย้อนหลัง',
                                       title: 'ตรวจสอบข้อมูล',
                                       context: context,
                                       actions: [
                                         IconsButton(
                                           onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
+                                            Navigator.of(context, rootNavigator: true).pop();
                                           },
                                           text: 'ตกลง',
                                           iconData: Icons.check_circle_outline,
@@ -1831,8 +1712,7 @@ class _MyHomePageState extends State<EmployeeList> {
                                         ),
                                       ]);
                                 } else {
-                                  String arrayText =
-                                      '{"302": ["$dtStart", "$dtEnd"]}';
+                                  String arrayText = '{"302": ["$dtStart", "$dtEnd"]}';
 
                                   var tagsJson = jsonDecode(arrayText);
 
@@ -1843,30 +1723,23 @@ class _MyHomePageState extends State<EmployeeList> {
                                     actions: [
                                       IconsOutlineButton(
                                         onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
+                                          Navigator.of(context, rootNavigator: true).pop();
                                         },
                                         text: 'ไม่',
                                         iconData: Icons.cancel_outlined,
                                         color: Colors.white,
-                                        textStyle: const TextStyle(
-                                            color: Colors.black),
+                                        textStyle: const TextStyle(color: Colors.black),
                                         iconColor: Colors.black,
                                       ),
                                       IconsButton(
                                         text: 'ใช่',
                                         iconData: Icons.check_circle_outline,
                                         color: Colors.green,
-                                        textStyle: const TextStyle(
-                                            color: Colors.white),
+                                        textStyle: const TextStyle(color: Colors.white),
                                         iconColor: Colors.white,
                                         onPressed: () {
-                                          datasavetimesheet(
-                                              arrayText, '', '', '');
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
+                                          datasavetimesheet(arrayText, '', '', '');
+                                          Navigator.of(context, rootNavigator: true).pop();
                                         },
                                       ),
                                     ],

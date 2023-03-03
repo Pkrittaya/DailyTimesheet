@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -35,8 +34,7 @@ class EmployeeDetail extends StatefulWidget {
   State<EmployeeDetail> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<EmployeeDetail>
-    with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<EmployeeDetail> with SingleTickerProviderStateMixin {
   List<TimeSheetHistoryModel> timesheetCurrent = [];
   List<TimeSheetHistoryModel> timesheetHistory = [];
   List<TimeSheetHistoryModel> workdayHistory = [];
@@ -54,10 +52,8 @@ class _MyHomePageState extends State<EmployeeDetail>
     Duration workYesterday = const Duration(hours: 9, minutes: 00);
     DateTime now = DateTime.now();
     if ((now.hour < workYesterday.inHours) ||
-        ((now.hour == workYesterday.inHours) &&
-            (now.minute <= workYesterday.inMinutes.remainder(60)))) {
-      now =
-          DateTime(now.year, now.month, now.day).add(const Duration(days: -1));
+        ((now.hour == workYesterday.inHours) && (now.minute <= workYesterday.inMinutes.remainder(60)))) {
+      now = DateTime(now.year, now.month, now.day).add(const Duration(days: -1));
     } else {
       now = DateTime(now.year, now.month, now.day);
     }
@@ -67,23 +63,25 @@ class _MyHomePageState extends State<EmployeeDetail>
 
   formatDateTextTH(textTime) {
     DateTime valDate = DateTime.parse(textTime);
-    String date = DateFormat("d MMMM yyyy", "th")
-        .format(DateTime(valDate.year + 543, valDate.month, valDate.day));
+    String date = DateFormat("d MMMM yyyy", "th").format(DateTime(valDate.year + 543, valDate.month, valDate.day));
     return date;
   }
 
   formatDateTH(validate) {
-    String date = DateFormat("d MMMM yyyy", "th")
-        .format(DateTime(validate.year + 543, validate.month, validate.day));
+    String date = DateFormat("d MMMM yyyy", "th").format(DateTime(validate.year + 543, validate.month, validate.day));
     return date;
   }
 
   customCountTime(text) {
     final parts = text.split(':');
-    final textTime =
-        '${int.parse(parts[0])} ชั่วโมง ${int.parse(parts[1])} นาที';
+    final textTime = '${int.parse(parts[0])} ชั่วโมง ${int.parse(parts[1])} นาที';
 
     return textTime.toString();
+  }
+
+  isWorkDayComplete(text) {
+    final parts = text.split(':');
+    return int.parse(parts[0]) >= 8;
   }
 
   EmployeeData empData = EmployeeData(
@@ -96,8 +94,6 @@ class _MyHomePageState extends State<EmployeeDetail>
   );
 
   getAPI() async {
-    var seen = <String>{};
-
     var current = await GetDailyTimesheet(widget.empDetail.empCode, 'CURRENT');
     var history = await GetDailyTimesheet(widget.empDetail.empCode, 'HISTORY');
     var profile = await GetEmpProfile(widget.empCode);
@@ -145,8 +141,7 @@ class _MyHomePageState extends State<EmployeeDetail>
     const JsonDecoder decoder = JsonDecoder();
     var currentDate = getDateTimeCurrent();
     if (formatDateTH(currentDate) == formatDateTextTH(timesheet.workDay!)) {
-      var dateNow =
-          DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
+      //var dateNow = DateFormat('yyyy-MM-ddTHH:mm:ss.SSS').format(DateTime.now());
 
       String toText = "[";
       toText += '{';
@@ -271,6 +266,21 @@ class _MyHomePageState extends State<EmployeeDetail>
     return MyScaffold(
       empCode: widget.empCode,
       empName: empData.empName,
+      actionButton: IconButton(
+        icon: const Icon(Icons.home, color: Colors.white),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmployeeList(
+                index: widget.index,
+                EmpCode: widget.empCode,
+                url: widget.url,
+              ),
+            ),
+          );
+        },
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,7 +291,7 @@ class _MyHomePageState extends State<EmployeeDetail>
             textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
             leftIcon: const Icon(Icons.chevron_left, size: 16.0),
           ),*/
-          ElevatedButton.icon(
+          /*ElevatedButton.icon(
             icon: const Icon(
               FontAwesomeIcons.arrowLeft,
               size: 12,
@@ -292,8 +302,7 @@ class _MyHomePageState extends State<EmployeeDetail>
               style: Theme.of(context).textTheme.titleSmall,
             ), //label text
             style: ElevatedButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -313,22 +322,16 @@ class _MyHomePageState extends State<EmployeeDetail>
               );
             },
           ),
-          const SizedBox(height: 24),
-          Container(
-              // margin: const EdgeInsets.all(15.0),
-              padding: const EdgeInsets.all(10.0),
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-              child: Column(
-                children: [
-                  _buildDropdownEmp(),
-                  (widget.empDetail.empDepartmentName) != ''
-                      ? Text("แผนก ${widget.empDetail.empDepartmentName}",
-                          style: Theme.of(context).textTheme.titleMedium!)
-                      : SizedBox(
-                          height: 0,
-                        )
-                ],
-              )),
+          */
+          const SizedBox(height: 8),
+          Column(
+            children: [
+              _buildDropdownEmp(),
+              (widget.empDetail.empDepartmentName) != ''
+                  ? Text("แผนก ${widget.empDetail.empDepartmentName}", style: Theme.of(context).textTheme.titleMedium!)
+                  : const SizedBox.shrink(),
+            ],
+          ),
           // const SizedBox(height: 15),
           const SizedBox(height: 24),
           Container(
@@ -372,12 +375,8 @@ class _MyHomePageState extends State<EmployeeDetail>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  (timesheetCurrent.isNotEmpty)
-                      ? _buildTimesheetCurrent()
-                      : const Center(child: Text('ไม่มีข้อมูล')),
-                  (timesheetHistory.isNotEmpty)
-                      ? _buildTimesheetHistory()
-                      : const Center(child: Text('ไม่มีข้อมูล')),
+                  (timesheetCurrent.isNotEmpty) ? _buildTimesheetCurrent() : const Center(child: Text('ไม่มีข้อมูล')),
+                  (timesheetHistory.isNotEmpty) ? _buildTimesheetHistory() : const Center(child: Text('ไม่มีข้อมูล')),
                 ],
               ),
             ),
@@ -391,11 +390,9 @@ class _MyHomePageState extends State<EmployeeDetail>
     return Column(
       children: [
         ExpansionPanelList(
-          expandedHeaderPadding:
-              const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
+          expandedHeaderPadding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
           elevation: 0.0,
-          children: [timesheetCurrent[0].lstTimesheet[0]]
-              .map<ExpansionPanel>((DailyTimeSheet day) {
+          children: [timesheetCurrent[0].lstTimesheet[0]].map<ExpansionPanel>((DailyTimeSheet day) {
             return ExpansionPanel(
               backgroundColor: Colors.grey.shade200,
               isExpanded: true,
@@ -413,7 +410,9 @@ class _MyHomePageState extends State<EmployeeDetail>
                         ),
                         Text(
                           'รวมเวลา ${customCountTime(day.totalsTime)}',
-                          style: Theme.of(context).textTheme.titleMedium,
+                          style: isWorkDayComplete(day.totalsTime)
+                              ? Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.green)
+                              : Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.redAccent),
                         ),
                       ],
                     ),
@@ -433,31 +432,32 @@ class _MyHomePageState extends State<EmployeeDetail>
 
                         return Container(
                           padding: const EdgeInsets.all(12.0),
-                          margin: EdgeInsets.only(
-                              bottom: index == dayList.length - 1 ? 12.0 : 0.0),
+                          margin: EdgeInsets.only(bottom: index == dayList.length - 1 ? 12.0 : 0.0),
                           decoration: BoxDecoration(
                             //color: index % 2 == 0 ? Colors.grey.shade100 : Colors.white,
                             color: Colors.white,
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: 1.0, color: Colors.grey.shade400)),
+                            border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey.shade400)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: (dayList[index].status != '301' ||
-                                        dayList[index].status != '301')
-                                    ? Text(
-                                        '${replaceStatusTime(dayList[index].status)} : ${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall)
+                                child: (dayList[index].status != '301' && dayList[index].status != '302')
+                                    ? Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 60.0,
+                                            child: Text('${replaceStatusTime(dayList[index].status)} :',
+                                                style: Theme.of(context).textTheme.titleSmall),
+                                          ),
+                                          Text(
+                                              '${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
+                                              style: Theme.of(context).textTheme.titleSmall),
+                                        ],
+                                      )
                                     : Text(
                                         '${replaceStatusTime(dayList[index].status)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
+                                        style: Theme.of(context).textTheme.titleSmall,
                                       ),
                               ),
                               Expanded(
@@ -468,15 +468,9 @@ class _MyHomePageState extends State<EmployeeDetail>
                                 ),
                               ),
                               const SizedBox(width: 16.0),
-                              (timesheetCurrent[0]
-                                          .lstTimesheet[index]
-                                          .createBy ==
-                                      widget.empCode)
-                                  ? _buildDeleteTimesheet(
-                                      timesheetCurrent[0].lstTimesheet[index])
-                                  : SizedBox(
-                                      height: 0,
-                                    )
+                              (timesheetCurrent[0].lstTimesheet[index].createBy == widget.empCode)
+                                  ? _buildDeleteTimesheet(timesheetCurrent[0].lstTimesheet[index])
+                                  : const SizedBox.shrink()
                             ],
                           ),
                         );
@@ -492,67 +486,18 @@ class _MyHomePageState extends State<EmployeeDetail>
     );
   }
 
-  /*Widget _buildTimesheetCurrent_old() {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'วันที่ ${formatDateTH(getDateTimeCurrent())}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            Text(
-              'รวมจำนวน ${customCountTime(timesheetCurrent[0].sumtimes)}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Divider(height: 1.0, color: Colors.grey.shade400),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: timesheetCurrent.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  (timesheetCurrent[index].status != '301' || timesheetCurrent[index].status != '301')
-                      ? Text(
-                          '${replaceStatusTime(timesheetCurrent[index].status)} : ${customTime(timesheetCurrent[index].timeIn)} - ${customTime(timesheetCurrent[index].timeOut)}')
-                      : Text('${replaceStatusTime(timesheetCurrent[index].status)}'),
-                  Row(
-                    children: [
-                      const SizedBox(width: 6),
-                      _buildDeleteTimesheet(timesheetCurrent[index]),
-                    ],
-                  ),
-                ],
-              );
-            },
-          ),
-        )
-      ],
-    );
-  }*/
-
   Widget _buildTimesheetHistory() {
     return Column(
       children: [
         ExpansionPanelList(
-          expandedHeaderPadding:
-              const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
+          expandedHeaderPadding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
           elevation: 0.0,
           expansionCallback: (int index, bool isExpanded) {
             setState(() {
               workdayHistory[index].isExpanded = !isExpanded;
             });
           },
-          children:
-              workdayHistory.map<ExpansionPanel>((TimeSheetHistoryModel day) {
+          children: workdayHistory.map<ExpansionPanel>((TimeSheetHistoryModel day) {
             return ExpansionPanel(
               backgroundColor: Colors.grey.shade200,
               isExpanded: day.isExpanded,
@@ -568,15 +513,14 @@ class _MyHomePageState extends State<EmployeeDetail>
                           'วันที่ ${formatDateTextTH(day.workDay!)}',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        (day.lstTimesheet[0].status != '301' &&
-                                day.lstTimesheet[0].status != '302')
+                        (day.lstTimesheet[0].status != '301' && day.lstTimesheet[0].status != '302')
                             ? Text(
                                 'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: isWorkDayComplete(day.lstTimesheet[0].totalsTime)
+                                    ? Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.green)
+                                    : Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.redAccent),
                               )
-                            : SizedBox(
-                                height: 0,
-                              ),
+                            : const SizedBox.shrink(),
                       ],
                     ),
                   ),
@@ -595,42 +539,38 @@ class _MyHomePageState extends State<EmployeeDetail>
 
                         return Container(
                           padding: const EdgeInsets.all(12.0),
-                          margin: EdgeInsets.only(
-                              bottom: index == dayList.length - 1 ? 12.0 : 0.0),
+                          margin: EdgeInsets.only(bottom: index == dayList.length - 1 ? 12.0 : 0.0),
                           decoration: BoxDecoration(
                             //color: index % 2 == 0 ? Colors.grey.shade100 : Colors.white,
                             color: Colors.white,
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: 1.0, color: Colors.grey.shade400)),
+                            border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey.shade400)),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              (dayList[index].status != '301' &&
-                                      dayList[index].status != '301')
-                                  ? Text(
-                                      '${replaceStatusTime(dayList[index].status)} : ${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall)
+                              (dayList[index].status != '301' && dayList[index].status != '302')
+                                  ? Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 60.0,
+                                          child: Text('${replaceStatusTime(dayList[index].status)} :',
+                                              style: Theme.of(context).textTheme.titleSmall),
+                                        ),
+                                        Text(
+                                            '${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
+                                            style: Theme.of(context).textTheme.titleSmall),
+                                      ],
+                                    )
                                   : Text(
                                       '${replaceStatusTime(dayList[index].status)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
+                                      style: Theme.of(context).textTheme.titleSmall,
                                     ),
-                              (dayList[index].status != '301' &&
-                                      dayList[index].status != '302')
+                              (dayList[index].status != '301' && dayList[index].status != '302')
                                   ? Text(
                                       '${customCountTime(dayList[index].dateDiffs)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
+                                      style: Theme.of(context).textTheme.titleSmall,
                                     )
-                                  : SizedBox(
-                                      height: 0,
-                                    ),
+                                  : const SizedBox.shrink(),
                             ],
                           ),
                         );
@@ -731,8 +671,7 @@ class _MyHomePageState extends State<EmployeeDetail>
           .toList(),
       onChanged: (val) {
         print(val.toString());
-        List<Employeelist> dropdownempList =
-            empList.where((res) => res.empCode == val.toString()).toList();
+        List<Employeelist> dropdownempList = empList.where((res) => res.empCode == val.toString()).toList();
 
         setState(() {
           Navigator.push(
