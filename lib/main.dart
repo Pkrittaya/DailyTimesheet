@@ -7,13 +7,14 @@ void main() {
   String? myurl = Uri.base.toString(); //get complete url
   String? para1 = Uri.base.queryParameters["para1"]; //get parameter with attribute "para1"
 
-  runApp(MyApp(myurl: myurl, para1: para1)); //pass to MyApp class
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp(myUrl: myurl, para1: para1)); //pass to MyApp class
 }
 
 class MyApp extends StatelessWidget {
-  String? myurl, para1;
+  final String? myUrl, para1;
 
-  MyApp({Key? key, this.myurl, this.para1}) : super(key: key);
+  const MyApp({Key? key, this.myUrl, this.para1}) : super(key: key);
 
   //con MyApp({this.myurl, this.para1});
   // This widget is the root of your application.
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [Locale('en'), Locale('th', 'TH')],
       title: 'Daily Timesheet',
       theme: basicTheme(),
-      home: Login(myurl: myurl, para1: para1),
+      home: Login(myUrl: myUrl, para1: para1),
       /*home: const EmployeeList(
         index: 1,
         EmpCode: '9900001',

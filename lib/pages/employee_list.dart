@@ -7,12 +7,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:k2mobileapp/login.dart';
 import 'package:k2mobileapp/models/EmployeeData.dart';
 import 'package:k2mobileapp/pages/employee_data.dart';
 import 'package:k2mobileapp/theme.dart';
 import 'package:k2mobileapp/widgets/my_box.dart';
 import 'package:k2mobileapp/widgets/my_button.dart';
+import 'package:k2mobileapp/widgets/my_scaffold.dart';
 import 'package:k2mobileapp/widgets/my_text_field.dart';
 import 'package:k2mobileapp/widgets/my_time_picker_row.dart';
 import 'package:material_dialogs/material_dialogs.dart';
@@ -554,207 +554,109 @@ class _MyHomePageState extends State<EmployeeList> {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white);
-
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            colors: [
-              Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor,
-            ],
-          ),
-        ),
+    return MyScaffold(
+      empCode: widget.EmpCode,
+      empName: empdata.empName,
+      actionButton: _buildAddTimesheet(),
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 28.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'บันทึกเวลาทำงาน',
-                        style: titleStyle!.copyWith(
-                          fontSize: 22.0,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(widget.EmpCode, style: titleStyle),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('สำหรับรายวัน', style: titleStyle),
-                      Text('${empdata.empName}', style: titleStyle),
-                    ],
-                  ),
-                  const SizedBox(height: 20.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 14),
-                          padding: EdgeInsets.zero,
-                          alignment: Alignment.centerLeft,
-                        ),
-                        icon: const Icon(
-                          Icons.logout,
-                          color: Colors.white,
-                        ),
-                        label: Text('ออกจากระบบ', style: titleStyle),
-                        onPressed: () {
-                          showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                          );
-                          return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Login(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildAddTimesheet(),
-                    ],
-                  ),
-                  const SizedBox(height: 20.0),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                MyButton(
+                  onPressed: addEmployee,
+                  text: 'เพิ่มพนักงาน',
+                  buttonColor: Colors.blue[900]!,
+                  textColor: Colors.white,
+                  textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
                 ),
-                //padding: const EdgeInsets.all(10),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            MyButton(
-                              onPressed: addEmployee,
-                              text: 'เพิ่มพนักงาน',
-                              buttonColor: Colors.blue[900]!,
-                              textColor: Colors.white,
-                              textStyle: Theme.of(context).textTheme.titleSmall!.copyWith(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20.0),
-                        MyTextField(
-                          controller: editingController,
-                          hintText: 'ค้นหารหัสพนักงาน / ชื่อ',
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            size: 22,
-                          ),
-                          onChanged: (value) {
-                            // filterSearchResults(value);
-                          },
-                        ),
-                        const SizedBox(height: 20.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ListTileTheme(
-                                horizontalTitleGap: 2.0,
-                                child: CheckboxListTile(
-                                  controlAffinity: ListTileControlAffinity.leading,
-                                  contentPadding: EdgeInsets.zero,
-                                  //selectedTileColor: Theme.of(context).primaryColor,
-                                  dense: true,
-                                  title: Text(
-                                    'เลือกพนักงานทั้งหมด',
-                                    style: Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  value: valall,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      if (valall == false) {
-                                        valall = true;
-                                        for (var element in _data) {
-                                          if (checkboxEmp(element.empCode) == true) {
-                                            ckboxEmp.add(element.empCode!);
-                                          }
-                                        }
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            MyTextField(
+              controller: editingController,
+              hintText: 'ค้นหารหัสพนักงาน / ชื่อ',
+              prefixIcon: const Icon(
+                Icons.search,
+                size: 22,
+              ),
+              onChanged: (value) {
+                // filterSearchResults(value);
+              },
+            ),
+            const SizedBox(height: 20.0),
+            Row(
+              children: [
+                Expanded(
+                  child: ListTileTheme(
+                    horizontalTitleGap: 2.0,
+                    child: CheckboxListTile(
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      //selectedTileColor: Theme.of(context).primaryColor,
+                      dense: true,
+                      title: Text(
+                        'เลือกพนักงานทั้งหมด',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      value: valall,
+                      onChanged: (value) {
+                        setState(() {
+                          if (valall == false) {
+                            valall = true;
+                            for (var element in _data) {
+                              if (checkboxEmp(element.empCode) == true) {
+                                ckboxEmp.add(element.empCode!);
+                              }
+                            }
 
-                                        for (var element in _dataAdd) {
-                                          if (checkboxEmp(element.empCode) == true) {
-                                            ckboxEmp.add(element.empCode!);
-                                          }
-                                        }
-                                      } else {
-                                        valall = false;
-                                        for (var element in _data) {
-                                          if (checkboxEmp(element.empCode) == false) {
-                                            ckboxEmp.remove(element.empCode!);
-                                          }
-                                        }
+                            for (var element in _dataAdd) {
+                              if (checkboxEmp(element.empCode) == true) {
+                                ckboxEmp.add(element.empCode!);
+                              }
+                            }
+                          } else {
+                            valall = false;
+                            for (var element in _data) {
+                              if (checkboxEmp(element.empCode) == false) {
+                                ckboxEmp.remove(element.empCode!);
+                              }
+                            }
 
-                                        for (var element in _dataAdd) {
-                                          if (checkboxEmp(element.empCode) == false) {
-                                            ckboxEmp.remove(element.empCode!);
-                                          }
-                                        }
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                            Container(
-                              alignment: Alignment.topRight,
-                              child: Text(
-                                'จำนวนพนักงาน ${_data.length + _dataAdd.length} คน',
-                                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.amber.shade800),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        _buildEmployeeList(_data),
-                        const SizedBox(height: 28.0),
-                        if (_dataAdd.isNotEmpty)
-                          Text(
-                            'พนักงานที่เพิ่ม',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: Theme.of(context).primaryColor),
-                          ),
-                        const SizedBox(height: 12.0),
-                        _buildEmployeeList(_dataAdd),
-                        const SizedBox(height: 40.0),
-                      ],
+                            for (var element in _dataAdd) {
+                              if (checkboxEmp(element.empCode) == false) {
+                                ckboxEmp.remove(element.empCode!);
+                              }
+                            }
+                          }
+                        });
+                      },
                     ),
                   ),
                 ),
-              ),
+                Container(
+                  alignment: Alignment.topRight,
+                  child: Text(
+                    'จำนวนพนักงาน ${_data.length + _dataAdd.length} คน',
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.amber.shade800),
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 8.0),
+            _buildEmployeeList(_data),
+            const SizedBox(height: 28.0),
+            if (_dataAdd.isNotEmpty)
+              Text(
+                'พนักงานที่เพิ่ม',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).primaryColor),
+              ),
+            const SizedBox(height: 12.0),
+            _buildEmployeeList(_dataAdd),
+            const SizedBox(height: 40.0),
           ],
         ),
       ),
@@ -791,6 +693,7 @@ class _MyHomePageState extends State<EmployeeList> {
       shrinkWrap: true,
       children: data.map((Employeelist item) {
         return Container(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(width: 0.0, color: Colors.grey.shade400),
@@ -852,8 +755,8 @@ class _MyHomePageState extends State<EmployeeList> {
                 MaterialPageRoute(
                   builder: (context) => EmployeeDetail(
                     index: 1,
-                    EmpCode: widget.EmpCode,
-                    EmpDetail: item,
+                    empCode: widget.EmpCode,
+                    empDetail: item,
                     url: widget.url,
                   ),
                 ),
@@ -920,8 +823,8 @@ class _MyHomePageState extends State<EmployeeList> {
                     MaterialPageRoute(
                       builder: (context) => EmployeeDetail(
                         index: 1,
-                        EmpCode: widget.EmpCode,
-                        EmpDetail: item,
+                        empCode: widget.EmpCode,
+                        empDetail: item,
                         url: widget.url,
                       ),
                     ),
@@ -949,7 +852,7 @@ class _MyHomePageState extends State<EmployeeList> {
   Widget _buildAddTimesheet() {
     return ElevatedButton.icon(
       onPressed: () => {
-        if (ckboxEmp.length > 0)
+        if (ckboxEmp.isNotEmpty)
           {
             Dialogs.materialDialog(
               context: context,

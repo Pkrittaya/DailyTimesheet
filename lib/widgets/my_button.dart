@@ -6,6 +6,7 @@ class MyButton extends StatelessWidget {
   final Color textColor;
   final double verticalPadding;
   final TextStyle? textStyle;
+  final Icon? leftIcon;
   final VoidCallback onPressed;
 
   static const minimumWidth = 120.0;
@@ -16,6 +17,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     required this.text,
     this.buttonColor,
+    this.leftIcon,
     this.textColor = Colors.white,
     this.verticalPadding = defaultPadding,
     this.textStyle,
@@ -38,13 +40,16 @@ class MyButton extends StatelessWidget {
           horizontal: defaultPadding,
           vertical: verticalPadding,
         ),
-        child: Text(
-          text,
-          style: textStyle ??
-              Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(color: textColor),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (leftIcon != null) leftIcon!,
+            if (leftIcon != null) const SizedBox(width: 8.0),
+            Text(
+              text,
+              style: textStyle ?? Theme.of(context).textTheme.titleMedium!.copyWith(color: textColor),
+            ),
+          ],
         ),
       ),
     );
