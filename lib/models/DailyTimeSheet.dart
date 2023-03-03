@@ -21,7 +21,7 @@ class DailyTimeSheet {
   String? empName;
   String? dateDiffs;
   int? sumMinute;
-  String? sumtimes;
+  String? totalsTime;
   bool isExpanded = false;
 
   DailyTimeSheet(
@@ -47,7 +47,7 @@ class DailyTimeSheet {
       this.empName,
       this.dateDiffs,
       this.sumMinute,
-      this.sumtimes});
+      this.totalsTime});
 
   DailyTimeSheet.fromJson(Map<String, dynamic> json) {
     jobNo = json['JobNo'];
@@ -72,7 +72,7 @@ class DailyTimeSheet {
     empName = json['Emp_Name'];
     dateDiffs = json['DateDiffs'];
     sumMinute = json['SumMinute'];
-    sumtimes = json['Sumtimes'];
+    totalsTime = json['TotalsTime'];
   }
 
   Map<String, dynamic> toJson() {
@@ -99,7 +99,7 @@ class DailyTimeSheet {
     data['Emp_Name'] = this.empName;
     data['DateDiffs'] = this.dateDiffs;
     data['SumMinute'] = this.sumMinute;
-    data['Sumtimes'] = this.sumtimes;
+    data['TotalsTime'] = this.totalsTime;
     return data;
   }
 }

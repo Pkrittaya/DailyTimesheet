@@ -9,6 +9,7 @@ import 'models/EmployeeData.dart';
 import 'models/EmployeeList.dart';
 import 'models/JobList.dart';
 import 'models/LocationList.dart';
+import 'models/TimeSheetHistoryModel.dart';
 
 /////
 List<Employeelist> itemsList = [];
@@ -16,6 +17,8 @@ List<EmpDailyEmployee> empdaily = [];
 List<JobMaster> jobms = [];
 List<LocationMaster> locationms = [];
 List<DailyTimeSheet> timesheet = [];
+List<TimeSheetHistoryModel> timesheetHistory = [];
+
 List<EmployeeData> empprofile = [];
 
 var webconfig = "";
@@ -36,7 +39,8 @@ GetEmpProfile(var empcode) async {
     webconfig = await readJsonFile(filejson);
 
     var client = http.Client();
-    var uri = Uri.parse("${webconfig}/api/Interface/GetEmployeeData?EmpCode=${empcode}");
+    var uri = Uri.parse(
+        "${webconfig}/api/Interface/GetEmployeeData?EmpCode=${empcode}");
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -58,7 +62,8 @@ GetEmpProfile(var empcode) async {
 Future<List<Employeelist>> GetEmployeeList(String supCode) async {
   try {
     webconfig = await readJsonFile(filejson);
-    var _baseUrl = "${webconfig}/api/Daily/GetListEmpDailyBySuppervisor?suppervisor=$supCode";
+    var _baseUrl =
+        "${webconfig}/api/Daily/GetListEmpDailyBySuppervisor?suppervisor=$supCode";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -70,7 +75,8 @@ Future<List<Employeelist>> GetEmployeeList(String supCode) async {
 
     // print(parsedListJson);
 
-    itemsList = List<Employeelist>.from(parsedListJson.map<Employeelist>((dynamic i) => Employeelist.fromJson(i)));
+    itemsList = List<Employeelist>.from(parsedListJson
+        .map<Employeelist>((dynamic i) => Employeelist.fromJson(i)));
 
     // print(itemsList.length);
 
@@ -87,7 +93,8 @@ Future<List<EmpDailyEmployee>> GetEmpDailyEmployee(var empcode) async {
   try {
     webconfig = await readJsonFile(filejson);
 
-    var _baseUrl = "${webconfig}/api/Daily/GetEmpDailyEmployee?empcode=${empcode}";
+    var _baseUrl =
+        "${webconfig}/api/Daily/GetEmpDailyEmployee?empcode=${empcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -97,8 +104,8 @@ Future<List<EmpDailyEmployee>> GetEmpDailyEmployee(var empcode) async {
 
     List<dynamic> parsedListJson = jsonDecode(res.body);
 
-    empdaily =
-        List<EmpDailyEmployee>.from(parsedListJson.map<EmpDailyEmployee>((dynamic i) => EmpDailyEmployee.fromJson(i)));
+    empdaily = List<EmpDailyEmployee>.from(parsedListJson
+        .map<EmpDailyEmployee>((dynamic i) => EmpDailyEmployee.fromJson(i)));
 
     return empdaily;
   } catch (err) {
@@ -114,7 +121,8 @@ PostTempEmployeeDaily(var tojsontext) async {
 
     final _baseUrl = '${webconfig}/api/Daily/PostTempEmployeeDaily';
     final res = await http.post(Uri.parse("${_baseUrl}"),
-        headers: {"Content-Type": "application/json"}, body: json.encode(tojsontext));
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(tojsontext));
 
     return res;
   } catch (err) {
@@ -129,7 +137,8 @@ Future<List<JobMaster>> GetJobMaster(var projectcode) async {
   try {
     webconfig = await readJsonFile(filejson);
 
-    var _baseUrl = "${webconfig}/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
+    var _baseUrl =
+        "${webconfig}/api/Daily/GetDropDownJobMaster?projectcode=${projectcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -139,7 +148,8 @@ Future<List<JobMaster>> GetJobMaster(var projectcode) async {
 
     List<dynamic> parsedListJson = jsonDecode(res.body);
 
-    jobms = List<JobMaster>.from(parsedListJson.map<JobMaster>((dynamic i) => JobMaster.fromJson(i)));
+    jobms = List<JobMaster>.from(
+        parsedListJson.map<JobMaster>((dynamic i) => JobMaster.fromJson(i)));
 
     return jobms;
   } catch (err) {
@@ -154,7 +164,8 @@ Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
   try {
     webconfig = await readJsonFile(filejson);
 
-    var _baseUrl = "${webconfig}/api/Daily/GetDropDownLocation?projectcode=${projectcode}";
+    var _baseUrl =
+        "${webconfig}/api/Daily/GetDropDownLocation?projectcode=${projectcode}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -164,8 +175,8 @@ Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
 
     List<dynamic> parsedListJson = jsonDecode(res.body);
 
-    locationms =
-        List<LocationMaster>.from(parsedListJson.map<LocationMaster>((dynamic i) => LocationMaster.fromJson(i)));
+    locationms = List<LocationMaster>.from(parsedListJson
+        .map<LocationMaster>((dynamic i) => LocationMaster.fromJson(i)));
 
     return locationms;
   } catch (err) {
@@ -176,11 +187,13 @@ Future<List<LocationMaster>> GetLocationMaster(var projectcode) async {
 }
 
 ///// Timesheet
-Future<List<DailyTimeSheet>> GetDailyTimesheet(var empcode, var type) async {
+Future<List<TimeSheetHistoryModel>> GetDailyTimesheet(
+    var empcode, var type) async {
   try {
     webconfig = await readJsonFile(filejson);
 
-    var _baseUrl = "${webconfig}/api/Daily/GetDailyTimeSheet?empcode=${empcode}&type=${type}";
+    var _baseUrl =
+        "${webconfig}/api/Daily/GetDailyTimeSheet?empcode=${empcode}&type=${type}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
@@ -190,14 +203,22 @@ Future<List<DailyTimeSheet>> GetDailyTimesheet(var empcode, var type) async {
 
     List<dynamic> parsedListJson = jsonDecode(res.body);
 
-    timesheet =
-        List<DailyTimeSheet>.from(parsedListJson.map<DailyTimeSheet>((dynamic i) => DailyTimeSheet.fromJson(i)));
+    timesheetHistory = List<TimeSheetHistoryModel>.from(
+        parsedListJson.map<TimeSheetHistoryModel>(
+            (dynamic i) => TimeSheetHistoryModel.fromJson(i)));
 
-    return timesheet;
+    for (var hist in timesheetHistory) {
+      List<dynamic> parsedListJson2 = jsonDecode(hist.record!);
+
+      hist.lstTimesheet = List<DailyTimeSheet>.from(parsedListJson2
+          .map<DailyTimeSheet>((dynamic i) => DailyTimeSheet.fromJson(i)));
+    }
+
+    return timesheetHistory;
   } catch (err) {
     print('Something went wrong');
 
-    return <DailyTimeSheet>[];
+    return <TimeSheetHistoryModel>[];
   }
 }
 
@@ -212,7 +233,8 @@ GetValidateLogIn(var User, var pass) async {
   try {
     webconfig = await readJsonFile(filejson);
 
-    var _baseUrl = "${webconfig}/api/Interface/GetLogOn?Username=${User}&Password=${pass}";
+    var _baseUrl =
+        "${webconfig}/api/Interface/GetLogOn?Username=${User}&Password=${pass}";
     final res = await http.get(
       Uri.parse("$_baseUrl"),
     );
