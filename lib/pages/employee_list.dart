@@ -980,6 +980,7 @@ class _MyHomePageState extends State<EmployeeList> {
         if (ckboxEmp.isNotEmpty)
           {
             Dialogs.materialDialog(
+              // title: 'เวลาปฏิบัติงาน',
               context: context,
               dialogWidth: MediaQuery.of(context).size.width < 500
                   ? MediaQuery.of(context).size.width
@@ -987,6 +988,27 @@ class _MyHomePageState extends State<EmployeeList> {
               actions: [
                 Column(
                   children: [
+                    // Positioned(
+                    //   right: 0.0,
+                    //   top: 0.0,
+                    //   child: Align(
+                    //     alignment: Alignment.topRight,
+                    //     child: CircleAvatar(
+                    //       radius: 14.0,
+                    //       backgroundColor: Colors.white,
+                    //       child: IconButton(
+                    //         onPressed: () => Navigator.of(
+                    //           context,
+                    //           rootNavigator: true,
+                    //         ).pop(),
+                    //         icon: const Icon(Icons.close),
+                    //         padding: EdgeInsets.zero,
+                    //         // alignment: Alignment.topRight,
+                    //         splashRadius: 20,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     Text(
                       'เวลาปฏิบัติงาน',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -1083,6 +1105,7 @@ class _MyHomePageState extends State<EmployeeList> {
             TextOTAfterStart = "";
             TextOTAfterEnd = "";
             showDialog(
+              barrierDismissible: false,
               context: context,
               builder: (context) {
                 return StatefulBuilder(
@@ -1343,204 +1366,222 @@ class _MyHomePageState extends State<EmployeeList> {
                                 ),
                               ),
                               const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  /* ปุ่ม 'ยกเลิก' */
+                                  MyButton(
+                                    onPressed: () => Navigator.of(
+                                      context,
+                                      rootNavigator: true,
+                                    ).pop(),
+                                    text: 'ยกเลิก',
+                                    buttonColor: Colors.blue[900]!,
+                                    textColor: Colors.white,
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  /* ปุ่ม 'บันทึก' */
+                                  MyButton(
+                                    onPressed: () {
+                                      //////function check time
 
-                              /* ปุ่ม 'บันทึก' */
-                              MyButton(
-                                onPressed: () {
-                                  //////function check time
+                                      var ckOTBefore = "";
+                                      var ckOTBeforestart = "";
+                                      var ckDefultOne = "";
+                                      var ckDefultOnestart = "";
+                                      var ckOTAfter = "";
+                                      var ckOTOTAfterstart = "";
 
-                                  var ckOTBefore = "";
-                                  var ckOTBeforestart = "";
-                                  var ckDefultOne = "";
-                                  var ckDefultOnestart = "";
-                                  var ckOTAfter = "";
-                                  var ckOTOTAfterstart = "";
+                                      ///check ค่าว่าง
+                                      if ((TextOTBeforeStart != "") ||
+                                          (TextOTBeforeEnd != "")) {
+                                        ckOTBefore = 'YES1';
 
-                                  ///check ค่าว่าง
-                                  if ((TextOTBeforeStart != "") ||
-                                      (TextOTBeforeEnd != "")) {
-                                    ckOTBefore = 'YES1';
+                                        if ((TextOTBeforeStart != "") &&
+                                            (TextOTBeforeEnd != "")) {
+                                          ckOTBefore = '';
 
-                                    if ((TextOTBeforeStart != "") &&
-                                        (TextOTBeforeEnd != "")) {
-                                      ckOTBefore = '';
-
-                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                      if (OTBeforeStart.isAfter(OTBeforeEnd)) {
-                                        ckOTBeforestart = 'OVER1';
+                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                          if (OTBeforeStart.isAfter(
+                                              OTBeforeEnd)) {
+                                            ckOTBeforestart = 'OVER1';
+                                          }
+                                        }
                                       }
-                                    }
-                                  }
 
-                                  if ((TextDefultOneStart != "") ||
-                                      (TextDefultOneEnd != "")) {
-                                    ckDefultOne = 'YES2';
+                                      if ((TextDefultOneStart != "") ||
+                                          (TextDefultOneEnd != "")) {
+                                        ckDefultOne = 'YES2';
 
-                                    if ((TextDefultOneStart != "") &&
-                                        (TextDefultOneEnd != "")) {
-                                      ckDefultOne = '';
+                                        if ((TextDefultOneStart != "") &&
+                                            (TextDefultOneEnd != "")) {
+                                          ckDefultOne = '';
 
-                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                      if (DefultOneStart.isAfter(
-                                          DefultOneEnd)) {
-                                        ckDefultOnestart = 'OVER2';
+                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                          if (DefultOneStart.isAfter(
+                                              DefultOneEnd)) {
+                                            ckDefultOnestart = 'OVER2';
+                                          }
+                                        }
                                       }
-                                    }
-                                  }
 
-                                  if ((TextOTAfterStart != "") ||
-                                      (TextOTAfterEnd != "")) {
-                                    ckOTAfter = 'YES4';
+                                      if ((TextOTAfterStart != "") ||
+                                          (TextOTAfterEnd != "")) {
+                                        ckOTAfter = 'YES4';
 
-                                    if ((TextOTAfterStart != "") &&
-                                        (TextOTAfterEnd != "")) {
-                                      ckOTAfter = '';
+                                        if ((TextOTAfterStart != "") &&
+                                            (TextOTAfterEnd != "")) {
+                                          ckOTAfter = '';
 
-                                      ///check ห้ามน้อยกว่าเวลาเริ่ม
-                                      if (OTAfterStart.isAfter(OTAfterEnd)) {
-                                        ckOTOTAfterstart = 'OVER4';
+                                          ///check ห้ามน้อยกว่าเวลาเริ่ม
+                                          if (OTAfterStart.isAfter(
+                                              OTAfterEnd)) {
+                                            ckOTOTAfterstart = 'OVER4';
+                                          }
+                                        }
                                       }
-                                    }
-                                  }
 
-                                  if ((((ckOTBefore != "") ||
-                                              (ckDefultOne != "") ||
-                                              (ckOTAfter != "")) ||
-                                          ((ckOTBeforestart != "") ||
-                                              (ckDefultOnestart != "") ||
-                                              (ckOTOTAfterstart != ""))) ||
-                                      ((TextOTBeforeStart == "") &&
-                                          (TextOTBeforeEnd == "") &&
-                                          (TextDefultOneStart == "") &&
-                                          (TextDefultOneEnd == "") &&
-                                          (TextOTAfterStart == "") &&
-                                          (TextOTAfterEnd == ""))) {
-                                    Dialogs.materialDialog(
-                                        msg:
-                                            'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
-                                        title: 'ตรวจสอบข้อมูล',
-                                        context: context,
-                                        actions: [
-                                          IconsButton(
-                                            onPressed: () {
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop();
-                                            },
-                                            text: 'ตกลง',
-                                            iconData:
-                                                Icons.check_circle_outline,
-                                            color: Colors.green,
-                                            textStyle: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                            iconColor: Colors.white,
-                                          ),
-                                        ]);
-                                  } else if (locationName == '' ||
-                                      jobdetail == '') {
-                                    Dialogs.materialDialog(
-                                        msg:
-                                            'กรุณาตรวจสอบ งาน และ สถานที่ทำงาน',
-                                        title: 'ตรวจสอบข้อมูล',
-                                        context: context,
-                                        actions: [
-                                          IconsButton(
-                                            onPressed: () {
-                                              Navigator.of(context,
-                                                      rootNavigator: true)
-                                                  .pop();
-                                            },
-                                            text: 'ตกลง',
-                                            iconData:
-                                                Icons.check_circle_outline,
-                                            color: Colors.green,
-                                            textStyle: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                            iconColor: Colors.white,
-                                          ),
-                                        ]);
-                                  } else {
-                                    String arrayText = "";
-
-                                    List<DateTime> typeTimeStart = [];
-                                    List<DateTime> typeTimeEnd = [];
-                                    if (TextOTBeforeEnd != "") {
-                                      typeTimeStart.add(OTBeforeStart);
-                                      typeTimeEnd.add(OTBeforeEnd);
-
-                                      arrayText =
-                                          '{"201": ["$OTBeforeStart", "$OTBeforeEnd"]';
-                                    }
-                                    if (TextDefultOneEnd != "") {
-                                      typeTimeStart.add(DefultOneStart);
-                                      typeTimeEnd.add(DefultOneEnd);
-
-                                      if (arrayText == "") {
-                                        arrayText = '{';
+                                      if ((((ckOTBefore != "") ||
+                                                  (ckDefultOne != "") ||
+                                                  (ckOTAfter != "")) ||
+                                              ((ckOTBeforestart != "") ||
+                                                  (ckDefultOnestart != "") ||
+                                                  (ckOTOTAfterstart != ""))) ||
+                                          ((TextOTBeforeStart == "") &&
+                                              (TextOTBeforeEnd == "") &&
+                                              (TextDefultOneStart == "") &&
+                                              (TextDefultOneEnd == "") &&
+                                              (TextOTAfterStart == "") &&
+                                              (TextOTAfterEnd == ""))) {
+                                        Dialogs.materialDialog(
+                                            msg:
+                                                'กรุณาตรวจสอบเวลาเริ่มต้นและเวลาสิ้นสุดให้ถูกต้อง',
+                                            title: 'ตรวจสอบข้อมูล',
+                                            context: context,
+                                            actions: [
+                                              IconsButton(
+                                                onPressed: () {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                },
+                                                text: 'ตกลง',
+                                                iconData:
+                                                    Icons.check_circle_outline,
+                                                color: Colors.green,
+                                                textStyle: const TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                                iconColor: Colors.white,
+                                              ),
+                                            ]);
+                                      } else if (locationName == '' ||
+                                          jobdetail == '') {
+                                        Dialogs.materialDialog(
+                                            msg:
+                                                'กรุณาตรวจสอบ งาน และ สถานที่ทำงาน',
+                                            title: 'ตรวจสอบข้อมูล',
+                                            context: context,
+                                            actions: [
+                                              IconsButton(
+                                                onPressed: () {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                },
+                                                text: 'ตกลง',
+                                                iconData:
+                                                    Icons.check_circle_outline,
+                                                color: Colors.green,
+                                                textStyle: const TextStyle(
+                                                  color: Colors.white,
+                                                ),
+                                                iconColor: Colors.white,
+                                              ),
+                                            ]);
                                       } else {
-                                        arrayText += ',';
+                                        String arrayText = "";
+
+                                        List<DateTime> typeTimeStart = [];
+                                        List<DateTime> typeTimeEnd = [];
+                                        if (TextOTBeforeEnd != "") {
+                                          typeTimeStart.add(OTBeforeStart);
+                                          typeTimeEnd.add(OTBeforeEnd);
+
+                                          arrayText =
+                                              '{"201": ["$OTBeforeStart", "$OTBeforeEnd"]';
+                                        }
+                                        if (TextDefultOneEnd != "") {
+                                          typeTimeStart.add(DefultOneStart);
+                                          typeTimeEnd.add(DefultOneEnd);
+
+                                          if (arrayText == "") {
+                                            arrayText = '{';
+                                          } else {
+                                            arrayText += ',';
+                                          }
+                                          arrayText +=
+                                              '"100": ["$DefultOneStart", "$DefultOneEnd"]';
+                                        }
+                                        if (TextOTAfterEnd != "") {
+                                          typeTimeStart.add(OTAfterStart);
+                                          typeTimeEnd.add(OTAfterEnd);
+
+                                          if (arrayText == "") {
+                                            arrayText += '{';
+                                          } else {
+                                            arrayText += ',';
+                                          }
+                                          arrayText +=
+                                              '"202": ["$OTAfterStart", "$OTAfterEnd"]';
+                                        }
+
+                                        arrayText += "}";
+
+                                        var tagsJson = jsonDecode(arrayText);
+
+                                        Dialogs.materialDialog(
+                                          msg:
+                                              'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
+                                          title: 'ยืนยันข้อมูล',
+                                          context: context,
+                                          actions: [
+                                            IconsOutlineButton(
+                                              onPressed: () {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                              text: 'ไม่',
+                                              iconData: Icons.cancel_outlined,
+                                              color: Colors.white,
+                                              textStyle: const TextStyle(
+                                                  color: Colors.black),
+                                              iconColor: Colors.black,
+                                            ),
+                                            IconsButton(
+                                              text: 'ใช่',
+                                              iconData:
+                                                  Icons.check_circle_outline,
+                                              color: Colors.green,
+                                              textStyle: const TextStyle(
+                                                  color: Colors.white),
+                                              iconColor: Colors.white,
+                                              onPressed: () {
+                                                datasavetimesheet(
+                                                    arrayText, '', '', '');
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
                                       }
-                                      arrayText +=
-                                          '"100": ["$DefultOneStart", "$DefultOneEnd"]';
-                                    }
-                                    if (TextOTAfterEnd != "") {
-                                      typeTimeStart.add(OTAfterStart);
-                                      typeTimeEnd.add(OTAfterEnd);
-
-                                      if (arrayText == "") {
-                                        arrayText += '{';
-                                      } else {
-                                        arrayText += ',';
-                                      }
-                                      arrayText +=
-                                          '"202": ["$OTAfterStart", "$OTAfterEnd"]';
-                                    }
-
-                                    arrayText += "}";
-
-                                    var tagsJson = jsonDecode(arrayText);
-
-                                    Dialogs.materialDialog(
-                                      msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
-                                      title: 'ยืนยันข้อมูล',
-                                      context: context,
-                                      actions: [
-                                        IconsOutlineButton(
-                                          onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
-                                          },
-                                          text: 'ไม่',
-                                          iconData: Icons.cancel_outlined,
-                                          color: Colors.white,
-                                          textStyle: const TextStyle(
-                                              color: Colors.black),
-                                          iconColor: Colors.black,
-                                        ),
-                                        IconsButton(
-                                          text: 'ใช่',
-                                          iconData: Icons.check_circle_outline,
-                                          color: Colors.green,
-                                          textStyle: const TextStyle(
-                                              color: Colors.white),
-                                          iconColor: Colors.white,
-                                          onPressed: () {
-                                            datasavetimesheet(
-                                                arrayText, '', '', '');
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  }
-                                },
-                                text: 'บันทึก',
-                                textColor: Colors.white,
+                                    },
+                                    text: 'บันทึก',
+                                    textColor: Colors.white,
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 16.0),
                             ],
@@ -1571,6 +1612,7 @@ class _MyHomePageState extends State<EmployeeList> {
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             showDialog(
+              barrierDismissible: false,
               context: context,
               builder: (context) {
                 return StatefulBuilder(
@@ -1616,54 +1658,68 @@ class _MyHomePageState extends State<EmployeeList> {
                             //   ),
                             // ),
                             const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                /* ปุ่ม 'ยกเลิก' */
+                                MyButton(
+                                  onPressed: () => Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).pop(),
+                                  text: 'ยกเลิก',
+                                  buttonColor: Colors.blue[900]!,
+                                  textColor: Colors.white,
+                                ),
+                                const SizedBox(width: 16.0),
+                                /* ปุ่ม 'บันทึก' */
+                                MyButton(
+                                  onPressed: () {
+                                    //////function check time
 
-                            /* ปุ่ม 'บันทึก' */
-                            MyButton(
-                              onPressed: () {
-                                //////function check time
+                                    String arrayText =
+                                        '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
 
-                                String arrayText =
-                                    '{"301": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
+                                    var tagsJson = jsonDecode(arrayText);
 
-                                var tagsJson = jsonDecode(arrayText);
-
-                                Dialogs.materialDialog(
-                                  msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
-                                  title: 'ยืนยันข้อมูล',
-                                  context: context,
-                                  actions: [
-                                    IconsOutlineButton(
-                                      onPressed: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
-                                      },
-                                      text: 'ไม่',
-                                      iconData: Icons.cancel_outlined,
-                                      color: Colors.white,
-                                      textStyle:
-                                          const TextStyle(color: Colors.black),
-                                      iconColor: Colors.black,
-                                    ),
-                                    IconsButton(
-                                      text: 'ใช่',
-                                      iconData: Icons.check_circle_outline,
-                                      color: Colors.green,
-                                      textStyle:
-                                          const TextStyle(color: Colors.white),
-                                      iconColor: Colors.white,
-                                      onPressed: () {
-                                        datasavetimesheet(
-                                            arrayText, '', '', '');
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                              text: 'บันทึก',
+                                    Dialogs.materialDialog(
+                                      msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
+                                      title: 'ยืนยันข้อมูล',
+                                      context: context,
+                                      actions: [
+                                        IconsOutlineButton(
+                                          onPressed: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                          text: 'ไม่',
+                                          iconData: Icons.cancel_outlined,
+                                          color: Colors.white,
+                                          textStyle: const TextStyle(
+                                              color: Colors.black),
+                                          iconColor: Colors.black,
+                                        ),
+                                        IconsButton(
+                                          text: 'ใช่',
+                                          iconData: Icons.check_circle_outline,
+                                          color: Colors.green,
+                                          textStyle: const TextStyle(
+                                              color: Colors.white),
+                                          iconColor: Colors.white,
+                                          onPressed: () {
+                                            datasavetimesheet(
+                                                arrayText, '', '', '');
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  text: 'บันทึก',
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 16),
                           ],
@@ -1693,6 +1749,7 @@ class _MyHomePageState extends State<EmployeeList> {
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             showDialog(
+              barrierDismissible: false,
               context: context,
               builder: (context) {
                 return StatefulBuilder(
@@ -1801,122 +1858,144 @@ class _MyHomePageState extends State<EmployeeList> {
                               },
                             ),
                             const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                /* ปุ่ม 'ยกเลิก' */
+                                MyButton(
+                                  onPressed: () => Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).pop(),
+                                  text: 'ยกเลิก',
+                                  buttonColor: Colors.blue[900]!,
+                                  textColor: Colors.white,
+                                ),
+                                const SizedBox(width: 16.0),
+                                /* ปุ่ม 'บันทึก' */
+                                MyButton(
+                                  onPressed: () {
+                                    //////function check time
+                                    DateTime valdateStart =
+                                        DateFormat('dd/MM/yyyy')
+                                            .parse(LeaveStartDate.text);
+                                    DateTime valdateEnd =
+                                        DateFormat('dd/MM/yyyy')
+                                            .parse(LeaveEndDate.text);
 
-                            /* ปุ่ม 'บันทึก' */
-                            MyButton(
-                              onPressed: () {
-                                //////function check time
-                                DateTime valdateStart = DateFormat('dd/MM/yyyy')
-                                    .parse(LeaveStartDate.text);
-                                DateTime valdateEnd = DateFormat('dd/MM/yyyy')
-                                    .parse(LeaveEndDate.text);
+                                    DateTime dtStart = new DateTime(
+                                            valdateStart.year - 543,
+                                            valdateStart.month,
+                                            valdateStart.day)
+                                        .add(new Duration(
+                                            hours: 8, minutes: 30));
 
-                                DateTime dtStart = new DateTime(
+                                    DateTime dtEnd = new DateTime(
+                                            valdateEnd.year - 543,
+                                            valdateEnd.month,
+                                            valdateEnd.day)
+                                        .add(new Duration(
+                                            hours: 17, minutes: 30));
+
+                                    DateTime CurrentDate = GetDateTimeCurrent();
+                                    print(CurrentDate);
+                                    print(dtStart);
+                                    if (dtEnd.isBefore(dtStart)) {
+                                      Dialogs.materialDialog(
+                                          msg:
+                                              'กรุณาตรวจสอบวันที่การลา เวลาสิ้นสุด ต้องมากกว่าเวลาเริ่ม',
+                                          title: 'ตรวจสอบข้อมูล',
+                                          context: context,
+                                          actions: [
+                                            IconsButton(
+                                              onPressed: () {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                              text: 'ตกลง',
+                                              iconData:
+                                                  Icons.check_circle_outline,
+                                              color: Colors.green,
+                                              textStyle: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              iconColor: Colors.white,
+                                            ),
+                                          ]);
+                                    } else if (CurrentDate.isAfter(new DateTime(
                                         valdateStart.year - 543,
                                         valdateStart.month,
-                                        valdateStart.day)
-                                    .add(new Duration(hours: 8, minutes: 30));
+                                        valdateStart.day))) {
+                                      Dialogs.materialDialog(
+                                          msg:
+                                              'กรุณาตรวจสอบวันที่การลาไม่ให้ลงย้อนหลัง',
+                                          title: 'ตรวจสอบข้อมูล',
+                                          context: context,
+                                          actions: [
+                                            IconsButton(
+                                              onPressed: () {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop();
+                                              },
+                                              text: 'ตกลง',
+                                              iconData:
+                                                  Icons.check_circle_outline,
+                                              color: Colors.green,
+                                              textStyle: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              iconColor: Colors.white,
+                                            ),
+                                          ]);
+                                    } else {
+                                      String arrayText =
+                                          '{"302": ["$dtStart", "$dtEnd"]}';
 
-                                DateTime dtEnd = new DateTime(
-                                        valdateEnd.year - 543,
-                                        valdateEnd.month,
-                                        valdateEnd.day)
-                                    .add(new Duration(hours: 17, minutes: 30));
+                                      var tagsJson = jsonDecode(arrayText);
 
-                                DateTime CurrentDate = GetDateTimeCurrent();
-                                print(CurrentDate);
-                                print(dtStart);
-                                if (dtEnd.isBefore(dtStart)) {
-                                  Dialogs.materialDialog(
-                                      msg:
-                                          'กรุณาตรวจสอบวันที่การลา เวลาสิ้นสุด ต้องมากกว่าเวลาเริ่ม',
-                                      title: 'ตรวจสอบข้อมูล',
-                                      context: context,
-                                      actions: [
-                                        IconsButton(
-                                          onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
-                                          },
-                                          text: 'ตกลง',
-                                          iconData: Icons.check_circle_outline,
-                                          color: Colors.green,
-                                          textStyle: const TextStyle(
+                                      Dialogs.materialDialog(
+                                        msg:
+                                            'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
+                                        title: 'ยืนยันข้อมูล',
+                                        context: context,
+                                        actions: [
+                                          IconsOutlineButton(
+                                            onPressed: () {
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .pop();
+                                            },
+                                            text: 'ไม่',
+                                            iconData: Icons.cancel_outlined,
                                             color: Colors.white,
+                                            textStyle: const TextStyle(
+                                                color: Colors.black),
+                                            iconColor: Colors.black,
                                           ),
-                                          iconColor: Colors.white,
-                                        ),
-                                      ]);
-                                } else if (CurrentDate.isAfter(new DateTime(
-                                    valdateStart.year - 543,
-                                    valdateStart.month,
-                                    valdateStart.day))) {
-                                  Dialogs.materialDialog(
-                                      msg:
-                                          'กรุณาตรวจสอบวันที่การลาไม่ให้ลงย้อนหลัง',
-                                      title: 'ตรวจสอบข้อมูล',
-                                      context: context,
-                                      actions: [
-                                        IconsButton(
-                                          onPressed: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
-                                          },
-                                          text: 'ตกลง',
-                                          iconData: Icons.check_circle_outline,
-                                          color: Colors.green,
-                                          textStyle: const TextStyle(
-                                            color: Colors.white,
+                                          IconsButton(
+                                            text: 'ใช่',
+                                            iconData:
+                                                Icons.check_circle_outline,
+                                            color: Colors.green,
+                                            textStyle: const TextStyle(
+                                                color: Colors.white),
+                                            iconColor: Colors.white,
+                                            onPressed: () {
+                                              datasavetimesheet(
+                                                  arrayText, '', '', '');
+                                              Navigator.of(context,
+                                                      rootNavigator: true)
+                                                  .pop();
+                                            },
                                           ),
-                                          iconColor: Colors.white,
-                                        ),
-                                      ]);
-                                } else {
-                                  String arrayText =
-                                      '{"302": ["$dtStart", "$dtEnd"]}';
-
-                                  var tagsJson = jsonDecode(arrayText);
-
-                                  Dialogs.materialDialog(
-                                    msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
-                                    title: 'ยืนยันข้อมูล',
-                                    context: context,
-                                    actions: [
-                                      IconsOutlineButton(
-                                        onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                        text: 'ไม่',
-                                        iconData: Icons.cancel_outlined,
-                                        color: Colors.white,
-                                        textStyle: const TextStyle(
-                                            color: Colors.black),
-                                        iconColor: Colors.black,
-                                      ),
-                                      IconsButton(
-                                        text: 'ใช่',
-                                        iconData: Icons.check_circle_outline,
-                                        color: Colors.green,
-                                        textStyle: const TextStyle(
-                                            color: Colors.white),
-                                        iconColor: Colors.white,
-                                        onPressed: () {
-                                          datasavetimesheet(
-                                              arrayText, '', '', '');
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                              text: 'บันทึก',
+                                        ],
+                                      );
+                                    }
+                                  },
+                                  text: 'บันทึก',
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 16),
                           ],
@@ -1946,6 +2025,7 @@ class _MyHomePageState extends State<EmployeeList> {
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             showDialog(
+              barrierDismissible: false,
               context: context,
               builder: (context) {
                 return StatefulBuilder(
@@ -1991,54 +2071,68 @@ class _MyHomePageState extends State<EmployeeList> {
                             //   ),
                             // ),
                             const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                /* ปุ่ม 'ยกเลิก' */
+                                MyButton(
+                                  onPressed: () => Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  ).pop(),
+                                  text: 'ยกเลิก',
+                                  buttonColor: Colors.blue[900]!,
+                                  textColor: Colors.white,
+                                ),
+                                const SizedBox(width: 16.0),
+                                /* ปุ่ม 'บันทึก' */
+                                MyButton(
+                                  onPressed: () {
+                                    //////function check time
 
-                            /* ปุ่ม 'บันทึก' */
-                            MyButton(
-                              onPressed: () {
-                                //////function check time
+                                    String arrayText =
+                                        '{"300": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
 
-                                String arrayText =
-                                    '{"300": ["$LeavesickAllStart", "$LeavesickAllEnd"]}';
+                                    var tagsJson = jsonDecode(arrayText);
 
-                                var tagsJson = jsonDecode(arrayText);
-
-                                Dialogs.materialDialog(
-                                  msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
-                                  title: 'ยืนยันข้อมูล',
-                                  context: context,
-                                  actions: [
-                                    IconsOutlineButton(
-                                      onPressed: () {
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
-                                      },
-                                      text: 'ไม่',
-                                      iconData: Icons.cancel_outlined,
-                                      color: Colors.white,
-                                      textStyle:
-                                          const TextStyle(color: Colors.black),
-                                      iconColor: Colors.black,
-                                    ),
-                                    IconsButton(
-                                      text: 'ใช่',
-                                      iconData: Icons.check_circle_outline,
-                                      color: Colors.green,
-                                      textStyle:
-                                          const TextStyle(color: Colors.white),
-                                      iconColor: Colors.white,
-                                      onPressed: () {
-                                        datasavetimesheet(
-                                            arrayText, '', '', '');
-                                        Navigator.of(context,
-                                                rootNavigator: true)
-                                            .pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                              text: 'บันทึก',
+                                    Dialogs.materialDialog(
+                                      msg: 'ท่านต้องการบันทึกข้อมูลใช่หรือไม่?',
+                                      title: 'ยืนยันข้อมูล',
+                                      context: context,
+                                      actions: [
+                                        IconsOutlineButton(
+                                          onPressed: () {
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                          text: 'ไม่',
+                                          iconData: Icons.cancel_outlined,
+                                          color: Colors.white,
+                                          textStyle: const TextStyle(
+                                              color: Colors.black),
+                                          iconColor: Colors.black,
+                                        ),
+                                        IconsButton(
+                                          text: 'ใช่',
+                                          iconData: Icons.check_circle_outline,
+                                          color: Colors.green,
+                                          textStyle: const TextStyle(
+                                              color: Colors.white),
+                                          iconColor: Colors.white,
+                                          onPressed: () {
+                                            datasavetimesheet(
+                                                arrayText, '', '', '');
+                                            Navigator.of(context,
+                                                    rootNavigator: true)
+                                                .pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  text: 'บันทึก',
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 16),
                           ],
