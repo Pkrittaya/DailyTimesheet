@@ -1419,6 +1419,7 @@ class _MyHomePageState extends State<EmployeeList> {
                               ),
                               const SizedBox(height: 24),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   /* ปุ่ม 'ยกเลิก' */
                                   MyButton(
@@ -1711,6 +1712,7 @@ class _MyHomePageState extends State<EmployeeList> {
                             // ),
                             const SizedBox(height: 24),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 /* ปุ่ม 'ยกเลิก' */
                                 MyButton(
@@ -1911,6 +1913,7 @@ class _MyHomePageState extends State<EmployeeList> {
                             ),
                             const SizedBox(height: 24),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 /* ปุ่ม 'ยกเลิก' */
                                 MyButton(
@@ -2124,6 +2127,7 @@ class _MyHomePageState extends State<EmployeeList> {
                             // ),
                             const SizedBox(height: 24),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 /* ปุ่ม 'ยกเลิก' */
                                 MyButton(
