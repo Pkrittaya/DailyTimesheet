@@ -981,6 +981,35 @@ class _MyHomePageState extends State<EmployeeList> {
           {
             Dialogs.materialDialog(
               // title: 'เวลาปฏิบัติงาน',
+              barrierDismissible: false,
+              msg:
+                  'บันทึกเวลางาน ของวันที่ ${formatDateTH(GetDateTimeCurrent())}',
+              customView: Stack(
+                children: [
+                  const Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                      child: Text('เวลาปฏิบัติงาน',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+                      child: IconButton(
+                        onPressed: () => Navigator.of(
+                          context,
+                          rootNavigator: true,
+                        ).pop(),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               context: context,
               dialogWidth: MediaQuery.of(context).size.width < 500
                   ? MediaQuery.of(context).size.width
@@ -988,38 +1017,61 @@ class _MyHomePageState extends State<EmployeeList> {
               actions: [
                 Column(
                   children: [
-                    // Positioned(
-                    //   right: 0.0,
-                    //   top: 0.0,
-                    //   child: Align(
-                    //     alignment: Alignment.topRight,
-                    //     child: CircleAvatar(
-                    //       radius: 14.0,
-                    //       backgroundColor: Colors.white,
-                    //       child: IconButton(
-                    //         onPressed: () => Navigator.of(
-                    //           context,
-                    //           rootNavigator: true,
-                    //         ).pop(),
-                    //         icon: const Icon(Icons.close),
-                    //         padding: EdgeInsets.zero,
-                    //         // alignment: Alignment.topRight,
-                    //         splashRadius: 20,
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Text(
+                    //       'เวลาปฏิบัติงาน',
+                    //       style: Theme.of(context).textTheme.titleMedium,
+                    //       textAlign: TextAlign.center,
+                    //     ),
+                    //     Align(
+                    //       alignment: Alignment.topRight,
+                    //       child: CircleAvatar(
+                    //         radius: 14.0,
+                    //         backgroundColor: Colors.white,
+                    //         child: IconButton(
+                    //           onPressed: () => Navigator.of(
+                    //             context,
+                    //             rootNavigator: true,
+                    //           ).pop(),
+                    //           icon: const Icon(Icons.close),
+                    //           padding: EdgeInsets.zero,
+                    //           // alignment: Alignment.topRight,
+                    //           splashRadius: 20,
+                    //         ),
                     //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // Align(
+                    //   alignment: Alignment.topRight,
+                    //   child: CircleAvatar(
+                    //     radius: 14.0,
+                    //     backgroundColor: Colors.white,
+                    //     child: IconButton(
+                    //       onPressed: () => Navigator.of(
+                    //         context,
+                    //         rootNavigator: true,
+                    //       ).pop(),
+                    //       icon: const Icon(Icons.close),
+                    //       padding: EdgeInsets.zero,
+                    //       // alignment: Alignment.topRight,
+                    //       splashRadius: 20,
                     //     ),
                     //   ),
                     // ),
-                    Text(
-                      'เวลาปฏิบัติงาน',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'บันทึกเวลางาน ของวันที่ ${formatDateTH(GetDateTimeCurrent())}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    // Text(
+                    //   'เวลาปฏิบัติงาน',
+                    //   style: Theme.of(context).textTheme.titleMedium,
+                    // ),
+                    // const SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Text(
+                    //   'บันทึกเวลางาน ของวันที่ ${formatDateTH(GetDateTimeCurrent())}',
+                    //   style: Theme.of(context).textTheme.titleMedium,
+                    // ),
                     const SizedBox(
                       height: 10,
                     ),

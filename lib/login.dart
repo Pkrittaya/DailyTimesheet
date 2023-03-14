@@ -37,7 +37,8 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
       String username = "";
       //String authEncode = _authAPI(username, controllerPwd.text);
 
-      final res = await GetValidateLogIn(controllerUser.text, controllerPwd.text);
+      final res =
+          await GetValidateLogIn(controllerUser.text, controllerPwd.text);
 
       if (res.statusCode == 200) {
         final parsedJson = jsonDecode(res.body);
@@ -66,18 +67,22 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
           } else {
             flag = false;
 
-            Dialogs.materialDialog(msg: 'login ไม่สำเร็จ', title: 'ตรวจสอบข้อมูล', context: context, actions: [
-              IconsButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                text: 'ตกลง',
-                iconData: Icons.check_circle_outline,
-                color: Colors.green,
-                textStyle: const TextStyle(color: Colors.white),
-                iconColor: Colors.white,
-              ),
-            ]);
+            Dialogs.materialDialog(
+                msg: 'login ไม่สำเร็จ',
+                title: 'ตรวจสอบข้อมูล',
+                context: context,
+                actions: [
+                  IconsButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    text: 'ตกลง',
+                    iconData: Icons.check_circle_outline,
+                    color: Colors.green,
+                    textStyle: const TextStyle(color: Colors.white),
+                    iconColor: Colors.white,
+                  ),
+                ]);
           }
         } else {
           flag = false;
@@ -145,7 +150,8 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     Duration workYesterday = const Duration(hours: 9, minutes: 00);
 
     if ((newDate.hour < workYesterday.inHours) ||
-        ((newDate.hour == workYesterday.inHours) && (newDate.minute <= workYesterday.inMinutes.remainder(60)))) {
+        ((newDate.hour == workYesterday.inHours) &&
+            (newDate.minute <= workYesterday.inMinutes.remainder(60)))) {
       newDate = DateTime.now().add(const Duration(days: -1));
     } else {
       newDate = DateTime.now();
@@ -156,7 +162,11 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => homepage(index: 1, EmpCode: _empCode, ShowPopup: _showPopup, url: webConfig)),
+          builder: (context) => homepage(
+              index: 1,
+              EmpCode: _empCode,
+              ShowPopup: _showPopup,
+              url: webConfig)),
     );
   }
 
@@ -196,7 +206,9 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(child: Image.asset('assets/images/Logo.png', height: 150)),
+                  Center(
+                      child:
+                          Image.asset('assets/images/Logo.png', height: 150)),
                 ],
               ),
             ),
@@ -204,66 +216,116 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
             Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(60), topRight: Radius.circular(60)),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(60),
+                    topRight: Radius.circular(60)),
               ),
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(30),
                   child: Column(
                     children: [
+                      // const SizedBox(
+                      //   height: 2,
+                      // ),
+                      const Text(
+                        'ระบบบันทึกเวลาทำงาน',
+                        style: TextStyle(
+                          fontSize: 20,
+                          // color: Colors.grey,
+                        ),
+                      ),
+                      const Text(
+                        '(รายวัน)',
+                        style: TextStyle(
+                          fontSize: 20,
+                          // color: Colors.grey,
+                        ),
+                      ),
                       const SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       // #email, #password
                       Center(
                         child: Container(
-                          width: MediaQuery.of(context).size.width < 500 ? MediaQuery.of(context).size.width : 500,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: const [
-                              BoxShadow(color: Color.fromRGBO(171, 171, 171, .7), blurRadius: 20, offset: Offset(0, 0)),
-                            ],
-                          ),
+                          width: MediaQuery.of(context).size.width < 500
+                              ? MediaQuery.of(context).size.width
+                              : 500,
+                          // decoration: BoxDecoration(
+                          //   color: Colors.white,
+                          //   borderRadius: BorderRadius.circular(10),
+                          //   boxShadow: const [
+                          //     BoxShadow(
+                          //         color: Color.fromRGBO(171, 171, 171, .7),
+                          //         blurRadius: 20,
+                          //         offset: Offset(0, 0)),
+                          //   ],
+                          // ),
                           child: Column(
                             children: [
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 8.0),
                                 decoration: BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: TextField(
                                   controller: controllerUser,
                                   decoration: InputDecoration(
-                                    hintText: "ชื่อผู้ใช้งาน",
-                                    hintStyle: const TextStyle(color: Colors.grey),
+                                    hintText: "รหัสพนักงาน (xxxxxxx)",
+                                    hintStyle: const TextStyle(
+                                        color: Colors.grey, fontSize: 14),
                                     border: InputBorder.none,
-                                    errorText: _validate ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง' : null,
+                                    errorText: _validate
+                                        ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
+                                        : null,
                                   ),
                                 ),
                               ),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0, vertical: 8.0),
                                 decoration: BoxDecoration(
-                                  border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: TextField(
                                   controller: controllerPwd,
                                   obscureText: _isObscure,
                                   decoration: InputDecoration(
                                     // labelText: 'Password',
-                                    hintText: "รหัสผ่าน",
-                                    hintStyle: const TextStyle(color: Colors.grey),
+                                    hintText:
+                                        "รหัสผ่าน : วันเกิด ววดดปปปป (พ.ศ.)",
+                                    hintStyle: const TextStyle(
+                                        color: Colors.grey, fontSize: 14),
                                     border: InputBorder.none,
                                     suffixIcon: IconButton(
-                                      icon: Icon(_isObscure ? Icons.visibility : Icons.visibility_off),
+                                      icon: Icon(_isObscure
+                                          ? Icons.visibility
+                                          : Icons.visibility_off),
                                       onPressed: () {
                                         setState(() {
                                           _isObscure = !_isObscure;
                                         });
                                       },
                                     ),
-                                    errorText: _validate ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง' : null,
+                                    errorText: _validate
+                                        ? 'กรุณากรอกข้อมูล ข้อมูลห้ามเป็นค่าว่าง'
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '*ตัวอย่าง 1 ม.ค. 2565 = 01012565',
+                                  style: TextStyle(
+                                    // fontSize: 40,
+                                    color: Colors.grey,
                                   ),
                                 ),
                               )
@@ -277,10 +339,12 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                         margin: const EdgeInsets.symmetric(horizontal: 50),
                         child: ElevatedButton(
                           onPressed: () {
-                            if (controllerPwd.text.isNotEmpty && controllerUser.text.isNotEmpty) validateLogin();
+                            if (controllerPwd.text.isNotEmpty &&
+                                controllerUser.text.isNotEmpty) validateLogin();
 
                             setState(() {
-                              (controllerPwd.text.isEmpty || controllerUser.text.isEmpty)
+                              (controllerPwd.text.isEmpty ||
+                                      controllerUser.text.isEmpty)
                                   ? _validate = true
                                   : _validate = false;
                             });
@@ -292,7 +356,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             backgroundColor: Theme.of(context).primaryColor,
                             padding: const EdgeInsets.symmetric(
@@ -302,12 +366,20 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                             textStyle: const TextStyle(fontSize: 18),
                           ),
                           child: Text(
-                            'เข้าสู่ระบบ',
-                            style: GoogleFonts.getFont('Kanit'),
+                            'ลงชื่อเข้าใช้งาน',
+                            style: GoogleFonts.getFont('Kanit')
+                                .copyWith(fontSize: 14),
                           ),
                         ),
                       ),
                       const SizedBox(height: 30),
+                      const Text(
+                        'บริษัท ยูนิค เอ็นจิเนียริ่ง แอนด์ คอนสตรัคชั่น จำกัด (มหาชน)',
+                        style: TextStyle(
+                          // fontSize: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
                       const Text(
                         'Version 0.3.0',
                         style: TextStyle(
@@ -315,12 +387,6 @@ class _LoginState extends State<Login> with WidgetsBindingObserver {
                           color: Colors.grey,
                         ),
                       ),
-                      // #login SNS
-                      // const Text(
-                      //   "ลืมรหัสผ่าน ใช่หรือไม่?",
-                      //   style: TextStyle(
-                      //       color: Colors.grey, fontWeight: FontWeight.bold),
-                      // ),
                     ],
                   ),
                 ),

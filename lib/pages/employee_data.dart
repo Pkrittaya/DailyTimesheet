@@ -414,35 +414,69 @@ class _MyHomePageState extends State<EmployeeDetail>
               canTapOnHeader: false,
               headerBuilder: (BuildContext context, bool isExpanded) {
                 return ListTile(
-                  title: ListTileTheme(
-                    //horizontalTitleGap: 2.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'วันที่ ${formatDateTextTH(day.workDay!)}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        (day.status != '300' &&
-                                day.status != '301' &&
-                                day.status != '302')
-                            ? Text(
-                                'รวมเวลา ${customCountTime(day.totalsTime)}',
-                                style: isWorkDayComplete(day.totalsTime)
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(color: Colors.green)
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(color: Colors.redAccent),
-                              )
-                            : const SizedBox.shrink()
-                      ],
+                    title: ListTileTheme(
+                      //horizontalTitleGap: 2.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'วันที่ ${formatDateTextTH(day.workDay!)}',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          MediaQuery.of(context).size.width > 430
+                              ? Align(
+                                  alignment: Alignment.centerRight,
+                                  child: (day.status != '300' &&
+                                          day.status != '301' &&
+                                          day.status != '302')
+                                      ? Text(
+                                          'รวมเวลา ${customCountTime(day.totalsTime)}',
+                                          style:
+                                              isWorkDayComplete(day.totalsTime)
+                                                  ? Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(
+                                                          color: Colors.green,
+                                                          fontSize: 10)
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(
+                                                          color:
+                                                              Colors.redAccent,
+                                                          fontSize: 10),
+                                        )
+                                      : const SizedBox.shrink())
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
-                  ),
-                );
+                    subtitle: MediaQuery.of(context).size.width <= 430
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: (day.status != '300' &&
+                                    day.status != '301' &&
+                                    day.status != '302')
+                                ? Text(
+                                    'รวมเวลา ${customCountTime(day.totalsTime)}',
+                                    style: isWorkDayComplete(day.totalsTime)
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                color: Colors.green,
+                                                fontSize: 12)
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                color: Colors.redAccent,
+                                                fontSize: 12),
+                                  )
+                                : const SizedBox.shrink(),
+                          )
+                        : null);
               },
               body: ListTile(
                 //tileColor: Colors.grey[100],
@@ -467,79 +501,98 @@ class _MyHomePageState extends State<EmployeeDetail>
                                     width: 1.0, color: Colors.grey.shade400)),
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              MediaQuery.of(context).size.width > 500
-                                  ? Container(
-                                      child: (dayList[index].status != '300' &&
-                                              dayList[index].status != '301' &&
-                                              dayList[index].status != '302')
-                                          ? Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                SizedBox(
-                                                  width: 60.0,
-                                                  child: Text(
-                                                      '${replaceStatusTime(dayList[index].status)} :',
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            // mainAxisSize: MainAxisSize.max,
+                            children: MediaQuery.of(context).size.width > 500
+                                ? [
+                                    (dayList[index].status != '300' &&
+                                            dayList[index].status != '301' &&
+                                            dayList[index].status != '302')
+                                        ? Expanded(
+                                            child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  /* ชื่อ */
+                                                  SizedBox(
+                                                    width: 60.0,
+                                                    child: Text(
+                                                        '${replaceStatusTime(dayList[index].status)} :',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .titleSmall),
+                                                  ),
+                                                  /* เวลาเริ่ม - สิ้นสุด  */
+                                                  Text(
+                                                      '${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
                                                       style: Theme.of(context)
                                                           .textTheme
                                                           .titleSmall),
-                                                ),
-                                                Text(
-                                                    '${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
+                                                ],
+                                              ),
+                                              const SizedBox(width: 16.0),
+                                              Row(
+                                                children: [
+                                                  /* จำนวนชั่วโมง  */
+                                                  Text(
+                                                    '${customCountTime(dayList[index].dateDiffs)}',
                                                     style: Theme.of(context)
                                                         .textTheme
-                                                        .titleSmall),
-                                                const SizedBox(width: 16.0),
-                                                Text(
-                                                  '${customCountTime(dayList[index].dateDiffs)}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleSmall,
-                                                  textAlign: TextAlign.end,
-                                                ),
-                                                Align(
-                                                    alignment:
-                                                        Alignment.topRight,
-                                                    child: (timesheetCurrent[0]
-                                                                .lstTimesheet[
-                                                                    index]
-                                                                .createBy ==
-                                                            widget.empCode)
-                                                        ? _buildDeleteTimesheet(
-                                                            timesheetCurrent[0]
-                                                                    .lstTimesheet[
-                                                                index])
-                                                        : const SizedBox
-                                                            .shrink()),
-                                              ],
-                                            )
-                                          : Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  '${replaceStatusTime(dayList[index].status)}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleSmall,
-                                                ),
-                                                (timesheetCurrent[0]
-                                                            .lstTimesheet[index]
-                                                            .createBy ==
-                                                        widget.empCode)
-                                                    ? _buildDeleteTimesheet(
-                                                        timesheetCurrent[0]
-                                                                .lstTimesheet[
-                                                            index])
-                                                    : const SizedBox.shrink()
-                                              ],
-                                            ),
-                                    )
-                                  : Column(
+                                                        .titleSmall,
+                                                    textAlign: TextAlign.end,
+                                                  ),
+                                                  /* ปุ่มลบ  */
+                                                  Align(
+                                                      alignment:
+                                                          Alignment.topRight,
+                                                      child: (timesheetCurrent[
+                                                                      0]
+                                                                  .lstTimesheet[
+                                                                      index]
+                                                                  .createBy ==
+                                                              widget.empCode)
+                                                          ? _buildDeleteTimesheet(
+                                                              timesheetCurrent[
+                                                                          0]
+                                                                      .lstTimesheet[
+                                                                  index])
+                                                          : const SizedBox
+                                                              .shrink()),
+                                                ],
+                                              ),
+                                            ],
+                                          ))
+                                        : Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            mainAxisSize: MainAxisSize.max,
+                                            children: [
+                                              Text(
+                                                '${replaceStatusTime(dayList[index].status)}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleSmall,
+                                              ),
+                                              (timesheetCurrent[0]
+                                                          .lstTimesheet[index]
+                                                          .createBy ==
+                                                      widget.empCode)
+                                                  ? _buildDeleteTimesheet(
+                                                      timesheetCurrent[0]
+                                                          .lstTimesheet[index])
+                                                  : const SizedBox.shrink()
+                                            ],
+                                          ),
+                                  ]
+                                : [
+                                    Expanded(
+                                        child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      // mainAxisSize: MainAxisSize.max,
                                       children: [
                                         (dayList[index].status != '300' &&
                                                 dayList[index].status !=
@@ -551,7 +604,7 @@ class _MyHomePageState extends State<EmployeeDetail>
                                                         .spaceBetween,
                                                 children: [
                                                   SizedBox(
-                                                    width: 60.0,
+                                                    width: 50.0,
                                                     child: Text(
                                                         '${replaceStatusTime(dayList[index].status)} :',
                                                         style: Theme.of(context)
@@ -580,13 +633,16 @@ class _MyHomePageState extends State<EmployeeDetail>
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
+                                                // mainAxisSize: MainAxisSize.max,
                                                 children: [
+                                                  /* ชื่อ */
                                                   Text(
                                                     '${replaceStatusTime(dayList[index].status)}',
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .titleSmall,
                                                   ),
+                                                  /* เวลา */
                                                   (timesheetCurrent[0]
                                                               .lstTimesheet[
                                                                   index]
@@ -603,17 +659,21 @@ class _MyHomePageState extends State<EmployeeDetail>
                                                 dayList[index].status !=
                                                     '301' &&
                                                 dayList[index].status != '302')
-                                            ? Text(
-                                                '${customCountTime(dayList[index].dateDiffs)}',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleSmall,
-                                                textAlign: TextAlign.end,
-                                              )
+                                            ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                    Text(
+                                                      '${customCountTime(dayList[index].dateDiffs)}',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleSmall,
+                                                    )
+                                                  ])
                                             : const SizedBox.shrink()
                                       ],
-                                    )
-                            ],
+                                    ))
+                                  ],
                           ),
                         );
                       },
@@ -648,36 +708,70 @@ class _MyHomePageState extends State<EmployeeDetail>
               canTapOnHeader: true,
               headerBuilder: (BuildContext context, bool isExpanded) {
                 return ListTile(
-                  title: ListTileTheme(
-                    //horizontalTitleGap: 2.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'วันที่ ${formatDateTextTH(day.workDay!)}',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        (day.lstTimesheet[0].status != '300' &&
-                                day.lstTimesheet[0].status != '301' &&
-                                day.lstTimesheet[0].status != '302')
-                            ? Text(
-                                'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
-                                style: isWorkDayComplete(
-                                        day.lstTimesheet[0].totalsTime)
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(color: Colors.green)
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(color: Colors.redAccent),
-                              )
-                            : const SizedBox.shrink(),
-                      ],
+                    title: ListTileTheme(
+                      //horizontalTitleGap: 2.0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'วันที่ ${formatDateTextTH(day.workDay!)}',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          MediaQuery.of(context).size.width > 430
+                              ? Align(
+                                  alignment: Alignment.centerRight,
+                                  child: (day.lstTimesheet[0].status != '300' &&
+                                          day.lstTimesheet[0].status != '301' &&
+                                          day.lstTimesheet[0].status != '302')
+                                      ? Text(
+                                          'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
+                                          style: isWorkDayComplete(day
+                                                  .lstTimesheet[0].totalsTime)
+                                              ? Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      color: Colors.green,
+                                                      fontSize: 10)
+                                              : Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      color: Colors.redAccent,
+                                                      fontSize: 10),
+                                        )
+                                      : const SizedBox.shrink(),
+                                )
+                              : const SizedBox.shrink(),
+                        ],
+                      ),
                     ),
-                  ),
-                );
+                    subtitle: MediaQuery.of(context).size.width <= 430
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: (day.lstTimesheet[0].status != '300' &&
+                                    day.lstTimesheet[0].status != '301' &&
+                                    day.lstTimesheet[0].status != '302')
+                                ? Text(
+                                    'รวมเวลา ${customCountTime(day.lstTimesheet[0].totalsTime)}',
+                                    style: isWorkDayComplete(
+                                            day.lstTimesheet[0].totalsTime)
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                color: Colors.green,
+                                                fontSize: 12)
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(
+                                                color: Colors.redAccent,
+                                                fontSize: 12),
+                                  )
+                                : const SizedBox.shrink(),
+                          )
+                        : null);
               },
               body: ListTile(
                 //tileColor: Colors.grey[100],
@@ -710,7 +804,7 @@ class _MyHomePageState extends State<EmployeeDetail>
                                   ? Row(
                                       children: [
                                         SizedBox(
-                                          width: 60.0,
+                                          width: 50.0,
                                           child: Text(
                                               '${replaceStatusTime(dayList[index].status)} :',
                                               style: Theme.of(context)
@@ -721,24 +815,28 @@ class _MyHomePageState extends State<EmployeeDetail>
                                             '${customTime(dayList[index].timeIn)} - ${customTime(dayList[index].timeOut)}',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleSmall),
+                                                .titleSmall)
                                       ],
                                     )
-                                  : Text(
+                                  : Expanded(
+                                      child: Text(
                                       '${replaceStatusTime(dayList[index].status)}',
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleSmall,
-                                    ),
+                                    )),
                               (dayList[index].status != '300' &&
                                       dayList[index].status != '301' &&
                                       day.lstTimesheet[0].status != '302')
-                                  ? Text(
-                                      '${customCountTime(dayList[index].dateDiffs)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    )
+                                  ? Expanded(
+                                      child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            '${customCountTime(dayList[index].dateDiffs)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall,
+                                          )))
                                   : const SizedBox.shrink(),
                             ],
                           ),
